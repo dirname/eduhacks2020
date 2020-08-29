@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="./css/layui.css">
+    <title>Protobuf WebSocket</title>
+    <script src="./student.js"></script>
+</head>
+<body>
+
+<div id="2">
+    <button id="socket">send</button>
+</div>
+
+<div id="3">
+    <button onclick="post()">send</button>
+</div>
+<script src="./layui.all.js"></script>
+<script>
+    let $ = layui.jquery,
+        ws;
+    $("#socket").click(function () {
+        if ("WebSocket" in window) {
+            if (ws == undefined) {
+                ws = new WebSocket("ws://127.0.0.1:555/ws?systemId=128390283");
+            } else {
+                ws.send("Ping");
+            }
+            ws.binaryType = "arraybuffer";
+            ws.onopen = function () {
+                ws.send("Ping");
+            };
+
+            ws.onmessage = function (evt) {
+                let buffer = evt.data;
+                let unBytes = proto.protobuf.Student.deserializeBinary(buffer);
+                let name = unBytes.getName();
+
+                console.log("my name is ", name);
+                $("#3").html(name);
+            };
+
+            ws.onclose = function () {
+                // 关闭 websocket
+                alert("连接已关闭...");
+            };
+        } else {
+            alert("您的浏览器不支持 WebSocket!");
+        }
+    })
+</script>
+</body>
+</html>
