@@ -13,3 +13,12 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# JetBrains Cache
+.idea/
+
+# Demo
+Demo/
+
+# log
+*.log
