@@ -1,4 +1,5 @@
 # EduHacks 2020 - 科技驱动在线教学的新工具、新方法和新技术
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b7df68b252224405a3fa51f792c823a7)](https://app.codacy.com/manual/dirname/eduhacks2020?utm_source=github.com&utm_medium=referral&utm_content=dirname/eduhacks2020&utm_campaign=Badge_Grade_Dashboard)
 [![Build Status](https://travis-ci.org/dirname/eduhacks2020.svg?branch=master)](https://travis-ci.org/dirname/eduhacks2020)
 [![Go Report Card](https://goreportcard.com/badge/github.com/dirname/eduhacks2020)](https://goreportcard.com/report/github.com/dirname/eduhacks2020)
 [![codecov](https://codecov.io/gh/dirname/eduhacks2020/branch/master/graph/badge.svg)](https://codecov.io/gh/dirname/eduhacks2020)
