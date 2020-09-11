@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package protobuf;
+
+message Request {
+  int32  type = 1;
+  string path = 2;
+  string location = 3;
+  bytes data = 4;
+  bytes sign = 5;
+}
+
+message Response {
+  int32 code = 1;
+  string msg = 2;
+  int32 type = 3;
+  bytes data = 4;
+  bool render = 5;
+  Render html = 6;
+}
+
+message Render {
+  string code = 1;
+  int32 type = 2;
+  string id = 3;
+  bool iframe = 4;
+
+}

@@ -1,0 +1,10 @@
+language: go
+
+go:
+  - 1.15.1
+
+before_install:
+  - cd Go/
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
