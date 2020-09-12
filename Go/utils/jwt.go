@@ -62,14 +62,15 @@ func (j *JWT) parseToken(tokenString string) (*CustomClaims, error) {
 	})
 	if err != nil {
 		if ve, ok := err.(*jwt.ValidationError); ok {
-			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
+			errType := j.getErrorType(ve)
+			switch errType {
+			case jwt.ValidationErrorMalformed:
 				return nil, ErrTokenMalformed
-			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
-				// Token is expired
+			case jwt.ValidationErrorExpired:
 				return nil, ErrTokenExpired
-			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
+			case jwt.ValidationErrorNotValidYet:
 				return nil, ErrTokenNotValidYet
-			} else {
+			default:
 				return nil, ErrTokenInvalid
 			}
 		}
@@ -80,7 +81,18 @@ func (j *JWT) parseToken(tokenString string) (*CustomClaims, error) {
 	return nil, ErrTokenInvalid
 }
 
-// 更新token
+// 获取错误的类型
+func (j *JWT) getErrorType(validationError *jwt.ValidationError) uint32 {
+	errorValidation := []uint32{jwt.ValidationErrorMalformed, jwt.ValidationErrorExpired, jwt.ValidationErrorNotValidYet}
+	for _, err := range errorValidation {
+		if validationError.Errors&err != 0 {
+			return err
+		}
+	}
+	return 0
+}
+
+// refreshToken 更新token
 func (j *JWT) refreshToken(tokenString string) (string, error) {
 	//jwt.TimeFunc = func() time.Time {
 	//	return time.Unix(0, 0)
@@ -90,14 +102,15 @@ func (j *JWT) refreshToken(tokenString string) (string, error) {
 	})
 	if err != nil {
 		if ve, ok := err.(*jwt.ValidationError); ok {
-			if ve.Errors&jwt.ValidationErrorMalformed != 0 {
+			errType := j.getErrorType(ve)
+			switch errType {
+			case jwt.ValidationErrorMalformed:
 				return "", ErrTokenMalformed
-			} else if ve.Errors&jwt.ValidationErrorExpired != 0 {
-				// Token is expired
+			case jwt.ValidationErrorExpired:
 				return "", ErrTokenExpired
-			} else if ve.Errors&jwt.ValidationErrorNotValidYet != 0 {
+			case jwt.ValidationErrorNotValidYet:
 				return "", ErrTokenNotValidYet
-			} else {
+			default:
 				return "", ErrTokenInvalid
 			}
 		}

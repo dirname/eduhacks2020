@@ -41,6 +41,7 @@ func NewClient(clientID string, systemID string, socket *websocket.Conn) *Client
 	}
 }
 
+// Read 客户端读取消息
 func (c *Client) Read(d *database.ORM, id string) {
 	go func() {
 		for {
@@ -53,36 +54,41 @@ func (c *Client) Read(d *database.ORM, id string) {
 					return
 				}
 			} else {
-				var req protobuf.Request
-				err := proto.Unmarshal(msg, &req)
-				res := &protobuf.Response{
-					Code:   http.StatusInternalServerError,
-					Msg:    "Invalid requests",
-					Type:   3,
-					Data:   nil,
-					Render: true,
-					Html: &protobuf.Render{
-						Code:   render.GetLayer(0, render.Incorrect, "Error", "Invalid Requests"),
-						Type:   1,
-						Id:     "layerMsgBox",
-						Iframe: false,
-					},
-				}
-				if err != nil {
-					log.Error("Parse Protobuf Error: ", err.Error(), string(msg))
-					data, _ := proto.Marshal(res)
-					c.Socket.WriteMessage(2, data)
-				}
-				router := database.Router{}
-				router.Find(&database.ProtoParam{
-					Request:   &req,
-					Response:  res,
-					SessionID: id,
-					DB:        d.DB,
-				}, database.Handler)
-				data, _ := proto.Marshal(res)
-				c.Socket.WriteMessage(2, data)
+				c.Router(msg, d, id)
 			}
 		}
 	}()
+}
+
+// Router 客户端处理路由
+func (c *Client) Router(msg []byte, d *database.ORM, id string) {
+	var req protobuf.Request
+	err := proto.Unmarshal(msg, &req)
+	res := &protobuf.Response{
+		Code:   http.StatusInternalServerError,
+		Msg:    "Invalid requests",
+		Type:   3,
+		Data:   nil,
+		Render: true,
+		Html: &protobuf.Render{
+			Code:   render.GetLayer(0, render.Incorrect, "Error", "Invalid Requests"),
+			Type:   1,
+			Id:     "layerMsgBox",
+			Iframe: false,
+		},
+	}
+	if err != nil {
+		log.Error("Parse Protobuf Error: ", err.Error(), string(msg))
+		data, _ := proto.Marshal(res)
+		c.Socket.WriteMessage(2, data)
+	}
+	router := database.Router{}
+	router.Find(&database.ProtoParam{
+		Request:   &req,
+		Response:  res,
+		SessionID: id,
+		DB:        d.DB,
+	}, database.Handler)
+	data, _ := proto.Marshal(res)
+	c.Socket.WriteMessage(2, data)
 }
