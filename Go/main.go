@@ -20,8 +20,13 @@ func main() {
 	orm := database.ORM{}
 	orm.Init()
 	defer orm.Close()
+
+	redis := database.RedisClient{}
+	redis.Init()
+	defer redis.Close()
+
 	router.GET("/ws", func(c *gin.Context) {
-		websocketHandler.Run(c.Writer, c.Request, &orm)
+		websocketHandler.Run(c.Writer, c.Request, &orm, &redis)
 	})
 
 	//router.POST("/sessions", func(c *gin.Context) {

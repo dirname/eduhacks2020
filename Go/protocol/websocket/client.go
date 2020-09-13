@@ -42,7 +42,7 @@ func NewClient(clientID string, systemID string, socket *websocket.Conn) *Client
 }
 
 // Read 客户端读取消息
-func (c *Client) Read(d *database.ORM, id string) {
+func (c *Client) Read(d *database.ORM, r2 *database.RedisClient, id string) {
 	go func() {
 		for {
 			messageType, msg, err := c.Socket.ReadMessage()
@@ -54,14 +54,14 @@ func (c *Client) Read(d *database.ORM, id string) {
 					return
 				}
 			} else {
-				c.Router(msg, d, id)
+				c.Router(msg, d, r2, id)
 			}
 		}
 	}()
 }
 
 // Router 客户端处理路由
-func (c *Client) Router(msg []byte, d *database.ORM, id string) {
+func (c *Client) Router(msg []byte, d *database.ORM, r *database.RedisClient, id string) {
 	var req protobuf.Request
 	err := proto.Unmarshal(msg, &req)
 	res := &protobuf.Response{
@@ -87,6 +87,7 @@ func (c *Client) Router(msg []byte, d *database.ORM, id string) {
 		Request:   &req,
 		Response:  res,
 		SessionID: id,
+		Redis:     r.Instance,
 		DB:        d.DB,
 	}, database.Handler)
 	data, _ := proto.Marshal(res)

@@ -24,7 +24,7 @@ type renderData struct {
 }
 
 // Run 建立 Websocket 连接
-func (c *Controller) Run(w http.ResponseWriter, r *http.Request, orm *database.ORM) {
+func (c *Controller) Run(w http.ResponseWriter, r *http.Request, orm *database.ORM, r2 *database.RedisClient) {
 	conn, err := (&websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -65,7 +65,7 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request, orm *database.O
 	}
 
 	//读取客户端消息
-	clientSocket.Read(orm, session.ID)
+	clientSocket.Read(orm, r2, session.ID)
 
 	//if err = api.ConnRender(conn, renderData{ClientID: clientId}); err != nil {
 	//	_ = conn.Close()

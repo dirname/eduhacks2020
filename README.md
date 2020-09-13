@@ -38,6 +38,11 @@ EduHacks 2020 创客马拉松大赛项目，项目创建于 2020-08-25，**由�
 | 2020-08-26 | [初始化项目](#初始化项目)                         | [@dirname](https://github.com/dirname) |
 | 2020-08-29 | [添加 Websocket 渲染演示](#添加-Websocket-渲染演示) | [@dirname](https://github.com/dirname) |
 | 2020-09-10 | [基础架构完成](#基础架构完成)                       | [@dirname](https://github.com/dirname) |
+| 2020-09-13 | [添加 API 文档](#API-文档)                    | [@dirname](https://github.com/dirname) |
+
+# API 文档
+
+[API文档](API.md)
 
 ## 初始化项目
 
