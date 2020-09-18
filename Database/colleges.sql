@@ -4,7 +4,7 @@
 CREATE TABLE IF NOT EXISTS "college"."colleges"
 (
     "id"           bigserial,
-    "college_id"   text NOT NULL UNIQUE,
+    "college_id"   uuid NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
     "college_name" text NOT NULL UNIQUE,
     "created_at"   timestamptz,
     "updated_at"   timestamptz,
@@ -19,7 +19,7 @@ CREATE INDEX IF NOT EXISTS "idx_colleges_deleted_at" ON "college"."colleges" ("d
 CREATE TABLE IF NOT EXISTS "college"."majors"
 (
     "id"         bigserial,
-    "major_id"   text NOT NULL UNIQUE,
+    "major_id"   uuid NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
     "major_name" text NOT NULL UNIQUE,
     "college_id" bigint,
     "created_at" timestamptz,
@@ -35,7 +35,7 @@ CREATE INDEX IF NOT EXISTS "idx_majors_deleted_at" ON "college"."majors" ("delet
 CREATE TABLE IF NOT EXISTS "college"."classes"
 (
     "id"         bigserial,
-    "class_id"   text NOT NULL UNIQUE,
+    "class_id"   uuid NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
     "class_name" text NOT NULL UNIQUE,
     "major_id"   bigint,
     "created_at" timestamptz,

@@ -18,7 +18,7 @@
 CREATE TABLE IF NOT EXISTS "student"."users"
 (
     "id"         bigserial,
-    "user_id"    text NOT NULL UNIQUE,
+    "user_id"    uuid NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
     "username"   text NOT NULL UNIQUE,
     "password"   text NOT NULL,
     "nickname"   text NOT NULL,

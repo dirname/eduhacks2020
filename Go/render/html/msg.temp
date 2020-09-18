@@ -1,0 +1,5 @@
+<script>
+    layer.msg('%s', {
+        time: %d
+    });
+</script>

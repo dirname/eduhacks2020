@@ -32,3 +32,10 @@ func GetLayer(t, icon int, title, content string) string {
 	temp, _ := ReadTemp(dir + "/render/html/layer.temp")
 	return fmt.Sprintf(temp, t, title, content, icon)
 }
+
+// GetMsg 获取一个 MSg 的代码
+func GetMsg(content string, Sec int) string {
+	dir, _ := os.Getwd()
+	temp, _ := ReadTemp(dir + "/render/html/msg.temp")
+	return fmt.Sprintf(temp, content, Sec*1000)
+}

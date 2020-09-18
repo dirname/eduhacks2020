@@ -38,6 +38,10 @@ type LoginResponse struct {
 	Time  time.Time   `json:"time"`
 }
 
+type managerInfo struct {
+	Nickname string `json:"nickname"`
+}
+
 // Exec 执行登录
 func (l *LoginParam) Exec(db *gorm.DB, redis *redis.Client, sessionId string) ([]byte, string, error) {
 
@@ -86,7 +90,7 @@ func (l *LoginParam) adminLogin(redis *redis.Client) ([]byte, string, error) {
 	}
 	res := LoginResponse{
 		Token: token,
-		Data:  nil,
+		Data:  managerInfo{Nickname: "Admin"},
 		Time:  time.Now(),
 	}
 	js, err := json.Marshal(&res)

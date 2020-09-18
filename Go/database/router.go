@@ -3,6 +3,7 @@ package database
 import (
 	"bytes"
 	"crypto/md5"
+	"eduhacks2020/Go/api/college"
 	"eduhacks2020/Go/api/users"
 	"eduhacks2020/Go/protobuf"
 	"eduhacks2020/Go/render"
@@ -107,12 +108,98 @@ func Handler(p *ProtoParam) {
 			return
 		}
 		data, errMsg, err := get.Exec(p.DB, p.Redis)
-		if err.Error() == users.TokenInvalid {
-			p.Response.Code = -1
+		if err != nil {
+			if err.Error() == users.TokenInvalid {
+				p.Response.Code = -1
+			}
 		}
 		p.Response.Data = data
 		p.Response.Msg = errMsg
 		p.Response.Id = p.Request.Id
-
+	case APIManagerCollegeGet:
+		p.Response.Html = nil
+		p.Response.Render = false
+		p.Response.Type = 5
+		get := college.GetParam{}
+		if err := json.Unmarshal(p.Request.Data, &get); err != nil {
+			p.Response.Msg = err.Error()
+			return
+		}
+		if !verifySign(get.Salt, p.Request.Sign, p.Request.Data) {
+			p.Response.Msg = signInvalid
+			return
+		}
+		data, errMsg, err := get.Exec(p.DB, p.Redis)
+		if err != nil {
+			if err.Error() == users.TokenInvalid {
+				p.Response.Code = -1
+			}
+		}
+		p.Response.Data = data
+		p.Response.Msg = errMsg
+		p.Response.Id = p.Request.Id
+	case APIManagerCollegeAdd:
+		add := college.AddParam{}
+		if err := json.Unmarshal(p.Request.Data, &add); err != nil {
+			p.Response.Msg = err.Error()
+			p.Response.Html.Code = render.GetMsg(err.Error(), 3)
+			return
+		}
+		if !verifySign(add.Salt, p.Request.Sign, p.Request.Data) {
+			p.Response.Msg = signInvalid
+			p.Response.Html.Code = render.GetMsg(signInvalid, 3)
+			return
+		}
+		data, errMsg, err := add.Exec(p.DB, p.Redis)
+		p.Response.Html.Code = render.GetMsg(errMsg, 3)
+		if err == nil {
+			p.Response.Code = http.StatusOK
+			p.Response.Html.Code = render.GetMsg(errMsg, 3)
+		}
+		p.Response.Data = data
+		p.Response.Msg = errMsg
+		p.Response.Id = p.Request.Id
+	case APIManagerCollegeDelete:
+		del := college.DelParam{}
+		if err := json.Unmarshal(p.Request.Data, &del); err != nil {
+			p.Response.Msg = err.Error()
+			p.Response.Html.Code = render.GetMsg(err.Error(), 3)
+			return
+		}
+		if !verifySign(del.Salt, p.Request.Sign, p.Request.Data) {
+			p.Response.Msg = signInvalid
+			p.Response.Html.Code = render.GetMsg(signInvalid, 3)
+			return
+		}
+		data, errMsg, err := del.Exec(p.DB, p.Redis)
+		p.Response.Html.Code = render.GetMsg(errMsg, 3)
+		if err == nil {
+			p.Response.Code = http.StatusOK
+			p.Response.Html.Code = render.GetMsg(errMsg, 3)
+		}
+		p.Response.Data = data
+		p.Response.Msg = errMsg
+		p.Response.Id = p.Request.Id
+	case APILogout:
+		logout := users.LogoutParam{}
+		if err := json.Unmarshal(p.Request.Data, &logout); err != nil {
+			p.Response.Msg = err.Error()
+			p.Response.Html.Code = render.GetLayer(0, render.Incorrect, "Error", err.Error())
+			return
+		}
+		if !verifySign(logout.Salt, p.Request.Sign, p.Request.Data) {
+			p.Response.Msg = signInvalid
+			p.Response.Html.Code = render.GetLayer(0, render.Sad, "Error", signInvalid)
+			return
+		}
+		data, errMsg, err := logout.Exec(p.Redis)
+		p.Response.Html.Code = render.GetLayer(0, render.Sad, "Logout", errMsg)
+		if err == nil {
+			p.Response.Code = http.StatusOK
+			p.Response.Html.Code = render.GetLayer(0, render.Smile, "Logout", errMsg)
+		}
+		p.Response.Data = data
+		p.Response.Msg = errMsg
+		p.Response.Id = p.Request.Id
 	}
 }
