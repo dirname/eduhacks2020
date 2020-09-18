@@ -11,8 +11,10 @@ import (
 	"gorm.io/gorm"
 )
 
+// TokenInvalid 登录状态失效的错误信息
 const TokenInvalid = "token is invalid, please login again"
 
+// StudentGetParam 学生获取的请求结构
 type StudentGetParam struct {
 	Page     int    `json:"page"`
 	Limit    int    `json:"limit"`
@@ -32,14 +34,14 @@ func (l *StudentGetParam) Exec(db *gorm.DB, redis *redis.Client) ([]byte, string
 		Message: "",
 		Count:   0,
 	})
-	if claims, err := utils.ParseToken(l.Token); err != nil {
+	claims, err := utils.ParseToken(l.Token)
+	if err != nil {
 		return nullJs, TokenInvalid, errors.New(TokenInvalid)
-	} else {
-		redisAuth := api.AuthRedis{Redis: redis}
-		flag, _ := redisAuth.GetFlag(claims.UID)
-		if claims.Flag != flag {
-			return nullJs, TokenInvalid, errors.New(TokenInvalid)
-		}
+	}
+	redisAuth := api.AuthRedis{Redis: redis}
+	flag, _ := redisAuth.GetFlag(claims.UID)
+	if claims.Flag != flag {
+		return nullJs, TokenInvalid, errors.New(TokenInvalid)
 	}
 
 	var stuRows []response.StudentInfo

@@ -43,16 +43,16 @@ type managerInfo struct {
 }
 
 // Exec 执行登录
-func (l *LoginParam) Exec(db *gorm.DB, redis *redis.Client, sessionId string) ([]byte, string, error) {
+func (l *LoginParam) Exec(db *gorm.DB, redis *redis.Client, sessionID string) ([]byte, string, error) {
 
 	//var result interface{}
 	switch l.Type {
 	case -1:
 		return l.adminLogin(redis)
 	case 1:
-		return l.teacherLogin(db, redis, sessionId)
+		return l.teacherLogin(db, redis, sessionID)
 	case 2:
-		return l.studentLogin(db, redis, sessionId)
+		return l.studentLogin(db, redis, sessionID)
 	default:
 		return nil, "未知的登录域", errors.New(unknownLogin)
 	}
@@ -106,12 +106,12 @@ func (l *LoginParam) adminLogin(redis *redis.Client) ([]byte, string, error) {
 }
 
 // managerLogin 教务的登录
-func (l *LoginParam) managerLogin(db *gorm.DB, redis *redis.Client, sessionId string) ([]byte, string, error) {
+func (l *LoginParam) managerLogin(db *gorm.DB, redis *redis.Client, sessionID string) ([]byte, string, error) {
 	return nil, "", nil
 }
 
 // teacherLogin 教师的登录
-func (l *LoginParam) teacherLogin(db *gorm.DB, redis *redis.Client, sessionId string) ([]byte, string, error) {
+func (l *LoginParam) teacherLogin(db *gorm.DB, redis *redis.Client, sessionID string) ([]byte, string, error) {
 	cipher := crypto.ChaCha20Poly1305{}
 	cipher.Init()
 	result := psql.Teacher{}
@@ -166,7 +166,7 @@ func (l *LoginParam) teacherLogin(db *gorm.DB, redis *redis.Client, sessionId st
 }
 
 // studentLogin 学生的登录
-func (l *LoginParam) studentLogin(db *gorm.DB, redis *redis.Client, sessionId string) ([]byte, string, error) {
+func (l *LoginParam) studentLogin(db *gorm.DB, redis *redis.Client, sessionID string) ([]byte, string, error) {
 	cipher := crypto.ChaCha20Poly1305{}
 	cipher.Init()
 	result := psql.Student{}

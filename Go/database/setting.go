@@ -64,6 +64,7 @@ var DialInfo = &mgo.DialInfo{}
 
 var cfg *ini.File
 
+// ReadConfigure 读取配置文件
 func ReadConfigure() {
 	configFile := flag.String("c", "conf/app.ini", "-c conf/app.ini")
 
@@ -90,6 +91,8 @@ func ReadConfigure() {
 	}
 }
 
+
+// DefaultSetting 获取自动设置
 func DefaultSetting() {
 	CommonSetting = &commonConf{
 		Port:      "6000",

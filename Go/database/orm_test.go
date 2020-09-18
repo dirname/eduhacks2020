@@ -10,6 +10,7 @@ func TestOrm_Init(t *testing.T) {
 		DB *gorm.DB
 	}
 	var orm ORM
+	DefaultSetting()
 	orm.Init()
 	tests := []struct {
 		name   string

@@ -13,6 +13,7 @@ import (
 	"time"
 )
 
+// GetParam 获取学院的请求参数
 type GetParam struct {
 	Page  int    `json:"page"`
 	Limit int    `json:"limit"`
@@ -20,6 +21,7 @@ type GetParam struct {
 	Token string `json:"token"`
 }
 
+// ResInfo 返回学院的数据结构
 type ResInfo struct {
 	ID          uint      `json:"id"`
 	CollegeID   string    `json:"cid"`
@@ -27,12 +29,14 @@ type ResInfo struct {
 	CreatedAt   time.Time `json:"create"`
 }
 
+// AddParam 添加学院的请求参数
 type AddParam struct {
 	Salt  string `json:"salt"`
 	Name  string `json:"name"`
 	Token string `json:"token"`
 }
 
+// DelParam 删除学院的请求参数
 type DelParam struct {
 	Salt  string `json:"salt"`
 	ID    int    `json:"name"`
