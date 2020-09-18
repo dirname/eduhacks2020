@@ -15,9 +15,9 @@ var ctx = context.Background()
 // Init 初始化 Redis 的连接
 func (r *RedisClient) Init() {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     redisHost,
-		Password: redisPwd, // no password set
-		DB:       0,        // use default DB
+		Addr:     SettingDatabase.RedisHost,
+		Password: SettingDatabase.RedisPwd, // no password set
+		DB:       0,                        // use default DB
 	})
 	r.Instance = rdb
 }

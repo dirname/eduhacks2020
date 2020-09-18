@@ -8,6 +8,7 @@ message Request {
   string location = 3;
   bytes data = 4;
   bytes sign = 5;
+  string id = 6;
 }
 
 message Response {
@@ -17,6 +18,7 @@ message Response {
   bytes data = 4;
   bool render = 5;
   Render html = 6;
+  string id = 7;
 }
 
 message Render {

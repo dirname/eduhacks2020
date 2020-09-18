@@ -19,10 +19,10 @@ const (
 var codecs = securecookie.CodecsFromPairs([]byte(sessionKey))
 
 var dialInfo = &mgo.DialInfo{
-	Addrs:    []string{mongoHost},
-	Source:   mongoDB,
-	Username: mongoUser,
-	Password: mongoPwd,
+	Addrs:    []string{SettingDatabase.MongoHost},
+	Source:   SettingDatabase.MongoDB,
+	Username: SettingDatabase.MongoUser,
+	Password: SettingDatabase.MongoPwd,
 }
 
 // SessionManager 这是对 mongoStore 的改写, 从 mgo 层面直接解密 session, 使其在 websocket 通信时能实时读取
@@ -36,7 +36,7 @@ func CreateMongoStore() (*mongostore.MongoStore, *mgo.Session) {
 	if err != nil {
 		log.Error(err)
 	}
-	return mongostore.NewMongoStore(session.DB(mongoDB).C(sessionDB), 86400, true,
+	return mongostore.NewMongoStore(session.DB(SettingDatabase.MongoDB).C(sessionDB), 86400, true,
 		[]byte(sessionKey)), session
 }
 
@@ -48,7 +48,7 @@ func (*SessionManager) GetData(id string) (interface{}, error) {
 		log.Error(err)
 	}
 	objectID := bson.ObjectIdHex(id)
-	c := session.DB(mongoDB).C(sessionDB)
+	c := session.DB(SettingDatabase.MongoDB).C(sessionDB)
 	var one map[string]interface{}
 	err = c.FindId(objectID).One(&one)
 	return one["data"], err
@@ -75,7 +75,7 @@ func (s *SessionManager) SaveData(id string, data string) error {
 		log.Error(err)
 	}
 	objectID := bson.ObjectIdHex(id)
-	c := session.DB(mongoDB).C(sessionDB)
+	c := session.DB(SettingDatabase.MongoDB).C(sessionDB)
 	err = c.UpdateId(objectID, bson.M{"data": data, "modified": time.Now()})
 	return err
 }
@@ -88,7 +88,7 @@ func (s *SessionManager) DeleteData(id string) error {
 		log.Error(err)
 	}
 	objectID := bson.ObjectIdHex(id)
-	c := session.DB(mongoDB).C(sessionDB)
+	c := session.DB(SettingDatabase.MongoDB).C(sessionDB)
 	err = c.RemoveId(objectID)
 	return err
 }

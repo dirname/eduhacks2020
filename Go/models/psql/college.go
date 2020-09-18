@@ -40,6 +40,25 @@ type Class struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 }
 
+// Administration 教务的架构表
+type Administration struct {
+	ID        uint      `sql:"serial unique"`
+	UserID    uuid.UUID `gorm:"not null;unique;type:uuid;default:uuid_generate_v4()"`
+	Username  string    `gorm:"not null;unique"`
+	Password  string    `gorm:"not null;"`
+	Nickname  string    `gorm:"not null;"`
+	CollegeID uint
+	College   College `gorm:"foreignKey:CollegeID"`
+	Gender    bool
+	Phone     string `gorm:"unique"`
+	Email     string `gorm:"unique"`
+	Avatar    string
+	Birthday  time.Time
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
 // TableName 学院的表名称
 func (College) TableName() string {
 	return "college.colleges"
@@ -53,4 +72,9 @@ func (Class) TableName() string {
 // TableName 专业的表名称
 func (Major) TableName() string {
 	return "college.majors"
+}
+
+// TableName 教务的表名称
+func (Administration) TableName() string {
+	return "college.users"
 }

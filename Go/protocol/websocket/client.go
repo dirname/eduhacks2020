@@ -4,6 +4,7 @@ import (
 	"eduhacks2020/Go/database"
 	"eduhacks2020/Go/protobuf"
 	"eduhacks2020/Go/render"
+	"encoding/base64"
 	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
@@ -60,8 +61,20 @@ func (c *Client) Read(d *database.ORM, r2 *database.RedisClient, id string) {
 	}()
 }
 
+func xorData(data []byte, decrypt bool) []byte {
+	res := make([]byte, len(data))
+	for i, b := range data {
+		res[i] = b ^ 32
+	}
+	if !decrypt {
+		return []byte(base64.URLEncoding.EncodeToString(res))
+	}
+	return res
+}
+
 // Router 客户端处理路由
 func (c *Client) Router(msg []byte, d *database.ORM, r *database.RedisClient, id string) {
+	msg = xorData(msg, true)
 	var req protobuf.Request
 	err := proto.Unmarshal(msg, &req)
 	res := &protobuf.Response{
@@ -76,11 +89,13 @@ func (c *Client) Router(msg []byte, d *database.ORM, r *database.RedisClient, id
 			Id:     "layerMsgBox",
 			Iframe: false,
 		},
+		Id: "",
 	}
 	if err != nil {
 		log.Error("Parse Protobuf Error: ", err.Error(), string(msg))
 		data, _ := proto.Marshal(res)
-		c.Socket.WriteMessage(2, data)
+		c.Socket.WriteMessage(2, xorData(data, false))
+		return
 	}
 	router := database.Router{}
 	router.Find(&database.ProtoParam{
@@ -91,5 +106,5 @@ func (c *Client) Router(msg []byte, d *database.ORM, r *database.RedisClient, id
 		DB:        d.DB,
 	}, database.Handler)
 	data, _ := proto.Marshal(res)
-	c.Socket.WriteMessage(2, data)
+	c.Socket.WriteMessage(2, xorData(data, false))
 }

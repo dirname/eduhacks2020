@@ -21,3 +21,4 @@ func (r *AuthRedis) GetFlag(id string) (string, error) {
 func (r *AuthRedis) SetFlag(id, flag string) error {
 	return r.Redis.Set(ctx, id, flag, 0).Err()
 }
+

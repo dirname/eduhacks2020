@@ -8,14 +8,10 @@ import (
 	"eduhacks2020/Go/render"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
 	"net/http"
-)
-
-// 定义路由
-const (
-	APILogin = "/api/login" //用户登录的接口
 )
 
 // 定义一些常量错误
@@ -79,15 +75,14 @@ func Handler(p *ProtoParam) {
 	switch p.Request.Path {
 	case APILogin:
 		login := users.LoginParam{}
-		err := json.Unmarshal(p.Request.Data, &login)
+		if err := json.Unmarshal(p.Request.Data, &login); err != nil {
+			p.Response.Msg = err.Error()
+			p.Response.Html.Code = render.GetLayer(0, render.Incorrect, "Error", err.Error())
+			return
+		}
 		if !verifySign(login.Salt, p.Request.Sign, p.Request.Data) {
 			p.Response.Msg = signInvalid
 			p.Response.Html.Code = render.GetLayer(0, render.Sad, "Error", signInvalid)
-			return
-		}
-		if err != nil {
-			p.Response.Msg = err.Error()
-			p.Response.Html.Code = render.GetLayer(0, render.Incorrect, "Error", err.Error())
 			return
 		}
 		data, errMsg, err := login.Exec(p.DB, p.Redis, p.SessionID)
@@ -98,5 +93,26 @@ func Handler(p *ProtoParam) {
 		}
 		p.Response.Data = data
 		p.Response.Msg = errMsg
+	case APIManagerStudentGet:
+		p.Response.Html = nil
+		p.Response.Render = false
+		p.Response.Type = 5
+		get := users.StudentGetParam{}
+		if err := json.Unmarshal(p.Request.Data, &get); err != nil {
+			p.Response.Msg = err.Error()
+			return
+		}
+		if !verifySign(get.Salt, p.Request.Sign, p.Request.Data) {
+			p.Response.Msg = signInvalid
+			return
+		}
+		data, errMsg, err := get.Exec(p.DB, p.Redis)
+		if err == errors.New(users.TokenInvalid) {
+			p.Response.Code = -1
+		}
+		p.Response.Data = data
+		p.Response.Msg = errMsg
+		p.Response.Id = p.Request.Id
+
 	}
 }

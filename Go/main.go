@@ -1,28 +1,43 @@
 package main
 
 import (
+	"context"
 	"eduhacks2020/Go/database"
 	"eduhacks2020/Go/middleware"
 	"eduhacks2020/Go/protocol/websocket"
 	"github.com/gin-gonic/gin"
 	_ "github.com/gorilla/websocket"
+	log "github.com/sirupsen/logrus"
 )
 
 func main() {
-	gin.SetMode(gin.DebugMode) //生产模式中改写成 release
+	gin.SetMode(gin.DebugMode) // 生产模式中改写成 release
 
 	websocketHandler := &protocol.Controller{}
 	router := gin.Default()
 
 	router.Use(middleware.Logger())
 	router.Use(middleware.CSRF())
-	router.Use(middleware.Auth()) //授权的中间件
+	router.Use(middleware.Auth()) // 授权的中间件
+
+	//database.ReadConfigure() // 读取配置
+	database.DefaultSetting()
+	// 数据库的一些初始化, 全局引用
 	orm := database.ORM{}
 	orm.Init()
 	defer orm.Close()
 
 	redis := database.RedisClient{}
 	redis.Init()
+
+	if err := redis.Instance.Set(context.Background(), "AdminUser", database.AdminConf.Username, 0).Err(); err != nil {
+		log.Errorf("Set Admin User Failed: %s", err.Error())
+	}
+
+	if err := redis.Instance.Set(context.Background(), "AdminPassword", database.AdminConf.Password, 0).Err(); err != nil {
+		log.Errorf("Set Admin Password Failed: %s", err.Error())
+	}
+
 	defer redis.Close()
 
 	router.GET("/ws", func(c *gin.Context) {
@@ -62,23 +77,4 @@ func main() {
 	//	context.JSON(200, gin.H{"msg": "ok", "id": session.ID})
 	//})
 	router.Run(":555")
-	//http.HandleFunc("/ws", websocketHandler.Run)
-	//if err := http.ListenAndServe(":555", nil); err != nil {
-	//	panic(err)
-	//}
 }
-
-//func helloWorld(w http.ResponseWriter, r *http.Request) {
-//	test := &protobuf.Student{
-//		Name:   "Hao",
-//		Male:   true,
-//		Scores: []int32{98, 85, 88},
-//	}
-//	data, err := proto.Marshal(test)
-//	if err != nil {
-//		return
-//	}
-//	w.Header().Set("Access-Control-Allow-Origin", "*")
-//	w.Header().Set("content-type", "application/octet-stream")
-//	w.Write(data)
-//}

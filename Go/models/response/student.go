@@ -4,6 +4,7 @@ import "time"
 
 // StudentInfo 响应体中学生的信息
 type StudentInfo struct {
+	ID          uint        `json:"id"`
 	UserID      string      `json:"uid"`
 	Username    string      `json:"username"`
 	Nickname    string      `json:"nickname"`

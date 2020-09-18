@@ -24,7 +24,7 @@ func (o *ORM) Close() error {
 
 // Init 初始化 ORM 的连接
 func (o *ORM) Init() {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable TimeZone=Asia/Shanghai", pgsqlHost, pgsqlUser, pgsqlPwd, pgsqlDB)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable TimeZone=Asia/Shanghai", SettingDatabase.PgsqlHost, SettingDatabase.PgsqlUser, SettingDatabase.PgsqlPwd, SettingDatabase.PgsqlDB)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Error(err.Error())

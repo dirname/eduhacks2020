@@ -55,7 +55,7 @@ func (j *JWT) createToken(claims CustomClaims) (string, error) {
 	return token.SignedString(j.SigningKey)
 }
 
-// 解析 Token
+// parseToken 解析 Token
 func (j *JWT) parseToken(tokenString string) (*CustomClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return j.SigningKey, nil
@@ -128,4 +128,10 @@ func GenerateToken(claims CustomClaims) (string, error) {
 	j := NewJWT()
 	token, err := j.createToken(claims)
 	return token, err
+}
+
+// ParseToken 解析一个令牌
+func ParseToken(tokenString string) (*CustomClaims, error) {
+	j := NewJWT()
+	return j.parseToken(tokenString)
 }

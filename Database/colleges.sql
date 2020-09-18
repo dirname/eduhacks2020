@@ -45,3 +45,28 @@ CREATE TABLE IF NOT EXISTS "college"."classes"
     CONSTRAINT "fk_classes_major" FOREIGN KEY ("major_id") REFERENCES "college"."majors" ("id")
 );
 CREATE INDEX IF NOT EXISTS "idx_classes_deleted_at" ON "college"."classes" ("deleted_at");
+-- ----------------------------
+-- Table structure for Users
+-- ----------------------------
+CREATE TABLE "college"."users"
+(
+    "id"         bigserial,
+    "user_id"    uuid NOT NULL UNIQUE DEFAULT uuid_generate_v4(),
+    "username"   text NOT NULL UNIQUE,
+    "password"   text NOT NULL,
+    "nickname"   text NOT NULL,
+    "college_id" bigint,
+    "gender"     boolean,
+    "phone"      text UNIQUE,
+    "email"      text UNIQUE,
+    "avatar"     text,
+    "birthday"   timestamptz,
+    "created_at" timestamptz,
+    "updated_at" timestamptz,
+    "deleted_at" timestamptz,
+    PRIMARY KEY ("id"),
+    CONSTRAINT "fk_administrations_college" FOREIGN KEY ("college_id") REFERENCES "college"."colleges" ("id")
+);
+CREATE INDEX "idx_administrations_deleted_at" ON "college"."users" ("deleted_at");
+
+
