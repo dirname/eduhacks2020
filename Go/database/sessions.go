@@ -18,13 +18,6 @@ const (
 
 var codecs = securecookie.CodecsFromPairs([]byte(sessionKey))
 
-var dialInfo = &mgo.DialInfo{
-	Addrs:    []string{SettingDatabase.MongoHost},
-	Source:   SettingDatabase.MongoDB,
-	Username: SettingDatabase.MongoUser,
-	Password: SettingDatabase.MongoPwd,
-}
-
 // SessionManager 这是对 mongoStore 的改写, 从 mgo 层面直接解密 session, 使其在 websocket 通信时能实时读取
 type SessionManager struct {
 	Values map[interface{}]interface{}
@@ -32,9 +25,9 @@ type SessionManager struct {
 
 // CreateMongoStore 返回 *mgo.Session 再调用结束后及时释放数据库连接资源
 func CreateMongoStore() (*mongostore.MongoStore, *mgo.Session) {
-	session, err := mgo.DialWithInfo(dialInfo)
+	session, err := mgo.DialWithInfo(DialInfo)
 	if err != nil {
-		log.Error(err)
+		log.Errorf(err.Error())
 	}
 	return mongostore.NewMongoStore(session.DB(SettingDatabase.MongoDB).C(sessionDB), 86400, true,
 		[]byte(sessionKey)), session
@@ -42,7 +35,7 @@ func CreateMongoStore() (*mongostore.MongoStore, *mgo.Session) {
 
 // GetData 对 mongoStore 的附加部分, 从 mgo 直接读取 session.id 中的数据, 随后加解密
 func (*SessionManager) GetData(id string) (interface{}, error) {
-	session, err := mgo.DialWithInfo(dialInfo)
+	session, err := mgo.DialWithInfo(DialInfo)
 	defer session.Close()
 	if err != nil {
 		log.Error(err)
@@ -69,7 +62,7 @@ func (s *SessionManager) EncryptedData(sessionName string) (string, error) {
 
 // SaveData 保存 session 的数据
 func (s *SessionManager) SaveData(id string, data string) error {
-	session, err := mgo.DialWithInfo(dialInfo)
+	session, err := mgo.DialWithInfo(DialInfo)
 	defer session.Close()
 	if err != nil {
 		log.Error(err)
@@ -82,7 +75,7 @@ func (s *SessionManager) SaveData(id string, data string) error {
 
 // DeleteData 删除 session 的数据
 func (s *SessionManager) DeleteData(id string) error {
-	session, err := mgo.DialWithInfo(dialInfo)
+	session, err := mgo.DialWithInfo(DialInfo)
 	defer session.Close()
 	if err != nil {
 		log.Error(err)

@@ -8,7 +8,6 @@ import (
 	"eduhacks2020/Go/render"
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
 	"net/http"
@@ -93,6 +92,7 @@ func Handler(p *ProtoParam) {
 		}
 		p.Response.Data = data
 		p.Response.Msg = errMsg
+		p.Response.Id = p.Request.Id
 	case APIManagerStudentGet:
 		p.Response.Html = nil
 		p.Response.Render = false
@@ -107,7 +107,7 @@ func Handler(p *ProtoParam) {
 			return
 		}
 		data, errMsg, err := get.Exec(p.DB, p.Redis)
-		if err == errors.New(users.TokenInvalid) {
+		if err.Error() == users.TokenInvalid {
 			p.Response.Code = -1
 		}
 		p.Response.Data = data

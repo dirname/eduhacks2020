@@ -2,6 +2,7 @@ package database
 
 import (
 	"flag"
+	"github.com/globalsign/mgo"
 	"github.com/go-ini/ini"
 	"log"
 	"net"
@@ -58,6 +59,9 @@ type global struct {
 // GlobalSetting 一些全局性的配置
 var GlobalSetting = &global{}
 
+// DialInfo Mongo 的连接信息
+var DialInfo = &mgo.DialInfo{}
+
 var cfg *ini.File
 
 func ReadConfigure() {
@@ -74,6 +78,11 @@ func ReadConfigure() {
 	mapTo("etcd", EtcdSetting)
 	mapTo("database", SettingDatabase)
 	mapTo("admin", AdminConf)
+
+	DialInfo.Addrs = []string{SettingDatabase.MongoHost}
+	DialInfo.Source = SettingDatabase.MongoDB
+	DialInfo.Username = SettingDatabase.MongoUser
+	DialInfo.Password = SettingDatabase.MongoPwd
 
 	GlobalSetting = &global{
 		LocalHost:  getIntranetIp(),

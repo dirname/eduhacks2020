@@ -43,6 +43,8 @@ func (l *LoginParam) Exec(db *gorm.DB, redis *redis.Client, sessionId string) ([
 
 	//var result interface{}
 	switch l.Type {
+	case -1:
+		return l.adminLogin(redis)
 	case 1:
 		return l.teacherLogin(db, redis, sessionId)
 	case 2:
@@ -54,7 +56,7 @@ func (l *LoginParam) Exec(db *gorm.DB, redis *redis.Client, sessionId string) ([
 }
 
 // adminLogin 管理员的登录
-func (l *LoginParam) adminLogin(db *gorm.DB, redis *redis.Client, sessionId string) ([]byte, string, error) {
+func (l *LoginParam) adminLogin(redis *redis.Client) ([]byte, string, error) {
 	Username, err := redis.Get(context.Background(), "AdminUser").Result()
 	Password, err := redis.Get(context.Background(), "AdminPassword").Result()
 	if err != nil {
