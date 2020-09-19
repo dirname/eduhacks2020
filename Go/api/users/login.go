@@ -6,6 +6,8 @@ import (
 	"eduhacks2020/Go/crypto"
 	"eduhacks2020/Go/models/psql"
 	"eduhacks2020/Go/models/response"
+	"eduhacks2020/Go/protobuf"
+	"eduhacks2020/Go/render"
 	"eduhacks2020/Go/utils"
 	"encoding/json"
 	"errors"
@@ -13,6 +15,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"net/http"
 	"time"
 )
 
@@ -43,20 +46,39 @@ type managerInfo struct {
 }
 
 // Exec 执行登录
-func (l *LoginParam) Exec(db *gorm.DB, redis *redis.Client, sessionID string) ([]byte, string, error) {
-
+func (l *LoginParam) Exec(db *gorm.DB, redis *redis.Client, sessionID string, request *protobuf.Request, r *protobuf.Response) {
+	r.Id = request.Id
+	if err := json.Unmarshal(request.Data, l); err != nil {
+		r.Msg = err.Error()
+		r.Html.Code = render.GetLayer(0, render.Incorrect, "Error", err.Error())
+		return
+	}
+	if !utils.VerifySign(l.Salt, request.Sign, request.Data) {
+		r.Msg = utils.SignInvalid
+		r.Html.Code = render.GetLayer(0, render.Sad, "Error", utils.SignInvalid)
+		return
+	}
 	//var result interface{}
+	var data []byte
+	var errMsg string
+	var err error
 	switch l.Type {
 	case -1:
-		return l.adminLogin(redis)
+		data, errMsg, err = l.adminLogin(redis)
 	case 1:
-		return l.teacherLogin(db, redis, sessionID)
+		data, errMsg, err = l.teacherLogin(db, redis, sessionID)
 	case 2:
-		return l.studentLogin(db, redis, sessionID)
+		data, errMsg, err = l.studentLogin(db, redis, sessionID)
 	default:
-		return nil, "未知的登录域", errors.New(unknownLogin)
+		data, errMsg, err = nil, "未知的登录域", errors.New(unknownLogin)
 	}
-
+	r.Html.Code = render.GetLayer(0, render.Sad, "Login", errMsg)
+	if err == nil {
+		r.Code = http.StatusOK
+		r.Html.Code = render.GetLayer(0, render.Smile, "Login", errMsg)
+	}
+	r.Data = data
+	r.Msg = errMsg
 }
 
 // adminLogin 管理员的登录

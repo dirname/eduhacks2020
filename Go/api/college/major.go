@@ -171,7 +171,7 @@ func (c *MajorGetParam) Exec(db *gorm.DB, redis *redis.Client, request *protobuf
 		Message: "",
 		Count:   0,
 	})
-	errMsg := "ok"
+	errMsg := "OK"
 	r.Data = nullJs
 	r.Code = http.StatusOK
 	if claims, err := utils.ParseToken(c.Token); err != nil {
@@ -197,10 +197,9 @@ func (c *MajorGetParam) Exec(db *gorm.DB, redis *redis.Client, request *protobuf
 				r.Data = nil
 				r.Code = http.StatusInternalServerError
 				errMsg = err.Error()
-				r.Data = js
 			}
+			r.Data = js
 		}
 	}
-	r.Html.Code = render.GetMsg(errMsg, 3)
 	r.Msg = errMsg
 }

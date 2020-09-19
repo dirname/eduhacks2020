@@ -4,11 +4,8 @@ import (
 	"eduhacks2020/Go/api/college"
 	"eduhacks2020/Go/api/users"
 	"eduhacks2020/Go/protobuf"
-	"eduhacks2020/Go/render"
-	"encoding/json"
 	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
-	"net/http"
 )
 
 // Router 创建类型指定 Find 方法
@@ -49,137 +46,25 @@ func Handler(p *ProtoParam) {
 	switch p.Request.Path {
 	case APILogin:
 		login := users.LoginParam{}
-		if err := json.Unmarshal(p.Request.Data, &login); err != nil {
-			p.Response.Msg = err.Error()
-			p.Response.Html.Code = render.GetLayer(0, render.Incorrect, "Error", err.Error())
-			return
-		}
-		if !verifySign(login.Salt, p.Request.Sign, p.Request.Data) {
-			p.Response.Msg = signInvalid
-			p.Response.Html.Code = render.GetLayer(0, render.Sad, "Error", signInvalid)
-			return
-		}
-		data, errMsg, err := login.Exec(p.DB, p.Redis, p.SessionID)
-		p.Response.Html.Code = render.GetLayer(0, render.Sad, "Login", errMsg)
-		if err == nil {
-			p.Response.Code = http.StatusOK
-			p.Response.Html.Code = render.GetLayer(0, render.Smile, "Login", errMsg)
-		}
-		p.Response.Data = data
-		p.Response.Msg = errMsg
-		p.Response.Id = p.Request.Id
+		login.Exec(p.DB, p.Redis, p.SessionID, p.Request, p.Response)
 	case APIManagerStudentGet:
-		p.Response.Html = nil
-		p.Response.Render = false
-		p.Response.Type = 5
 		get := users.StudentGetParam{}
-		if err := json.Unmarshal(p.Request.Data, &get); err != nil {
-			p.Response.Msg = err.Error()
-			return
-		}
-		if !verifySign(get.Salt, p.Request.Sign, p.Request.Data) {
-			p.Response.Msg = signInvalid
-			return
-		}
-		data, errMsg, err := get.Exec(p.DB, p.Redis)
-		if err != nil {
-			if err.Error() == users.TokenInvalid {
-				p.Response.Code = -1
-			}
-		}
-		p.Response.Data = data
-		p.Response.Msg = errMsg
-		p.Response.Id = p.Request.Id
+		get.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APIManagerCollegeGet:
-		p.Response.Html = nil
-		p.Response.Render = false
-		p.Response.Type = 5
 		get := college.GetParam{}
-		if err := json.Unmarshal(p.Request.Data, &get); err != nil {
-			p.Response.Msg = err.Error()
-			return
-		}
-		if !verifySign(get.Salt, p.Request.Sign, p.Request.Data) {
-			p.Response.Msg = signInvalid
-			return
-		}
-		data, errMsg, err := get.Exec(p.DB, p.Redis)
-		if err != nil {
-			if err.Error() == users.TokenInvalid {
-				p.Response.Code = -1
-			}
-		}
-		p.Response.Data = data
-		p.Response.Msg = errMsg
-		p.Response.Id = p.Request.Id
+		get.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APIManagerCollegeView:
-		p.Response.Html = nil
-		p.Response.Render = false
-		p.Response.Type = 5
 		get := college.GetView{}
-		if err := json.Unmarshal(p.Request.Data, &get); err != nil {
-			p.Response.Msg = err.Error()
-			return
-		}
-		if !verifySign(get.Salt, p.Request.Sign, p.Request.Data) {
-			p.Response.Msg = signInvalid
-			return
-		}
-		data, errMsg, err := get.Exec(p.DB, p.Redis)
-		if err != nil {
-			if err.Error() == users.TokenInvalid {
-				p.Response.Code = -1
-			}
-		}
-		p.Response.Data = data
-		p.Response.Msg = errMsg
-		p.Response.Id = p.Request.Id
+		get.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APIManagerCollegeAdd:
 		add := college.AddParam{}
-		if err := json.Unmarshal(p.Request.Data, &add); err != nil {
-			p.Response.Msg = err.Error()
-			p.Response.Html.Code = render.GetMsg(err.Error(), 3)
-			return
-		}
-		if !verifySign(add.Salt, p.Request.Sign, p.Request.Data) {
-			p.Response.Msg = signInvalid
-			p.Response.Html.Code = render.GetMsg(signInvalid, 3)
-			return
-		}
-		data, errMsg, err := add.Exec(p.DB, p.Redis)
-		p.Response.Html.Code = render.GetMsg(errMsg, 3)
-		if err == nil {
-			p.Response.Code = http.StatusOK
-			p.Response.Html.Code = render.GetMsg(errMsg, 3)
-		}
-		p.Response.Data = data
-		p.Response.Msg = errMsg
-		p.Response.Id = p.Request.Id
+		add.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APIManagerCollegeDelete:
 		del := college.DelParam{}
-		if err := json.Unmarshal(p.Request.Data, &del); err != nil {
-			p.Response.Msg = err.Error()
-			p.Response.Html.Code = render.GetMsg(err.Error(), 3)
-			return
-		}
-		if !verifySign(del.Salt, p.Request.Sign, p.Request.Data) {
-			p.Response.Msg = signInvalid
-			p.Response.Html.Code = render.GetMsg(signInvalid, 3)
-			return
-		}
-		data, errMsg, err := del.Exec(p.DB, p.Redis)
-		p.Response.Html.Code = render.GetMsg(errMsg, 3)
-		if err == nil {
-			p.Response.Code = http.StatusOK
-			p.Response.Html.Code = render.GetMsg(errMsg, 3)
-		}
-		p.Response.Data = data
-		p.Response.Msg = errMsg
-		p.Response.Id = p.Request.Id
+		del.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APIManagerCollegeEdit:
 		edit := college.UpdateParam{}
-		data, errMsg, err := edit.Exec(p.DB, p.Redis, p.Request, p.Response)
-
+		edit.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APIManagerMajorGet:
 		get := college.MajorGetParam{}
 		get.Exec(p.DB, p.Redis, p.Request, p.Response)
