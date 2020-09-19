@@ -180,8 +180,7 @@ func (c *UpdateParam) Exec(db *gorm.DB, redis *redis.Client, request *protobuf.R
 			errMsg = users.TokenInvalid
 			r.Code = -1
 		} else {
-			db.Model(&psql.College{
-			}).Where("id = ?", c.ID).Update("college_name", c.Name)
+			db.Model(&psql.College{}).Where("id = ?", c.ID).Update("college_name", c.Name)
 		}
 	}
 	r.Html.Code = render.GetMsg(errMsg, 3)

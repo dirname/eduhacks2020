@@ -75,8 +75,7 @@ func (c *UpdateMajorParam) Exec(db *gorm.DB, redis *redis.Client) ([]byte, strin
 			return nullJs, users.TokenInvalid, errors.New(users.TokenInvalid)
 		}
 	}
-	db.Model(&psql.Major{
-	}).Updates(psql.Major{
+	db.Model(&psql.Major{}).Updates(psql.Major{
 		MajorName: c.Name,
 		CollegeID: c.College,
 	}).Where("id = ?", c.ID)
