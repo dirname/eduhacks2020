@@ -17,11 +17,11 @@ import (
 
 // Student 学生表的结构
 type Student struct {
-	ID       uint   `sql:"serial unique"`
+	ID       uint      `sql:"serial unique"`
 	UserID   uuid.UUID `gorm:"not null;unique;type:uuid;default:uuid_generate_v4()"`
-	Username string `gorm:"not null;unique"`
-	Password string `gorm:"not null;"`
-	Nickname string `gorm:"not null;"`
+	Username string    `gorm:"not null;unique"`
+	Password string    `gorm:"not null;"`
+	Nickname string    `gorm:"not null;"`
 	Gender   bool
 	Phone    string `gorm:"unique"`
 	Email    string `gorm:"unique"`
