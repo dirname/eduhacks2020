@@ -86,11 +86,10 @@ func ReadConfigure() {
 	DialInfo.Password = SettingDatabase.MongoPwd
 
 	GlobalSetting = &global{
-		LocalHost:  getIntranetIp(),
+		LocalHost:  getIntranetIP(),
 		ServerList: make(map[string]string),
 	}
 }
-
 
 // DefaultSetting 获取自动设置
 func DefaultSetting() {
@@ -120,7 +119,7 @@ func DefaultSetting() {
 	}
 
 	GlobalSetting = &global{
-		LocalHost:  getIntranetIp(),
+		LocalHost:  getIntranetIP(),
 		ServerList: make(map[string]string),
 	}
 }
@@ -134,7 +133,7 @@ func mapTo(section string, v interface{}) {
 }
 
 // getIntranetIp 获取本机内网IP
-func getIntranetIp() string {
+func getIntranetIP() string {
 	adders, _ := net.InterfaceAddrs()
 
 	for _, addr := range adders {

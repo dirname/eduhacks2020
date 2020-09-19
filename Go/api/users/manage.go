@@ -51,14 +51,17 @@ func (l *StudentGetParam) Exec(db *gorm.DB, redis *redis.Client) ([]byte, string
 		Phone:    l.Phone,
 		Email:    l.Email,
 	}).Find(&resTemp)
-	db.Model(&psql.Student{}).Select("student.users.*,college.classes.class_name,college.classes.class_id,college.majors.major_name,college.majors.major_id,college.colleges.college_name,college.colleges.college_id").
+	db.Model(&psql.Student{}).Select("student.users.*,college.classes.deleted_at,college.classes.class_name,college.classes.class_id,college.majors.deleted_at,college.majors.major_name,college.majors.major_id,college.colleges.deleted_at,college.colleges.college_name,college.colleges.college_id").
 		Joins("left join college.classes on student.users.class_id = college.classes.id left join college.majors on college.classes.major_id = college.majors.id LEFT JOIN college.colleges on college.majors.college_id = college.colleges.id").
 		Where(&psql.Student{
 			Username: l.Username,
 			Phone:    l.Phone,
 			Email:    l.Email,
 			Nickname: l.Nickname,
-		}).Offset((l.Page - 1) * l.Limit).Limit(l.Limit).Find(&stuRows)
+		}).
+		Where("college.colleges.deleted_at is null").
+		Where("college.majors.deleted_at is null").
+		Where("college.classes.deleted_at is null").Offset((l.Page - 1) * l.Limit).Limit(l.Limit).Find(&stuRows)
 	res := response.TableResponse{
 		Code:    0,
 		Data:    stuRows,

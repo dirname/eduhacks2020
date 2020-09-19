@@ -1,22 +1,14 @@
 package database
 
 import (
-	"bytes"
-	"crypto/md5"
 	"eduhacks2020/Go/api/college"
 	"eduhacks2020/Go/api/users"
 	"eduhacks2020/Go/protobuf"
 	"eduhacks2020/Go/render"
-	"encoding/hex"
 	"encoding/json"
 	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
 	"net/http"
-)
-
-// 定义一些常量错误
-const (
-	signInvalid = "data has been tampered with invalid sign"
 )
 
 // Router 创建类型指定 Find 方法
@@ -50,24 +42,6 @@ func (r *Router) Find(p *ProtoParam, f func(param *ProtoParam)) {
 
 func handlerFind(p *ProtoParam, c Call) {
 	c.call(p)
-}
-
-// 用于计算签名
-func calcSign(timestamp string, data []byte) string {
-	var buffer bytes.Buffer
-	buffer.Write([]byte(timestamp))
-	buffer.Write(data)
-	h := md5.New()
-	h.Write(buffer.Bytes())
-	cipherStr := h.Sum(nil)
-	return hex.EncodeToString(cipherStr)
-}
-
-// 返回校验的结果
-func verifySign(salt string, submitSign, data []byte) bool {
-	submit := string(submitSign)
-	calc := calcSign(salt, data)
-	return submit == calc
 }
 
 // Handler 判断 websocket 传递的路由然后开始处理
@@ -138,6 +112,28 @@ func Handler(p *ProtoParam) {
 		p.Response.Data = data
 		p.Response.Msg = errMsg
 		p.Response.Id = p.Request.Id
+	case APIManagerCollegeView:
+		p.Response.Html = nil
+		p.Response.Render = false
+		p.Response.Type = 5
+		get := college.GetView{}
+		if err := json.Unmarshal(p.Request.Data, &get); err != nil {
+			p.Response.Msg = err.Error()
+			return
+		}
+		if !verifySign(get.Salt, p.Request.Sign, p.Request.Data) {
+			p.Response.Msg = signInvalid
+			return
+		}
+		data, errMsg, err := get.Exec(p.DB, p.Redis)
+		if err != nil {
+			if err.Error() == users.TokenInvalid {
+				p.Response.Code = -1
+			}
+		}
+		p.Response.Data = data
+		p.Response.Msg = errMsg
+		p.Response.Id = p.Request.Id
 	case APIManagerCollegeAdd:
 		add := college.AddParam{}
 		if err := json.Unmarshal(p.Request.Data, &add); err != nil {
@@ -180,26 +176,18 @@ func Handler(p *ProtoParam) {
 		p.Response.Data = data
 		p.Response.Msg = errMsg
 		p.Response.Id = p.Request.Id
+	case APIManagerCollegeEdit:
+		edit := college.UpdateParam{}
+		data, errMsg, err := edit.Exec(p.DB, p.Redis, p.Request, p.Response)
+
+	case APIManagerMajorGet:
+		get := college.MajorGetParam{}
+		get.Exec(p.DB, p.Redis, p.Request, p.Response)
+	case APIManagerMajorAdd:
+		add := college.MajorAddParam{}
+		add.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APILogout:
 		logout := users.LogoutParam{}
-		if err := json.Unmarshal(p.Request.Data, &logout); err != nil {
-			p.Response.Msg = err.Error()
-			p.Response.Html.Code = render.GetLayer(0, render.Incorrect, "Error", err.Error())
-			return
-		}
-		if !verifySign(logout.Salt, p.Request.Sign, p.Request.Data) {
-			p.Response.Msg = signInvalid
-			p.Response.Html.Code = render.GetLayer(0, render.Sad, "Error", signInvalid)
-			return
-		}
-		data, errMsg, err := logout.Exec(p.Redis)
-		p.Response.Html.Code = render.GetLayer(0, render.Sad, "Logout", errMsg)
-		if err == nil {
-			p.Response.Code = http.StatusOK
-			p.Response.Html.Code = render.GetLayer(0, render.Smile, "Logout", errMsg)
-		}
-		p.Response.Data = data
-		p.Response.Msg = errMsg
-		p.Response.Id = p.Request.Id
+		logout.Exec(p.Redis, p.Request, p.Response)
 	}
 }

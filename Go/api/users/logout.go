@@ -3,9 +3,12 @@ package users
 import (
 	"context"
 	"eduhacks2020/Go/api"
+	"eduhacks2020/Go/protobuf"
+	"eduhacks2020/Go/render"
 	"eduhacks2020/Go/utils"
-	"errors"
+	"encoding/json"
 	"github.com/go-redis/redis/v8"
+	"net/http"
 )
 
 // LogoutParam 退出登录的请求参数
@@ -15,16 +18,37 @@ type LogoutParam struct {
 }
 
 // Exec 执行删除
-func (l *LogoutParam) Exec(redis *redis.Client) ([]byte, string, error) {
+func (l *LogoutParam) Exec(redis *redis.Client, request *protobuf.Request, response *protobuf.Response) {
+	response.Id = request.Id
+	if err := json.Unmarshal(request.Data, l); err != nil {
+		response.Msg = err.Error()
+		response.Html.Code = render.GetLayer(0, render.Incorrect, "Error", err.Error())
+		return
+	}
+	response.Id = request.Id
+	if !utils.VerifySign(l.Salt, request.Sign, request.Data) {
+		response.Msg = utils.SignInvalid
+		response.Html.Code = render.GetLayer(0, render.Sad, "Error", utils.SignInvalid)
+		return
+	}
 	claims, err := utils.ParseToken(l.Token)
+	errMsg := "Logout success !"
 	if err != nil {
-		return nil, TokenInvalid, errors.New(TokenInvalid)
+		errMsg = TokenInvalid
+	} else {
+		redisAuth := api.AuthRedis{Redis: redis}
+		flag, _ := redisAuth.GetFlag(claims.UID)
+		if claims.Flag != flag {
+			errMsg = TokenInvalid
+		} else {
+			redis.Del(context.Background(), claims.UID).Result()
+		}
 	}
-	redisAuth := api.AuthRedis{Redis: redis}
-	flag, _ := redisAuth.GetFlag(claims.UID)
-	if claims.Flag != flag {
-		return nil, TokenInvalid, errors.New(TokenInvalid)
+	response.Html.Code = render.GetLayer(0, render.Sad, "Logout", errMsg)
+	if err == nil {
+		response.Code = http.StatusOK
+		response.Html.Code = render.GetLayer(0, render.Smile, "Logout", errMsg)
 	}
-	redis.Del(context.Background(), claims.UID).Result()
-	return nil, "Logout success !", nil
+	response.Data = nil
+	response.Msg = errMsg
 }
