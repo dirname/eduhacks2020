@@ -9,7 +9,6 @@ import (
 	"eduhacks2020/Go/render"
 	"eduhacks2020/Go/utils"
 	"encoding/json"
-	"errors"
 	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
 	"net/http"
@@ -59,49 +58,88 @@ type UpdateMajorParam struct {
 }
 
 // Exec 执行更新
-func (c *UpdateMajorParam) Exec(db *gorm.DB, redis *redis.Client) ([]byte, string, error) {
+func (c *UpdateMajorParam) Exec(db *gorm.DB, redis *redis.Client, request *protobuf.Request, r *protobuf.Response) {
+	r.Id = request.Id
+	if err := json.Unmarshal(request.Data, c); err != nil {
+		r.Msg = err.Error()
+		r.Html.Code = render.GetMsg(err.Error(), 3)
+		return
+	}
+	if !utils.VerifySign(c.Salt, request.Sign, request.Data) {
+		r.Msg = utils.SignInvalid
+		r.Html.Code = render.GetMsg(utils.SignInvalid, 3)
+		return
+	}
 	nullJs, _ := json.Marshal(response.TableResponse{
 		Code:    -1,
 		Data:    nil,
 		Message: "",
 		Count:   0,
 	})
+	r.Code = http.StatusOK
+	r.Data = nil
+	errMsg := "Updated successfully !"
 	if claims, err := utils.ParseToken(c.Token); err != nil {
-		return nullJs, users.TokenInvalid, errors.New(users.TokenInvalid)
+		r.Data = nullJs
+		errMsg = users.TokenInvalid
+		r.Code = -1
 	} else {
 		redisAuth := api.AuthRedis{Redis: redis}
 		flag, _ := redisAuth.GetFlag(claims.UID)
 		if claims.Flag != flag {
-			return nullJs, users.TokenInvalid, errors.New(users.TokenInvalid)
+			r.Data = nullJs
+			errMsg = users.TokenInvalid
+			r.Code = -1
+		} else {
+			db.Model(&psql.Major{}).Updates(psql.Major{
+				MajorName: c.Name,
+				CollegeID: c.College,
+			}).Where("id = ?", c.ID)
 		}
 	}
-	db.Model(&psql.Major{}).Updates(psql.Major{
-		MajorName: c.Name,
-		CollegeID: c.College,
-	}).Where("id = ?", c.ID)
-	return nil, "Updated successfully !", nil
+	r.Html.Code = render.GetMsg(errMsg, 3)
+	r.Msg = errMsg
 }
 
 // Exec 执行删除
-func (d *MajorDelParam) Exec(db *gorm.DB, redis *redis.Client) ([]byte, string, error) {
+func (d *MajorDelParam) Exec(db *gorm.DB, redis *redis.Client, request *protobuf.Request, r *protobuf.Response) {
+	r.Id = request.Id
+	if err := json.Unmarshal(request.Data, d); err != nil {
+		r.Msg = err.Error()
+		r.Html.Code = render.GetMsg(err.Error(), 3)
+		return
+	}
+	if !utils.VerifySign(d.Salt, request.Sign, request.Data) {
+		r.Msg = utils.SignInvalid
+		r.Html.Code = render.GetMsg(utils.SignInvalid, 3)
+		return
+	}
 	nullJs, _ := json.Marshal(response.TableResponse{
 		Code:    -1,
 		Data:    nil,
 		Message: "",
 		Count:   0,
 	})
-	claims, err := utils.ParseToken(d.Token)
-	if err != nil {
-		return nullJs, users.TokenInvalid, errors.New(users.TokenInvalid)
+	errMsg := "Deleted successfully !"
+	r.Code = http.StatusOK
+	r.Data = nil
+	if claims, err := utils.ParseToken(d.Token); err != nil {
+		r.Data = nullJs
+		r.Code = -1
+		errMsg = users.TokenInvalid
+	} else {
+		redisAuth := api.AuthRedis{Redis: redis}
+		flag, _ := redisAuth.GetFlag(claims.UID)
+		if claims.Flag != flag {
+			r.Data = nullJs
+			r.Code = -1
+			errMsg = users.TokenInvalid
+		} else {
+			db.Where("id = ?", d.ID).Delete(&psql.Major{})
+		}
 	}
-	redisAuth := api.AuthRedis{Redis: redis}
-	flag, _ := redisAuth.GetFlag(claims.UID)
-	if claims.Flag != flag {
-		return nullJs, users.TokenInvalid, errors.New(users.TokenInvalid)
-
-	}
-	db.Where("id = ?", d.ID).Delete(&psql.Major{})
-	return nil, "Deleted successfully !", nil
+	r.Html.Code = render.GetMsg(errMsg, 3)
+	r.Msg = errMsg
 }
 
 // Exec 执行添加
