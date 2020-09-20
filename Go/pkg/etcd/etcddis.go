@@ -20,13 +20,13 @@ func NewClientDis(addr []string) (*ClientDis, error) {
 		Endpoints:   addr,
 		DialTimeout: 5 * time.Second,
 	}
-	if client, err := clientv3.New(conf); err == nil {
+	client, err := clientv3.New(conf)
+	if err == nil {
 		return &ClientDis{
 			client: client,
 		}, nil
-	} else {
-		return nil, err
 	}
+	return nil, err
 }
 
 // GetService 获取服务

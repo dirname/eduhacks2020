@@ -15,19 +15,19 @@ var mu sync.Mutex
 // GetInstance 获取实例
 func GetInstance() *clientv3.Client {
 	if etcdKvClient == nil {
-		if client, err := clientv3.New(clientv3.Config{
+		client, err := clientv3.New(clientv3.Config{
 			Endpoints:   setting.EtcdSetting.Endpoints,
 			DialTimeout: 5 * time.Second,
-		}); err != nil {
+		})
+		if err != nil {
 			log.Error(err)
 			return nil
-		} else {
-			//创建时才加锁
-			mu.Lock()
-			defer mu.Unlock()
-			etcdKvClient = client
-			return etcdKvClient
 		}
+		//创建时才加锁
+		mu.Lock()
+		defer mu.Unlock()
+		etcdKvClient = client
+		return etcdKvClient
 
 	}
 	return etcdKvClient

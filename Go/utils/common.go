@@ -17,8 +17,8 @@ func GenUUID() string {
 	return string(uuidByt[8:24])
 }
 
-//对称加密IP和端口，当做clientId
-func GenClientId() string {
+// GenClientId 对称加密IP和端口，当做clientId
+func GenClientID() string {
 	raw := []byte(setting.GlobalSetting.LocalHost + ":" + setting.CommonSetting.RPCPort)
 	str, err := crypto.Encrypt(raw, []byte(setting.CommonSetting.CryptoKey))
 	if err != nil {
@@ -28,7 +28,7 @@ func GenClientId() string {
 	return str
 }
 
-//解析redis的地址格式
+// ParseRedisAddrValue 解析redis的地址格式
 func ParseRedisAddrValue(redisValue string) (host string, port string, err error) {
 	if redisValue == "" {
 		err = errors.New("解析地址错误")
@@ -44,20 +44,20 @@ func ParseRedisAddrValue(redisValue string) (host string, port string, err error
 	return
 }
 
-//判断地址是否为本机
+// IsAddrLocal 判断地址是否为本机
 func IsAddrLocal(host string, port string) bool {
 	return host == setting.GlobalSetting.LocalHost && port == setting.CommonSetting.RPCPort
 }
 
-//是否集群
+// IsCluster 是否集群
 func IsCluster() bool {
 	return setting.CommonSetting.Cluster
 }
 
-//获取client key地址信息
-func GetAddrInfoAndIsLocal(clientId string) (addr string, host string, port string, isLocal bool, err error) {
+// GetAddrInfoAndIsLocal 获取client key地址信息
+func GetAddrInfoAndIsLocal(clientID string) (addr string, host string, port string, isLocal bool, err error) {
 	//解密ClientId
-	addr, err = crypto.Decrypt(clientId, []byte(setting.CommonSetting.CryptoKey))
+	addr, err = crypto.Decrypt(clientID, []byte(setting.CommonSetting.CryptoKey))
 	if err != nil {
 		return
 	}
@@ -71,6 +71,7 @@ func GetAddrInfoAndIsLocal(clientId string) (addr string, host string, port stri
 	return
 }
 
-func GenGroupKey(systemId, groupName string) string {
-	return systemId + ":" + groupName
+// GenGroupKey 生成群租密匙
+func GenGroupKey(systemID, groupName string) string {
+	return systemID + ":" + groupName
 }
