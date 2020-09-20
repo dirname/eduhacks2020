@@ -1,11 +1,11 @@
 package users
 
 import (
-	"context"
 	"eduhacks2020/Go/api"
 	"eduhacks2020/Go/crypto"
 	"eduhacks2020/Go/models/psql"
 	"eduhacks2020/Go/models/response"
+	"eduhacks2020/Go/pkg/setting"
 	"eduhacks2020/Go/protobuf"
 	"eduhacks2020/Go/render"
 	"eduhacks2020/Go/utils"
@@ -83,12 +83,12 @@ func (l *LoginParam) Exec(db *gorm.DB, redis *redis.Client, sessionID string, re
 
 // adminLogin 管理员的登录
 func (l *LoginParam) adminLogin(redis *redis.Client) ([]byte, string, error) {
-	Username, err := redis.Get(context.Background(), "AdminUser").Result()
-	Password, err := redis.Get(context.Background(), "AdminPassword").Result()
-	if err != nil {
-		log.Errorf("an error occurred while getting the admin configure from redis: %s", err.Error())
-		return nil, "an error occurred while logging admin", errors.New(adminGetError)
-	}
+	Username := setting.AdminConf.Username
+	Password := setting.AdminConf.Password
+	//if err != nil {
+	//	log.Errorf("an error occurred while getting the admin configure from redis: %s", err.Error())
+	//	return nil, "an error occurred while logging admin", errors.New(adminGetError)
+	//}
 	if l.Username != Username || l.Password != Password {
 		return nil, "username or password is invalid", errors.New(passwordValid)
 	}

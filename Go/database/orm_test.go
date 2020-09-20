@@ -1,6 +1,7 @@
 package database
 
 import (
+	"eduhacks2020/Go/pkg/setting"
 	"gorm.io/gorm"
 	"testing"
 )
@@ -10,7 +11,7 @@ func TestOrm_Init(t *testing.T) {
 		DB *gorm.DB
 	}
 	var orm ORM
-	DefaultSetting()
+	setting.DefaultSetting()
 	orm.Init()
 	tests := []struct {
 		name   string

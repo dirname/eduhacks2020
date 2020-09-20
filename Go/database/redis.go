@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"eduhacks2020/Go/pkg/setting"
 	"github.com/go-redis/redis/v8"
 )
 
@@ -15,9 +16,9 @@ var ctx = context.Background()
 // Init 初始化 Redis 的连接
 func (r *RedisClient) Init() {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     SettingDatabase.RedisHost,
-		Password: SettingDatabase.RedisPwd, // no password set
-		DB:       0,                        // use default DB
+		Addr:     setting.SettingDatabase.RedisHost,
+		Password: setting.SettingDatabase.RedisPwd, // no password set
+		DB:       0,                                // use default DB
 	})
 	r.Instance = rdb
 }

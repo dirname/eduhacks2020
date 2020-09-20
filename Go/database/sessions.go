@@ -1,6 +1,7 @@
 package database
 
 import (
+	"eduhacks2020/Go/pkg/setting"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	"github.com/gorilla/securecookie"
@@ -25,23 +26,23 @@ type SessionManager struct {
 
 // CreateMongoStore 返回 *mgo.Session 再调用结束后及时释放数据库连接资源
 func CreateMongoStore() (*mongostore.MongoStore, *mgo.Session) {
-	session, err := mgo.DialWithInfo(DialInfo)
+	session, err := mgo.DialWithInfo(setting.DialInfo)
 	if err != nil {
 		log.Errorf(err.Error())
 	}
-	return mongostore.NewMongoStore(session.DB(SettingDatabase.MongoDB).C(sessionDB), 86400, true,
+	return mongostore.NewMongoStore(session.DB(setting.SettingDatabase.MongoDB).C(sessionDB), 86400, true,
 		[]byte(sessionKey)), session
 }
 
 // GetData 对 mongoStore 的附加部分, 从 mgo 直接读取 session.id 中的数据, 随后加解密
 func (*SessionManager) GetData(id string) (interface{}, error) {
-	session, err := mgo.DialWithInfo(DialInfo)
+	session, err := mgo.DialWithInfo(setting.DialInfo)
 	defer session.Close()
 	if err != nil {
 		log.Error(err)
 	}
 	objectID := bson.ObjectIdHex(id)
-	c := session.DB(SettingDatabase.MongoDB).C(sessionDB)
+	c := session.DB(setting.SettingDatabase.MongoDB).C(sessionDB)
 	var one map[string]interface{}
 	err = c.FindId(objectID).One(&one)
 	return one["data"], err
@@ -62,26 +63,26 @@ func (s *SessionManager) EncryptedData(sessionName string) (string, error) {
 
 // SaveData 保存 session 的数据
 func (s *SessionManager) SaveData(id string, data string) error {
-	session, err := mgo.DialWithInfo(DialInfo)
+	session, err := mgo.DialWithInfo(setting.DialInfo)
 	defer session.Close()
 	if err != nil {
 		log.Error(err)
 	}
 	objectID := bson.ObjectIdHex(id)
-	c := session.DB(SettingDatabase.MongoDB).C(sessionDB)
+	c := session.DB(setting.SettingDatabase.MongoDB).C(sessionDB)
 	err = c.UpdateId(objectID, bson.M{"data": data, "modified": time.Now()})
 	return err
 }
 
 // DeleteData 删除 session 的数据
 func (s *SessionManager) DeleteData(id string) error {
-	session, err := mgo.DialWithInfo(DialInfo)
+	session, err := mgo.DialWithInfo(setting.DialInfo)
 	defer session.Close()
 	if err != nil {
 		log.Error(err)
 	}
 	objectID := bson.ObjectIdHex(id)
-	c := session.DB(SettingDatabase.MongoDB).C(sessionDB)
+	c := session.DB(setting.SettingDatabase.MongoDB).C(sessionDB)
 	err = c.RemoveId(objectID)
 	return err
 }

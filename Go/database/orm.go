@@ -1,6 +1,7 @@
 package database
 
 import (
+	"eduhacks2020/Go/pkg/setting"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
@@ -24,7 +25,7 @@ func (o *ORM) Close() error {
 
 // Init 初始化 ORM 的连接
 func (o *ORM) Init() {
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable TimeZone=Asia/Shanghai", SettingDatabase.PgsqlHost, SettingDatabase.PgsqlUser, SettingDatabase.PgsqlPwd, SettingDatabase.PgsqlDB)
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable TimeZone=Asia/Shanghai", setting.SettingDatabase.PgsqlHost, setting.SettingDatabase.PgsqlUser, setting.SettingDatabase.PgsqlPwd, setting.SettingDatabase.PgsqlDB)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Error(err.Error())
