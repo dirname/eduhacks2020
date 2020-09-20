@@ -68,6 +68,9 @@ func Handler(p *ProtoParam) {
 	case APIManagerMajorGet:
 		get := college.MajorGetParam{}
 		get.Exec(p.DB, p.Redis, p.Request, p.Response)
+	case APIManagerMajorView:
+		get := college.MajorGetView{}
+		get.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APIManagerMajorAdd:
 		add := college.MajorAddParam{}
 		add.Exec(p.DB, p.Redis, p.Request, p.Response)
@@ -76,6 +79,21 @@ func Handler(p *ProtoParam) {
 		del.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APIManagerMajorEdit:
 		edit := college.UpdateMajorParam{}
+		edit.Exec(p.DB, p.Redis, p.Request, p.Response)
+	case APIManagerClassGet:
+		get := college.ClassGetParam{}
+		get.Exec(p.DB, p.Redis, p.Request, p.Response)
+	case APIManagerClassView:
+		view := college.ClassGetView{}
+		view.Exec(p.DB, p.Redis, p.Request, p.Response)
+	case APIManagerClassAdd:
+		add := college.ClassAddParam{}
+		add.Exec(p.DB, p.Redis, p.Request, p.Response)
+	case APIManagerClassDelete:
+		del := college.ClassDeleteParam{}
+		del.Exec(p.DB, p.Redis, p.Request, p.Response)
+	case APIManagerClassEdit:
+		edit := college.ClassUpdateParam{}
 		edit.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APILogout:
 		logout := users.LogoutParam{}

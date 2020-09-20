@@ -101,9 +101,9 @@ func (l *LoginParam) adminLogin(redis *redis.Client) ([]byte, string, error) {
 		Role:     -1,
 		Flag:     userFlag,
 		StandardClaims: jwt.StandardClaims{
-			NotBefore: time.Now().Unix() - 1000, // 签名生效时间
-			ExpiresAt: time.Now().Unix() + 3600, // 过期时间 一小时
-			Issuer:    utils.Issuer,             //签名的发行者
+			NotBefore: time.Now().Unix() - 1000,  // 签名生效时间
+			ExpiresAt: time.Now().Unix() + 28800, // 过期时间 八小时
+			Issuer:    utils.Issuer,              //签名的发行者
 		},
 	}
 	token, err := utils.GenerateToken(claims)
