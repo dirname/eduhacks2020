@@ -7,7 +7,10 @@ import (
 	"eduhacks2020/Go/pkg/etcd"
 	"eduhacks2020/Go/pkg/setting"
 	protocol "eduhacks2020/Go/protocol/websocket"
+	"eduhacks2020/Go/servers"
 	"eduhacks2020/Go/utils"
+	"eduhacks2020/Go/utils/log"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/gorilla/websocket"
 	"net"
@@ -15,6 +18,16 @@ import (
 
 func init() {
 	setting.ReadConfigure()
+	log.Setup()
+}
+
+func initRPCServer() {
+	//如果是集群，则启用RPC进行通讯
+	if utils.IsCluster() {
+		//初始化RPC服务
+		servers.InitGRpcServer()
+		fmt.Printf("Start RPC Listening on :%s\n", setting.CommonSetting.RPCPort)
+	}
 }
 
 //ETCD注册发现服务
@@ -45,6 +58,9 @@ func registerServer() {
 }
 
 func main() {
+	initRPCServer()
+	registerServer()
+	servers.PingTimer()
 	gin.SetMode(gin.DebugMode) // 生产模式中改写成 release
 
 	websocketHandler := &protocol.Controller{}

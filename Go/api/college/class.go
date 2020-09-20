@@ -37,14 +37,14 @@ type ClassResInfo struct {
 	CreatedAt   time.Time `json:"create"`
 }
 
-// MajorGetView 获取专业的html渲染
+// ClassGetView 获取班级的html渲染
 type ClassGetView struct {
 	Salt    string `json:"salt"`
 	Token   string `json:"token"`
 	MajorID uint   `json:"majorID"`
 }
 
-// MajorViewRes 专业的 html 响应
+// ClassViewRes 班级的 html 响应
 type ClassViewRes struct {
 	ID        uint   `json:"id"`
 	ClassID   string `json:"cid"`
