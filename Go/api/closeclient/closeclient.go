@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// Controller
 type Controller struct {
 }
 

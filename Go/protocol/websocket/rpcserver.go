@@ -10,8 +10,10 @@ import (
 	"net"
 )
 
+// CommonServiceServer
 type CommonServiceServer struct{}
 
+// Send2Client
 func (s *CommonServiceServer) Send2Client(ctx context.Context, req *pb.Send2ClientReq) (*pb.Send2ClientReply, error) {
 	log.WithFields(log.Fields{
 		"host":     setting.GlobalSetting.LocalHost,
@@ -22,6 +24,7 @@ func (s *CommonServiceServer) Send2Client(ctx context.Context, req *pb.Send2Clie
 	return &pb.Send2ClientReply{}, nil
 }
 
+// CloseClient
 func (s *CommonServiceServer) CloseClient(ctx context.Context, req *pb.CloseClientReq) (*pb.CloseClientReply, error) {
 	log.WithFields(log.Fields{
 		"host":     setting.GlobalSetting.LocalHost,
@@ -32,9 +35,9 @@ func (s *CommonServiceServer) CloseClient(ctx context.Context, req *pb.CloseClie
 	return &pb.CloseClientReply{}, nil
 }
 
-//添加分组到group
+// BindGroup 添加分组到group
 func (s *CommonServiceServer) BindGroup(ctx context.Context, req *pb.BindGroupReq) (*pb.BindGroupReply, error) {
-	if client, err := Manager.GetByClientId(req.ClientID); err == nil {
+	if client, err := Manager.GetByClientID(req.ClientID); err == nil {
 		//添加到本地
 		Manager.AddClient2LocalGroup(req.GroupName, client, req.UserID, req.Extend)
 	} else {
@@ -43,6 +46,7 @@ func (s *CommonServiceServer) BindGroup(ctx context.Context, req *pb.BindGroupRe
 	return &pb.BindGroupReply{}, nil
 }
 
+// Send2Group
 func (s *CommonServiceServer) Send2Group(ctx context.Context, req *pb.Send2GroupReq) (*pb.Send2GroupReply, error) {
 	log.WithFields(log.Fields{
 		"host": setting.GlobalSetting.LocalHost,
@@ -52,6 +56,7 @@ func (s *CommonServiceServer) Send2Group(ctx context.Context, req *pb.Send2Group
 	return &pb.Send2GroupReply{}, nil
 }
 
+// Send2System
 func (s *CommonServiceServer) Send2System(ctx context.Context, req *pb.Send2SystemReq) (*pb.Send2SystemReply, error) {
 	log.WithFields(log.Fields{
 		"host": setting.GlobalSetting.LocalHost,
@@ -61,14 +66,15 @@ func (s *CommonServiceServer) Send2System(ctx context.Context, req *pb.Send2Syst
 	return &pb.Send2SystemReply{}, nil
 }
 
-//获取分组在线用户列表
+// GetGroupClients 获取分组在线用户列表
 func (s *CommonServiceServer) GetGroupClients(ctx context.Context, req *pb.GetGroupClientsReq) (*pb.GetGroupClientsReply, error) {
 	response := pb.GetGroupClientsReply{}
 	response.List = Manager.GetGroupClientList(utils.GenGroupKey(req.SystemID, req.GroupName))
 	return &response, nil
 }
 
-func InitGRpcServer() {
+// InitGRPCServer
+func InitGRPCServer() {
 	go createGRPCServer(":" + setting.CommonSetting.RPCPort)
 }
 

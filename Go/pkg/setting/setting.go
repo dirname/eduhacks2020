@@ -22,7 +22,7 @@ type databaseConf struct {
 	RedisPwd  string
 }
 
-// SettingDatabase 数据库的配置
+// Database 数据库的配置
 var Database = &databaseConf{}
 
 type adminConf struct {

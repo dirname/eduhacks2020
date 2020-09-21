@@ -8,13 +8,14 @@ import (
 	"net/http"
 )
 
+// Controller
 type Controller struct {
 }
 
 type inputData struct {
 	ClientID  string `json:"clientId" validate:"required"`
 	GroupName string `json:"groupName" validate:"required"`
-	UserId    string `json:"userId"`
+	UserID    string `json:"userId"`
 	Extend    string `json:"extend"` // 拓展字段，方便业务存储数据
 }
 
@@ -33,7 +34,7 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 	}
 
 	systemID := r.Header.Get("SystemID")
-	websocket.AddClient2Group(systemID, inputData.GroupName, inputData.ClientID, inputData.UserId, inputData.Extend)
+	websocket.AddClient2Group(systemID, inputData.GroupName, inputData.ClientID, inputData.UserID, inputData.Extend)
 
 	api.Render(w, retcode.SUCCESS, "success", []string{})
 }

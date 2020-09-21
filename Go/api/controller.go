@@ -16,6 +16,7 @@ import (
 	"net/http"
 )
 
+// RetData
 type RetData struct {
 	Code int         `json:"code"`
 	Msg  string      `json:"msg"`
@@ -33,6 +34,7 @@ func xorData(data []byte, decrypt bool) []byte {
 	return res
 }
 
+// ConnRender
 func ConnRender(conn *websocket.Conn, data interface{}) (err error) {
 	js, _ := json.Marshal(RetData{
 		Code: retcode.SUCCESS,
@@ -52,7 +54,7 @@ func ConnRender(conn *websocket.Conn, data interface{}) (err error) {
 	err = conn.WriteMessage(2, xorData(msg, false))
 	return
 }
-
+// Render
 func Render(w http.ResponseWriter, code int, msg string, data interface{}) (str string) {
 	var retData RetData
 
@@ -60,14 +62,14 @@ func Render(w http.ResponseWriter, code int, msg string, data interface{}) (str 
 	retData.Msg = msg
 	retData.Data = data
 
-	retJson, _ := json.Marshal(retData)
-	str = string(retJson)
+	retJSON, _ := json.Marshal(retData)
+	str = string(retJSON)
 
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	_, _ = io.WriteString(w, str)
 	return
 }
-
+// Validate
 func Validate(inputData interface{}) error {
 
 	validate := validator.New()

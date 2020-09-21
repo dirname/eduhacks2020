@@ -15,22 +15,24 @@ type accountInfo struct {
 	RegisterTime int64  `json:"registerTime"`
 }
 
+// SystemMap
 var SystemMap sync.Map
 
-func Register(systemId string) (err error) {
+// Register
+func Register(systemID string) (err error) {
 	//校验是否为空
-	if len(systemId) == 0 {
+	if len(systemID) == 0 {
 		return errors.New("系统ID不能为空")
 	}
 
 	accountInfo := accountInfo{
-		SystemID:     systemId,
+		SystemID:     systemID,
 		RegisterTime: time.Now().Unix(),
 	}
 
 	if utils.IsCluster() {
 		//判断是否被注册
-		resp, err := etcd.Get(define.EtcdPrefixAccountInfo + systemId)
+		resp, err := etcd.Get(define.EtcdPrefixAccountInfo + systemID)
 		if err != nil {
 			return err
 		}
@@ -42,17 +44,17 @@ func Register(systemId string) (err error) {
 		jsonBytes, _ := json.Marshal(accountInfo)
 
 		//注册
-		err = etcd.Put(define.EtcdPrefixAccountInfo+systemId, string(jsonBytes))
+		err = etcd.Put(define.EtcdPrefixAccountInfo+systemID, string(jsonBytes))
 		if err != nil {
 			panic(err)
 			return err
 		}
 	} else {
-		if _, ok := SystemMap.Load(systemId); ok {
+		if _, ok := SystemMap.Load(systemID); ok {
 			return errors.New("该系统ID已被注册")
 		}
 
-		SystemMap.Store(systemId, accountInfo)
+		SystemMap.Store(systemID, accountInfo)
 	}
 
 	return nil

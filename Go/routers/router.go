@@ -11,7 +11,7 @@ type databaseManager struct {
 	Redis *database.RedisClient
 }
 
-// 初始化的路由
+// Init 初始化的路由
 func Init(engine *gin.Engine) *databaseManager {
 
 	orm := database.ORM{}
@@ -34,6 +34,7 @@ func Init(engine *gin.Engine) *databaseManager {
 	return &dm
 }
 
+// Close
 func (d *databaseManager) Close() {
 	d.ORM.Close()
 	d.Redis.Close()

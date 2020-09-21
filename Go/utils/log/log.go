@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+// Setup
 func Setup() {
 	basePath := getCurrentDirectory()
 

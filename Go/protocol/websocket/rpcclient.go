@@ -17,7 +17,8 @@ func grpcConn(addr string) *grpc.ClientConn {
 	return conn
 }
 
-func SendRpc2Client(addr string, messageId, sendUserID, clientId string, code int, message string, data *string) {
+// SendRPC2Client
+func SendRPC2Client(addr string, messageID, sendUserID, clientId string, code int, message string, data *string) {
 	conn := grpcConn(addr)
 	defer conn.Close()
 
@@ -31,7 +32,7 @@ func SendRpc2Client(addr string, messageId, sendUserID, clientId string, code in
 
 	c := pb.NewCommonServiceClient(conn)
 	_, err := c.Send2Client(context.Background(), &pb.Send2ClientReq{
-		MessageID:  messageId,
+		MessageID:  messageID,
 		SendUserID: sendUserID,
 		ClientID:   clientId,
 		Code:       int32(code),
@@ -43,7 +44,8 @@ func SendRpc2Client(addr string, messageId, sendUserID, clientId string, code in
 	}
 }
 
-func CloseRpcClient(addr string, clientId, systemId string) {
+// CloseRPCClient
+func CloseRPCClient(addr string, clientId, systemID string) {
 	conn := grpcConn(addr)
 	defer conn.Close()
 
@@ -56,7 +58,7 @@ func CloseRpcClient(addr string, clientId, systemId string) {
 
 	c := pb.NewCommonServiceClient(conn)
 	_, err := c.CloseClient(context.Background(), &pb.CloseClientReq{
-		SystemID: systemId,
+		SystemID: systemID,
 		ClientID: clientId,
 	})
 	if err != nil {
@@ -64,14 +66,14 @@ func CloseRpcClient(addr string, clientId, systemId string) {
 	}
 }
 
-//绑定分组
-func SendRpcBindGroup(addr string, systemId string, groupName string, clientId string, userId string, extend string) {
+// SendRPCBindGroup 绑定分组
+func SendRPCBindGroup(addr string, systemID string, groupName string, clientId string, userId string, extend string) {
 	conn := grpcConn(addr)
 	defer conn.Close()
 
 	c := pb.NewCommonServiceClient(conn)
 	_, err := c.BindGroup(context.Background(), &pb.BindGroupReq{
-		SystemID:  systemId,
+		SystemID:  systemID,
 		GroupName: groupName,
 		ClientID:  clientId,
 		UserID:    userId,
@@ -82,8 +84,8 @@ func SendRpcBindGroup(addr string, systemId string, groupName string, clientId s
 	}
 }
 
-//发送分组消息
-func SendGroupBroadcast(systemId string, messageId, sendUserID, groupName string, code int, message string, data *string) {
+// SendGroupBroadcast 发送分组消息
+func SendGroupBroadcast(systemID string, messageID, sendUserID, groupName string, code int, message string, data *string) {
 	setting.GlobalSetting.ServerListLock.Lock()
 	defer setting.GlobalSetting.ServerListLock.Unlock()
 	for _, addr := range setting.GlobalSetting.ServerList {
@@ -92,8 +94,8 @@ func SendGroupBroadcast(systemId string, messageId, sendUserID, groupName string
 
 		c := pb.NewCommonServiceClient(conn)
 		_, err := c.Send2Group(context.Background(), &pb.Send2GroupReq{
-			SystemID:   systemId,
-			MessageID:  messageId,
+			SystemID:   systemID,
+			MessageID:  messageID,
 			SendUserID: sendUserID,
 			GroupName:  groupName,
 			Code:       int32(code),
@@ -107,7 +109,7 @@ func SendGroupBroadcast(systemId string, messageId, sendUserID, groupName string
 }
 
 //发送系统信息
-func SendSystemBroadcast(systemId string, messageId, sendUserID string, code int, message string, data *string) {
+func SendSystemBroadcast(systemID string, messageID, sendUserID string, code int, message string, data *string) {
 	setting.GlobalSetting.ServerListLock.Lock()
 	defer setting.GlobalSetting.ServerListLock.Unlock()
 	for _, addr := range setting.GlobalSetting.ServerList {
@@ -116,8 +118,8 @@ func SendSystemBroadcast(systemId string, messageId, sendUserID string, code int
 
 		c := pb.NewCommonServiceClient(conn)
 		_, err := c.Send2System(context.Background(), &pb.Send2SystemReq{
-			SystemID:   systemId,
-			MessageID:  messageId,
+			SystemID:   systemID,
+			MessageID:  messageID,
 			SendUserID: sendUserID,
 			Code:       int32(code),
 			Message:    message,
@@ -129,7 +131,8 @@ func SendSystemBroadcast(systemId string, messageId, sendUserID string, code int
 	}
 }
 
-func GetOnlineListBroadcast(systemId *string, groupName *string) (clientIdList []string) {
+// GetOnlineListBroadcast
+func GetOnlineListBroadcast(systemID *string, groupName *string) (clientIdList []string) {
 	setting.GlobalSetting.ServerListLock.Lock()
 	defer setting.GlobalSetting.ServerListLock.Unlock()
 
@@ -145,7 +148,7 @@ func GetOnlineListBroadcast(systemId *string, groupName *string) (clientIdList [
 			defer conn.Close()
 			c := pb.NewCommonServiceClient(conn)
 			response, err := c.GetGroupClients(context.Background(), &pb.GetGroupClientsReq{
-				SystemID:  *systemId,
+				SystemID:  *systemID,
 				GroupName: *groupName,
 			})
 			if err != nil {

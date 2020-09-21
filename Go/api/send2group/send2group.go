@@ -8,17 +8,19 @@ import (
 	"net/http"
 )
 
+// Controller
 type Controller struct {
 }
 
 type inputData struct {
-	SendUserId string `json:"sendUserId"`
+	SendUserID string `json:"sendUserId"`
 	GroupName  string `json:"groupName" validate:"required"`
 	Code       int    `json:"code"`
 	Msg        string `json:"msg"`
 	Data       string `json:"data"`
 }
 
+// Run
 func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 	var inputData inputData
 	if err := json.NewDecoder(r.Body).Decode(&inputData); err != nil {
@@ -32,11 +34,11 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	systemId := r.Header.Get("SystemID")
-	messageId := websocket.SendMessage2Group(systemId, inputData.SendUserId, inputData.GroupName, inputData.Code, inputData.Msg, &inputData.Data)
+	systemID := r.Header.Get("SystemID")
+	messageID := websocket.SendMessage2Group(systemID, inputData.SendUserID, inputData.GroupName, inputData.Code, inputData.Msg, &inputData.Data)
 
 	api.Render(w, retcode.SUCCESS, "success", map[string]string{
-		"messageId": messageId,
+		"messageID": messageID,
 	})
 	return
 }

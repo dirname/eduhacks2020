@@ -8,17 +8,19 @@ import (
 	"net/http"
 )
 
+// Controller
 type Controller struct {
 }
 
 type inputData struct {
 	ClientIds  []string `json:"clientIds" validate:"required"`
-	SendUserId string   `json:"sendUserId"`
+	SendUserID string   `json:"sendUserId"`
 	Code       int      `json:"code"`
 	Msg        string   `json:"msg"`
 	Data       string   `json:"data"`
 }
 
+// Run
 func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 	var inputData inputData
 	if err := json.NewDecoder(r.Body).Decode(&inputData); err != nil {
@@ -32,9 +34,9 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	for _, clientId := range inputData.ClientIds {
+	for _, clientID := range inputData.ClientIds {
 		//发送信息
-		_ = websocket.SendMessage2Client(clientId, inputData.SendUserId, inputData.Code, inputData.Msg, &inputData.Data)
+		_ = websocket.SendMessage2Client(clientID, inputData.SendUserID, inputData.Code, inputData.Msg, &inputData.Data)
 	}
 
 	api.Render(w, retcode.SUCCESS, "success", []string{})

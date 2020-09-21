@@ -24,7 +24,7 @@ func initRPCServer() {
 	//如果是集群，则启用RPC进行通讯
 	if utils.IsCluster() {
 		//初始化RPC服务
-		websocket.InitGRpcServer()
+		websocket.InitGRPCServer()
 		fmt.Printf("Start RPC Listening on :%s\n", setting.CommonSetting.RPCPort)
 	}
 }

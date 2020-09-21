@@ -17,7 +17,7 @@ func GenUUID() string {
 	return string(uuidByt[8:24])
 }
 
-// GenClientId 对称加密IP和端口，当做clientId
+// GenClientID 对称加密IP和端口，当做clientId
 func GenClientID() string {
 	raw := []byte(setting.GlobalSetting.LocalHost + ":" + setting.CommonSetting.RPCPort)
 	str, err := crypto.Encrypt(raw, []byte(setting.CommonSetting.CryptoKey))

@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+// Controller
 type Controller struct {
 }
 
@@ -18,6 +19,7 @@ type inputData struct {
 	Data      interface{} `json:"data"`
 }
 
+// Run
 func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 	var inputData inputData
 	if err := json.NewDecoder(r.Body).Decode(&inputData); err != nil {
@@ -31,8 +33,8 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	systemId := r.Header.Get("SystemID")
-	ret := websocket.GetOnlineList(&systemId, &inputData.GroupName)
+	systemID := r.Header.Get("SystemID")
+	ret := websocket.GetOnlineList(&systemID, &inputData.GroupName)
 
 	api.Render(w, retcode.SUCCESS, "success", ret)
 	return

@@ -8,13 +8,15 @@ import (
 	"net/http"
 )
 
+// Controller
 type Controller struct {
 }
 
 type inputData struct {
-	SystemId string `json:"systemId" validate:"required"`
+	SystemID string `json:"systemId" validate:"required"`
 }
 
+// Run
 func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 	var inputData inputData
 	if err := json.NewDecoder(r.Body).Decode(&inputData); err != nil {
@@ -28,7 +30,7 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = websocket.Register(inputData.SystemId)
+	err = websocket.Register(inputData.SystemID)
 	if err != nil {
 		api.Render(w, retcode.FAIL, err.Error(), []string{})
 		return
