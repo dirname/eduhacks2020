@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-// Controller
+// Controller 控制器
 type Controller struct {
 }
 

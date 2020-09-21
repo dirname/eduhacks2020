@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// DatabaseManager 数据库管理器
 type DatabaseManager struct {
 	ORM   *database.ORM
 	Redis *database.RedisClient
@@ -31,7 +32,7 @@ func (d *DatabaseManager) Init(engine *gin.Engine) {
 	go websocket.WriteMessage()
 }
 
-// Close
+// Close 关闭数据库连接
 func (d *DatabaseManager) Close() {
 	d.ORM.Close()
 	d.Redis.Close()

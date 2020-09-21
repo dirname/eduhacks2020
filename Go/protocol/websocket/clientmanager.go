@@ -176,12 +176,12 @@ func (manager *ClientManager) SendMessage2LocalGroup(systemID, messageID, sendUs
 }
 
 // SendMessage2LocalSystem 发送给指定业务系统
-func (manager *ClientManager) SendMessage2LocalSystem(systemID, messageID string, sendUserId string, code int, msg string, data *string) {
+func (manager *ClientManager) SendMessage2LocalSystem(systemID, messageID string, sendUserID string, code int, msg string, data *string) {
 	if len(systemID) > 0 {
 		clientIds := Manager.GetSystemClientList(systemID)
 		if len(clientIds) > 0 {
 			for _, clientID := range clientIds {
-				SendMessage2LocalClient(messageID, clientID, sendUserId, code, msg, data)
+				SendMessage2LocalClient(messageID, clientID, sendUserID, code, msg, data)
 			}
 		}
 	}
@@ -213,10 +213,10 @@ func (manager *ClientManager) AddClient2LocalGroup(groupName string, client *Cli
 		"extend":   client.Extend,
 	})
 	data := string(mJSON)
-	sendUserId := ""
+	sendUserID := ""
 
 	//发送系统通知
-	SendMessage2Group(client.SystemID, sendUserId, groupName, retcode.OnlineMessageCode, "客户端上线", &data)
+	SendMessage2Group(client.SystemID, sendUserID, groupName, retcode.OnlineMessageCode, "客户端上线", &data)
 }
 
 // addClient2Group 添加到本地分组

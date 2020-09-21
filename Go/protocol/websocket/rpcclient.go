@@ -67,7 +67,7 @@ func CloseRPCClient(addr string, clientID, systemID string) {
 }
 
 // SendRPCBindGroup 绑定分组
-func SendRPCBindGroup(addr string, systemID string, groupName string, clientID string, userId string, extend string) {
+func SendRPCBindGroup(addr string, systemID string, groupName string, clientID string, userID string, extend string) {
 	conn := grpcConn(addr)
 	defer conn.Close()
 
@@ -76,7 +76,7 @@ func SendRPCBindGroup(addr string, systemID string, groupName string, clientID s
 		SystemID:  systemID,
 		GroupName: groupName,
 		ClientID:  clientID,
-		UserID:    userId,
+		UserID:    userID,
 		Extend:    extend,
 	})
 	if err != nil {

@@ -54,8 +54,8 @@ func StartWebSocket(engine *gin.Engine, o *database.ORM, r *database.RedisClient
 }
 
 // SendMessage2Client 发送信息到指定客户端
-func SendMessage2Client(clientID string, sendUserID string, code int, msg string, data *string) (messageId string) {
-	messageId = utils.GenUUID()
+func SendMessage2Client(clientID string, sendUserID string, code int, msg string, data *string) (messageID string) {
+	messageID = utils.GenUUID()
 	if utils.IsCluster() {
 		addr, _, _, isLocal, err := utils.GetAddrInfoAndIsLocal(clientID)
 		if err != nil {
@@ -65,14 +65,14 @@ func SendMessage2Client(clientID string, sendUserID string, code int, msg string
 
 		//如果是本机则发送到本机
 		if isLocal {
-			SendMessage2LocalClient(messageId, clientID, sendUserID, code, msg, data)
+			SendMessage2LocalClient(messageID, clientID, sendUserID, code, msg, data)
 		} else {
 			//发送到指定机器
-			SendRPC2Client(addr, messageId, sendUserID, clientID, code, msg, data)
+			SendRPC2Client(addr, messageID, sendUserID, clientID, code, msg, data)
 		}
 	} else {
 		//如果是单机服务，则只发送到本机
-		SendMessage2LocalClient(messageId, clientID, sendUserID, code, msg, data)
+		SendMessage2LocalClient(messageID, clientID, sendUserID, code, msg, data)
 	}
 
 	return

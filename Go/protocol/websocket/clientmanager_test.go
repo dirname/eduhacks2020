@@ -52,11 +52,11 @@ func TestDelClient(t *testing.T) {
 }
 
 func TestCount(t *testing.T) {
-	clientId := "clientId"
-	systemId := "publishSystem"
+	clientID := "clientID"
+	systemID := "publishSystem"
 	var manager = NewClientManager() // 管理者
 	conn := &websocket.Conn{}
-	clientSocket := NewClient(clientId, systemId, conn)
+	clientSocket := NewClient(clientID, systemID, conn)
 
 	Convey("测试获取客户端数量", t, func() {
 		Convey("添加一个客户端后", func() {
@@ -100,24 +100,24 @@ func TestGetByClientId(t *testing.T) {
 
 func TestAddClient2LocalGroup(t *testing.T) {
 	setting.DefaultSetting()
-	clientId := "clientId"
-	systemId := "publishSystem"
+	clientID := "clientID"
+	systemID := "publishSystem"
 	userID := "userID"
 	var manager = NewClientManager() // 管理者
 	conn := &websocket.Conn{}
-	clientSocket := NewClient(clientId, systemId, conn)
+	clientSocket := NewClient(clientID, systemID, conn)
 	manager.AddClient(clientSocket)
 	groupName := "testGroup"
 
 	Convey("测试添加分组", t, func() {
 		Convey("添加一个客户端到分组", func() {
 			manager.AddClient2LocalGroup(groupName, clientSocket, userID, "")
-			So(len(manager.Groups[utils.GenGroupKey(systemId, groupName)]), ShouldEqual, 1)
+			So(len(manager.Groups[utils.GenGroupKey(systemID, groupName)]), ShouldEqual, 1)
 		})
 
 		Convey("再添加一个客户端到分组", func() {
 			manager.AddClient2LocalGroup(groupName, clientSocket, userID, "")
-			So(len(manager.Groups[utils.GenGroupKey(systemId, groupName)]), ShouldEqual, 1)
+			So(len(manager.Groups[utils.GenGroupKey(systemID, groupName)]), ShouldEqual, 1)
 		})
 	})
 }
