@@ -1,4 +1,4 @@
-package database
+package websocket
 
 // 定义路由
 const (

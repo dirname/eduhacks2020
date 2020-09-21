@@ -3,7 +3,7 @@ package getonlinelist
 import (
 	"eduhacks2020/Go/api"
 	"eduhacks2020/Go/define/retcode"
-	"eduhacks2020/Go/servers"
+	"eduhacks2020/Go/protocol/websocket"
 	"encoding/json"
 	"net/http"
 )
@@ -31,8 +31,8 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	systemId := r.Header.Get("SystemId")
-	ret := servers.GetOnlineList(&systemId, &inputData.GroupName)
+	systemId := r.Header.Get("SystemID")
+	ret := websocket.GetOnlineList(&systemId, &inputData.GroupName)
 
 	api.Render(w, retcode.SUCCESS, "success", ret)
 	return

@@ -1,9 +1,9 @@
-package servers
+package websocket
 
 import (
 	"context"
 	"eduhacks2020/Go/pkg/setting"
-	"eduhacks2020/Go/servers/pb"
+	"eduhacks2020/Go/protocol/pb"
 	"eduhacks2020/Go/utils"
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"

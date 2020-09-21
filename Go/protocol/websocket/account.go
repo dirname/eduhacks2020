@@ -1,4 +1,4 @@
-package servers
+package websocket
 
 import (
 	"eduhacks2020/Go/define"
@@ -11,7 +11,7 @@ import (
 )
 
 type accountInfo struct {
-	SystemId     string `json:"systemId"`
+	SystemID     string `json:"systemId"`
 	RegisterTime int64  `json:"registerTime"`
 }
 
@@ -24,7 +24,7 @@ func Register(systemId string) (err error) {
 	}
 
 	accountInfo := accountInfo{
-		SystemId:     systemId,
+		SystemID:     systemId,
 		RegisterTime: time.Now().Unix(),
 	}
 

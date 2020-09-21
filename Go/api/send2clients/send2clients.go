@@ -3,7 +3,7 @@ package send2clients
 import (
 	"eduhacks2020/Go/api"
 	"eduhacks2020/Go/define/retcode"
-	"eduhacks2020/Go/servers"
+	"eduhacks2020/Go/protocol/websocket"
 	"encoding/json"
 	"net/http"
 )
@@ -34,7 +34,7 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 
 	for _, clientId := range inputData.ClientIds {
 		//发送信息
-		_ = servers.SendMessage2Client(clientId, inputData.SendUserId, inputData.Code, inputData.Msg, &inputData.Data)
+		_ = websocket.SendMessage2Client(clientId, inputData.SendUserId, inputData.Code, inputData.Msg, &inputData.Data)
 	}
 
 	api.Render(w, retcode.SUCCESS, "success", []string{})

@@ -1,11 +1,15 @@
-package servers
+package websocket
 
 import (
 	"eduhacks2020/Go/api"
+	"eduhacks2020/Go/database"
 	"eduhacks2020/Go/define/retcode"
 	"eduhacks2020/Go/utils"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
+	//"go-websocket/api"
+	//"go-websocket/define/retcode"
+	//"go-websocket/tools/util"
 	"net/http"
 )
 
@@ -14,14 +18,16 @@ const (
 	maxMessageSize = 8192
 )
 
+// Controller 创建类型指定 run 方法
 type Controller struct {
 }
 
 type renderData struct {
-	ClientId string `json:"clientId"`
+	ClientID string `json:"clientId"`
 }
 
-func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
+// Run 建立 Websocket 连接
+func (c *Controller) Run(w http.ResponseWriter, r *http.Request, orm *database.ORM, r2 *database.RedisClient) {
 	conn, err := (&websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -40,23 +46,31 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 	conn.SetReadLimit(maxMessageSize)
 
 	//解析参数
-	systemId := r.FormValue("systemId")
-	if len(systemId) == 0 {
+	systemID := r.FormValue("systemId")
+	if len(systemID) == 0 {
 		_ = Render(conn, "", "", retcode.SystemIdError, "系统ID不能为空", []string{})
 		_ = conn.Close()
 		return
 	}
 
-	clientId := utils.GenClientID()
+	clientID := utils.GenClientID()
 
-	clientSocket := NewClient(clientId, systemId, conn)
+	clientSocket := NewClient(clientID, systemID, conn)
 
-	Manager.AddClient2SystemClient(systemId, clientSocket)
+	Manager.AddClient2SystemClient(systemID, clientSocket)
+
+	store, dbSession := database.CreateMongoStore()
+	defer dbSession.Close()
+	session, err := store.Get(r, database.SessionName)
+
+	if err != nil {
+		log.Error(err.Error())
+	}
 
 	//读取客户端消息
-	clientSocket.Read()
+	clientSocket.Read(orm, r2, session.ID)
 
-	if err = api.ConnRender(conn, renderData{ClientId: clientId}); err != nil {
+	if err = api.ConnRender(conn, renderData{ClientID: clientID}); err != nil {
 		_ = conn.Close()
 		return
 	}

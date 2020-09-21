@@ -3,7 +3,7 @@ package closeclient
 import (
 	"eduhacks2020/Go/api"
 	"eduhacks2020/Go/define/retcode"
-	"eduhacks2020/Go/servers"
+	"eduhacks2020/Go/protocol/websocket"
 	"encoding/json"
 	"net/http"
 )
@@ -12,9 +12,10 @@ type Controller struct {
 }
 
 type inputData struct {
-	ClientId string `json:"clientId" validate:"required"`
+	ClientID string `json:"clientId" validate:"required"`
 }
 
+// Run 启动路由
 func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 	var inputData inputData
 	if err := json.NewDecoder(r.Body).Decode(&inputData); err != nil {
@@ -28,10 +29,10 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	systemId := r.Header.Get("SystemId")
+	systemID := r.Header.Get("SystemID")
 
 	//发送信息
-	servers.CloseClient(inputData.ClientId, systemId)
+	websocket.CloseClient(inputData.ClientID, systemID)
 
 	api.Render(w, retcode.SUCCESS, "success", map[string]string{})
 	return

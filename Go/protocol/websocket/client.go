@@ -1,9 +1,10 @@
-package protocol
+package websocket
 
 import (
 	"eduhacks2020/Go/database"
 	"eduhacks2020/Go/protobuf"
 	"eduhacks2020/Go/render"
+	websocket2 "eduhacks2020/Go/routers/websocket"
 	"encoding/base64"
 	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
@@ -97,14 +98,14 @@ func (c *Client) Router(msg []byte, d *database.ORM, r *database.RedisClient, id
 		c.Socket.WriteMessage(2, xorData(data, false))
 		return
 	}
-	router := database.Router{}
-	router.Find(&database.ProtoParam{
+	router := websocket2.Router{}
+	router.Find(&websocket2.ProtoParam{
 		Request:   &req,
 		Response:  res,
 		SessionID: id,
 		Redis:     r.Instance,
 		DB:        d.DB,
-	}, database.Handler)
+	}, websocket2.Handler)
 	data, _ := proto.Marshal(res)
 	c.Socket.WriteMessage(2, xorData(data, false))
 }

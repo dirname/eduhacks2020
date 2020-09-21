@@ -3,7 +3,7 @@ package register
 import (
 	"eduhacks2020/Go/api"
 	"eduhacks2020/Go/define/retcode"
-	"eduhacks2020/Go/servers"
+	"eduhacks2020/Go/protocol/websocket"
 	"encoding/json"
 	"net/http"
 )
@@ -28,7 +28,7 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = servers.Register(inputData.SystemId)
+	err = websocket.Register(inputData.SystemId)
 	if err != nil {
 		api.Render(w, retcode.FAIL, err.Error(), []string{})
 		return

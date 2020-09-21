@@ -1,4 +1,4 @@
-package database
+package websocket
 
 import (
 	"eduhacks2020/Go/api/college"

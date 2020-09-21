@@ -1,4 +1,4 @@
-package servers
+package websocket
 
 import (
 	"eduhacks2020/Go/pkg/setting"

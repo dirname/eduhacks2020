@@ -74,9 +74,8 @@ func (r *ServiceReg) ListenLeaseRespChan() {
 			if leaseKeepResp == nil {
 				log.Error("已经关闭续租功能")
 				return
-			} else {
-				log.Info("续租成功")
 			}
+			//log.Info("续租成功")
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package servers
+package websocket
 
 import (
 	"eduhacks2020/Go/define/retcode"
@@ -14,7 +14,7 @@ import (
 // 连接管理
 type ClientManager struct {
 	ClientIdMap     map[string]*Client // 全部的连接
-	ClientIdMapLock sync.RWMutex       // 读写锁
+	ClientIdMapLock sync.RWMutex                // 读写锁
 
 	Connect    chan *Client // 连接处理
 	DisConnect chan *Client // 断开连接处理
@@ -59,7 +59,7 @@ func (manager *ClientManager) EventConnect(client *Client) {
 	log.WithFields(log.Fields{
 		"host":     setting.GlobalSetting.LocalHost,
 		"port":     setting.CommonSetting.Port,
-		"clientId": client.ClientId,
+		"clientId": client.ClientID,
 		"counts":   Manager.Count(),
 	}).Info("客户端已连接")
 }
@@ -71,8 +71,8 @@ func (manager *ClientManager) EventDisconnect(client *Client) {
 	manager.DelClient(client)
 
 	mJson, _ := json.Marshal(map[string]string{
-		"clientId": client.ClientId,
-		"userId":   client.UserId,
+		"clientId": client.ClientID,
+		"userId":   client.UserID,
 		"extend":   client.Extend,
 	})
 	data := string(mJson)
@@ -81,14 +81,14 @@ func (manager *ClientManager) EventDisconnect(client *Client) {
 	//发送下线通知
 	if len(client.GroupList) > 0 {
 		for _, groupName := range client.GroupList {
-			SendMessage2Group(client.SystemId, sendUserId, groupName, retcode.OfflineMessageCode, "客户端下线", &data)
+			SendMessage2Group(client.SystemID, sendUserId, groupName, retcode.OfflineMessageCode, "客户端下线", &data)
 		}
 	}
 
 	log.WithFields(log.Fields{
 		"host":     setting.GlobalSetting.LocalHost,
 		"port":     setting.CommonSetting.Port,
-		"clientId": client.ClientId,
+		"clientId": client.ClientID,
 		"counts":   Manager.Count(),
 		"seconds":  uint64(time.Now().Unix()) - client.ConnectTime,
 	}).Info("客户端已断开")
@@ -103,7 +103,7 @@ func (manager *ClientManager) AddClient(client *Client) {
 	manager.ClientIdMapLock.Lock()
 	defer manager.ClientIdMapLock.Unlock()
 
-	manager.ClientIdMap[client.ClientId] = client
+	manager.ClientIdMap[client.ClientID] = client
 }
 
 // 获取所有的客户端
@@ -123,12 +123,12 @@ func (manager *ClientManager) Count() int {
 
 // 删除客户端
 func (manager *ClientManager) DelClient(client *Client) {
-	manager.delClientIdMap(client.ClientId)
+	manager.delClientIdMap(client.ClientID)
 
 	//删除所在的分组
 	if len(client.GroupList) > 0 {
 		for _, groupName := range client.GroupList {
-			manager.delGroupClient(utils.GenGroupKey(client.SystemId, groupName), client.ClientId)
+			manager.delGroupClient(utils.GenGroupKey(client.SystemID, groupName), client.ClientID)
 		}
 	}
 
@@ -189,7 +189,7 @@ func (manager *ClientManager) SendMessage2LocalSystem(systemId, messageId string
 // 添加到本地分组
 func (manager *ClientManager) AddClient2LocalGroup(groupName string, client *Client, userId string, extend string) {
 	//标记当前客户端的userId
-	client.UserId = userId
+	client.UserID = userId
 	client.Extend = extend
 
 	//判断之前是否有添加过
@@ -200,29 +200,29 @@ func (manager *ClientManager) AddClient2LocalGroup(groupName string, client *Cli
 	}
 
 	// 为属性添加分组信息
-	groupKey := utils.GenGroupKey(client.SystemId, groupName)
+	groupKey := utils.GenGroupKey(client.SystemID, groupName)
 
 	manager.addClient2Group(groupKey, client)
 
 	client.GroupList = append(client.GroupList, groupName)
 
 	mJson, _ := json.Marshal(map[string]string{
-		"clientId": client.ClientId,
-		"userId":   client.UserId,
+		"clientId": client.ClientID,
+		"userId":   client.UserID,
 		"extend":   client.Extend,
 	})
 	data := string(mJson)
 	sendUserId := ""
 
 	//发送系统通知
-	SendMessage2Group(client.SystemId, sendUserId, groupName, retcode.OnlineMessageCode, "客户端上线", &data)
+	SendMessage2Group(client.SystemID, sendUserId, groupName, retcode.OnlineMessageCode, "客户端上线", &data)
 }
 
 // 添加到本地分组
 func (manager *ClientManager) addClient2Group(groupKey string, client *Client) {
 	manager.GroupLock.Lock()
 	defer manager.GroupLock.Unlock()
-	manager.Groups[groupKey] = append(manager.Groups[groupKey], client.ClientId)
+	manager.Groups[groupKey] = append(manager.Groups[groupKey], client.ClientID)
 }
 
 // 删除分组里的客户端
@@ -248,7 +248,7 @@ func (manager *ClientManager) GetGroupClientList(groupKey string) []string {
 func (manager *ClientManager) AddClient2SystemClient(systemId string, client *Client) {
 	manager.SystemClientsLock.Lock()
 	defer manager.SystemClientsLock.Unlock()
-	manager.SystemClients[systemId] = append(manager.SystemClients[systemId], client.ClientId)
+	manager.SystemClients[systemId] = append(manager.SystemClients[systemId], client.ClientID)
 }
 
 // 删除系统里的客户端
@@ -256,9 +256,9 @@ func (manager *ClientManager) delSystemClient(client *Client) {
 	manager.SystemClientsLock.Lock()
 	defer manager.SystemClientsLock.Unlock()
 
-	for index, clientId := range manager.SystemClients[client.SystemId] {
-		if clientId == client.ClientId {
-			manager.SystemClients[client.SystemId] = append(manager.SystemClients[client.SystemId][:index], manager.SystemClients[client.SystemId][index+1:]...)
+	for index, clientId := range manager.SystemClients[client.SystemID] {
+		if clientId == client.ClientID {
+			manager.SystemClients[client.SystemID] = append(manager.SystemClients[client.SystemID][:index], manager.SystemClients[client.SystemID][index+1:]...)
 		}
 	}
 }

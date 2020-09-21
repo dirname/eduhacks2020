@@ -3,7 +3,7 @@ package send2group
 import (
 	"eduhacks2020/Go/api"
 	"eduhacks2020/Go/define/retcode"
-	"eduhacks2020/Go/servers"
+	"eduhacks2020/Go/protocol/websocket"
 	"encoding/json"
 	"net/http"
 )
@@ -32,8 +32,8 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	systemId := r.Header.Get("SystemId")
-	messageId := servers.SendMessage2Group(systemId, inputData.SendUserId, inputData.GroupName, inputData.Code, inputData.Msg, &inputData.Data)
+	systemId := r.Header.Get("SystemID")
+	messageId := websocket.SendMessage2Group(systemId, inputData.SendUserId, inputData.GroupName, inputData.Code, inputData.Msg, &inputData.Data)
 
 	api.Render(w, retcode.SUCCESS, "success", map[string]string{
 		"messageId": messageId,

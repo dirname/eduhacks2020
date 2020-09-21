@@ -2,9 +2,12 @@ package api
 
 import (
 	"eduhacks2020/Go/define/retcode"
+	"eduhacks2020/Go/protobuf"
+	"encoding/base64"
 	"encoding/json"
 	"github.com/go-playground/locales/zh"
 	ut "github.com/go-playground/universal-translator"
+	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/websocket"
 	"github.com/pkg/errors"
 	"gopkg.in/go-playground/validator.v9"
@@ -19,13 +22,34 @@ type RetData struct {
 	Data interface{} `json:"data"`
 }
 
+func xorData(data []byte, decrypt bool) []byte {
+	res := make([]byte, len(data))
+	for i, b := range data {
+		res[i] = b ^ 32
+	}
+	if !decrypt {
+		return []byte(base64.URLEncoding.EncodeToString(res))
+	}
+	return res
+}
+
 func ConnRender(conn *websocket.Conn, data interface{}) (err error) {
-	err = conn.WriteJSON(RetData{
+	js, _ := json.Marshal(RetData{
 		Code: retcode.SUCCESS,
 		Msg:  "success",
 		Data: data,
 	})
-
+	res := &protobuf.Response{
+		Code:   0,
+		Msg:    "OK",
+		Type:   1,
+		Data:   js,
+		Render: false,
+		Html:   nil,
+		Id:     "",
+	}
+	msg, _ := proto.Marshal(res)
+	err = conn.WriteMessage(2, xorData(msg, false))
 	return
 }
 
