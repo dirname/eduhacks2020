@@ -78,16 +78,16 @@ func TestCount(t *testing.T) {
 }
 
 func TestGetByClientId(t *testing.T) {
-	clientId := "clientId"
-	systemId := "publishSystem"
+	clientID := "clientID"
+	systemID := "publishSystem"
 	var manager = NewClientManager() // 管理者
 	conn := &websocket.Conn{}
-	clientSocket := NewClient(clientId, systemId, conn)
+	clientSocket := NewClient(clientID, systemID, conn)
 
 	Convey("测试通过clientId获取客户端", t, func() {
 		Convey("获取一个存在的clientId", func() {
 			manager.AddClient(clientSocket)
-			_, err := manager.GetByClientID(clientId)
+			_, err := manager.GetByClientID(clientID)
 			So(err, ShouldBeNil)
 		})
 
