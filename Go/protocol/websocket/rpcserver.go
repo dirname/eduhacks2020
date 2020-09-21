@@ -12,59 +12,59 @@ import (
 
 type CommonServiceServer struct{}
 
-func (this *CommonServiceServer) Send2Client(ctx context.Context, req *pb.Send2ClientReq) (*pb.Send2ClientReply, error) {
+func (s *CommonServiceServer) Send2Client(ctx context.Context, req *pb.Send2ClientReq) (*pb.Send2ClientReply, error) {
 	log.WithFields(log.Fields{
 		"host":     setting.GlobalSetting.LocalHost,
 		"port":     setting.CommonSetting.Port,
-		"clientId": req.ClientId,
+		"clientId": req.ClientID,
 	}).Info("接收到RPC指定客户端消息")
-	SendMessage2LocalClient(req.MessageId, req.ClientId, req.SendUserId, int(req.Code), req.Message, &req.Data)
+	SendMessage2LocalClient(req.MessageID, req.ClientID, req.SendUserID, int(req.Code), req.Message, &req.Data)
 	return &pb.Send2ClientReply{}, nil
 }
 
-func (this *CommonServiceServer) CloseClient(ctx context.Context, req *pb.CloseClientReq) (*pb.CloseClientReply, error) {
+func (s *CommonServiceServer) CloseClient(ctx context.Context, req *pb.CloseClientReq) (*pb.CloseClientReply, error) {
 	log.WithFields(log.Fields{
 		"host":     setting.GlobalSetting.LocalHost,
 		"port":     setting.CommonSetting.Port,
-		"clientId": req.ClientId,
+		"clientId": req.ClientID,
 	}).Info("接收到RPC关闭连接")
-	CloseLocalClient(req.ClientId, req.SystemId)
+	CloseLocalClient(req.ClientID, req.SystemID)
 	return &pb.CloseClientReply{}, nil
 }
 
 //添加分组到group
-func (this *CommonServiceServer) BindGroup(ctx context.Context, req *pb.BindGroupReq) (*pb.BindGroupReply, error) {
-	if client, err := Manager.GetByClientId(req.ClientId); err == nil {
+func (s *CommonServiceServer) BindGroup(ctx context.Context, req *pb.BindGroupReq) (*pb.BindGroupReply, error) {
+	if client, err := Manager.GetByClientId(req.ClientID); err == nil {
 		//添加到本地
-		Manager.AddClient2LocalGroup(req.GroupName, client, req.UserId, req.Extend)
+		Manager.AddClient2LocalGroup(req.GroupName, client, req.UserID, req.Extend)
 	} else {
 		log.Error("添加分组失败" + err.Error())
 	}
 	return &pb.BindGroupReply{}, nil
 }
 
-func (this *CommonServiceServer) Send2Group(ctx context.Context, req *pb.Send2GroupReq) (*pb.Send2GroupReply, error) {
+func (s *CommonServiceServer) Send2Group(ctx context.Context, req *pb.Send2GroupReq) (*pb.Send2GroupReply, error) {
 	log.WithFields(log.Fields{
 		"host": setting.GlobalSetting.LocalHost,
 		"port": setting.CommonSetting.Port,
 	}).Info("接收到RPC发送分组消息")
-	Manager.SendMessage2LocalGroup(req.SystemId, req.MessageId, req.SendUserId, req.GroupName, int(req.Code), req.Message, &req.Data)
+	Manager.SendMessage2LocalGroup(req.SystemID, req.MessageID, req.SendUserID, req.GroupName, int(req.Code), req.Message, &req.Data)
 	return &pb.Send2GroupReply{}, nil
 }
 
-func (this *CommonServiceServer) Send2System(ctx context.Context, req *pb.Send2SystemReq) (*pb.Send2SystemReply, error) {
+func (s *CommonServiceServer) Send2System(ctx context.Context, req *pb.Send2SystemReq) (*pb.Send2SystemReply, error) {
 	log.WithFields(log.Fields{
 		"host": setting.GlobalSetting.LocalHost,
 		"port": setting.CommonSetting.Port,
 	}).Info("接收到RPC发送系统消息")
-	Manager.SendMessage2LocalSystem(req.SystemId, req.MessageId, req.SendUserId, int(req.Code), req.Message, &req.Data)
+	Manager.SendMessage2LocalSystem(req.SystemID, req.MessageID, req.SendUserID, int(req.Code), req.Message, &req.Data)
 	return &pb.Send2SystemReply{}, nil
 }
 
 //获取分组在线用户列表
-func (this *CommonServiceServer) GetGroupClients(ctx context.Context, req *pb.GetGroupClientsReq) (*pb.GetGroupClientsReply, error) {
+func (s *CommonServiceServer) GetGroupClients(ctx context.Context, req *pb.GetGroupClientsReq) (*pb.GetGroupClientsReply, error) {
 	response := pb.GetGroupClientsReply{}
-	response.List = Manager.GetGroupClientList(utils.GenGroupKey(req.SystemId, req.GroupName))
+	response.List = Manager.GetGroupClientList(utils.GenGroupKey(req.SystemID, req.GroupName))
 	return &response, nil
 }
 
