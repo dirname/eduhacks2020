@@ -65,3 +65,37 @@ func TestSessionManager_EncryptedData(t *testing.T) {
 //	}
 //	session.SaveData("5f5321edbc36da097814b7da", cipherText)
 //}
+
+//func TestSessionManager_GetData(t *testing.T) {
+//	setting.DefaultSetting()
+//	type fields struct {
+//		Values map[interface{}]interface{}
+//	}
+//	type args struct {
+//		id string
+//	}
+//	tests := []struct {
+//		name    string
+//		fields  fields
+//		args    args
+//		want    interface{}
+//		wantErr bool
+//	}{
+//		{"test", fields{Values: make(map[interface{}]interface{})}, args{id: "5f6853c5f742920128fd123d"}, nil, false},
+//	}
+//	for _, tt := range tests {
+//		t.Run(tt.name, func(t *testing.T) {
+//			se := &SessionManager{
+//				Values: tt.fields.Values,
+//			}
+//			got, err := se.GetData(tt.args.id)
+//			if (err != nil) != tt.wantErr {
+//				t.Errorf("GetData() error = %v, wantErr %v", err, tt.wantErr)
+//				return
+//			}
+//			if !reflect.DeepEqual(got, tt.want) {
+//				t.Errorf("GetData() got = %v, want %v", got, tt.want)
+//			}
+//		})
+//	}
+//}

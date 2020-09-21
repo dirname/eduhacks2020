@@ -45,6 +45,12 @@ func Setup() {
 			"host": setting.GlobalSetting.LocalHost,
 		},
 	})
+	logrus.SetFormatter(&logrus.JSONFormatter{
+		TimestampFormat: "2006-01-02 15:04:05",
+		PrettyPrint:     false, //是否格式化json格式
+		FieldMap: logrus.FieldMap{
+			"host": setting.GlobalSetting.LocalHost,
+		}})
 	//logrus.SetReportCaller(true) //是否记录代码位置
 	logrus.AddHook(lfHook)
 }

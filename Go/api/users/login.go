@@ -3,6 +3,7 @@ package users
 import (
 	"eduhacks2020/Go/api"
 	"eduhacks2020/Go/crypto"
+	"eduhacks2020/Go/database"
 	"eduhacks2020/Go/models/psql"
 	"eduhacks2020/Go/models/response"
 	"eduhacks2020/Go/pkg/setting"
@@ -23,7 +24,6 @@ const (
 	passwordValid = "password is mismatch"
 	userBanned    = "account blocked"
 	unknownLogin  = "unknown login field"
-	adminGetError = "an error occurred while getting the configuration from redis"
 )
 
 // LoginParam 登录使用的参数
@@ -64,7 +64,7 @@ func (l *LoginParam) Exec(db *gorm.DB, redis *redis.Client, sessionID string, re
 	var err error
 	switch l.Type {
 	case -1:
-		data, errMsg, err = l.adminLogin(redis)
+		data, errMsg, err = l.adminLogin(redis, sessionID)
 	case 1:
 		data, errMsg, err = l.teacherLogin(db, redis, sessionID)
 	case 2:
@@ -81,8 +81,22 @@ func (l *LoginParam) Exec(db *gorm.DB, redis *redis.Client, sessionID string, re
 	r.Msg = errMsg
 }
 
+func saveToSession(username, name, token, sessionID string, role int) {
+	session := database.SessionManager{Values: make(map[interface{}]interface{})}
+	session.Values["login"] = true
+	session.Values["username"] = username
+	session.Values["nickname"] = name
+	session.Values["role"] = role
+	session.Values["token"] = token
+	cipherText, err := session.EncryptedData(database.SessionName)
+	if err != nil {
+		log.Errorf("Encrypted an error has occurred %s", err.Error())
+	}
+	session.SaveData(sessionID, cipherText)
+}
+
 // adminLogin 管理员的登录
-func (l *LoginParam) adminLogin(redis *redis.Client) ([]byte, string, error) {
+func (l *LoginParam) adminLogin(redis *redis.Client, sessionID string) ([]byte, string, error) {
 	Username := setting.AdminConf.Username
 	Password := setting.AdminConf.Password
 	//if err != nil {
@@ -110,6 +124,7 @@ func (l *LoginParam) adminLogin(redis *redis.Client) ([]byte, string, error) {
 	if err != nil {
 		return nil, err.Error(), err
 	}
+	saveToSession(claims.Username, claims.Name, token, sessionID, claims.Role)
 	res := LoginResponse{
 		Token: token,
 		Data:  managerInfo{Nickname: "Admin"},
@@ -168,6 +183,7 @@ func (l *LoginParam) teacherLogin(db *gorm.DB, redis *redis.Client, sessionID st
 	if err != nil {
 		return nil, err.Error(), err
 	}
+	saveToSession(claims.Username, claims.Name, token, sessionID, claims.Role)
 	teacherInfo := response.TeacherInfo{}
 	db.First(&teacherInfo, "username = ?", result.Username)
 	res := LoginResponse{
@@ -225,6 +241,7 @@ func (l *LoginParam) studentLogin(db *gorm.DB, redis *redis.Client, sessionID st
 	if err != nil {
 		return nil, err.Error(), err
 	}
+	saveToSession(claims.Username, claims.Name, token, sessionID, claims.Role)
 	studentInfo := response.StudentInfo{}
 	db.Model(&psql.Student{}).Select("student.users.*,college.classes.class_name,college.classes.deleted_at,college.classes.class_id,college.majors.deleted_at,college.majors.major_name,college.majors.major_id,college.colleges.deleted_at,college.colleges.college_name,college.colleges.college_id").
 		Joins("left join college.classes on student.users.class_id = college.classes.id left join college.majors on college.classes.major_id = college.majors.id LEFT JOIN college.colleges on college.majors.college_id = college.colleges.id").

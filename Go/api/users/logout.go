@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 	"eduhacks2020/Go/api"
+	"eduhacks2020/Go/database"
 	"eduhacks2020/Go/protobuf"
 	"eduhacks2020/Go/render"
 	"eduhacks2020/Go/utils"
@@ -18,7 +19,7 @@ type LogoutParam struct {
 }
 
 // Exec 执行删除
-func (l *LogoutParam) Exec(redis *redis.Client, request *protobuf.Request, response *protobuf.Response) {
+func (l *LogoutParam) Exec(redis *redis.Client, request *protobuf.Request, response *protobuf.Response, id string) {
 	response.Id = request.Id
 	if err := json.Unmarshal(request.Data, l); err != nil {
 		response.Msg = err.Error()
@@ -48,6 +49,8 @@ func (l *LogoutParam) Exec(redis *redis.Client, request *protobuf.Request, respo
 	if err == nil {
 		response.Code = http.StatusOK
 		response.Html.Code = render.GetLayer(0, render.Smile, "Logout", errMsg)
+		session := database.SessionManager{Values: make(map[interface{}]interface{})}
+		session.DeleteData(id)
 	}
 	response.Data = nil
 	response.Msg = errMsg

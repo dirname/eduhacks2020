@@ -30,7 +30,7 @@ func CreateMongoStore() (*mongostore.MongoStore, *mgo.Session) {
 	if err != nil {
 		log.Errorf(err.Error())
 	}
-	return mongostore.NewMongoStore(session.DB(setting.SettingDatabase.MongoDB).C(sessionDB), 86400, true,
+	return mongostore.NewMongoStore(session.DB(setting.Database.MongoDB).C(sessionDB), 86400, true,
 		[]byte(sessionKey)), session
 }
 
@@ -42,7 +42,7 @@ func (*SessionManager) GetData(id string) (interface{}, error) {
 		log.Error(err)
 	}
 	objectID := bson.ObjectIdHex(id)
-	c := session.DB(setting.SettingDatabase.MongoDB).C(sessionDB)
+	c := session.DB(setting.Database.MongoDB).C(sessionDB)
 	var one map[string]interface{}
 	err = c.FindId(objectID).One(&one)
 	return one["data"], err
@@ -69,7 +69,7 @@ func (s *SessionManager) SaveData(id string, data string) error {
 		log.Error(err)
 	}
 	objectID := bson.ObjectIdHex(id)
-	c := session.DB(setting.SettingDatabase.MongoDB).C(sessionDB)
+	c := session.DB(setting.Database.MongoDB).C(sessionDB)
 	err = c.UpdateId(objectID, bson.M{"data": data, "modified": time.Now()})
 	return err
 }
@@ -82,7 +82,7 @@ func (s *SessionManager) DeleteData(id string) error {
 		log.Error(err)
 	}
 	objectID := bson.ObjectIdHex(id)
-	c := session.DB(setting.SettingDatabase.MongoDB).C(sessionDB)
+	c := session.DB(setting.Database.MongoDB).C(sessionDB)
 	err = c.RemoveId(objectID)
 	return err
 }

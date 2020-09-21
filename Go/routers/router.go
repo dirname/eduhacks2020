@@ -25,6 +25,10 @@ func Init(engine *gin.Engine) *databaseManager {
 		Redis: &redis,
 	}
 
+	engine.GET("/get/client", func(context *gin.Context) {
+		context.JSON(200, websocket.Manager.AllClient())
+	})
+
 	websocket.StartWebSocket(engine, &orm, &redis)
 	go websocket.WriteMessage()
 	return &dm

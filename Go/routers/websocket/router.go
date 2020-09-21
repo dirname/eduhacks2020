@@ -97,6 +97,6 @@ func Handler(p *ProtoParam) {
 		edit.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APILogout:
 		logout := users.LogoutParam{}
-		logout.Exec(p.Redis, p.Request, p.Response)
+		logout.Exec(p.Redis, p.Request, p.Response, p.SessionID)
 	}
 }

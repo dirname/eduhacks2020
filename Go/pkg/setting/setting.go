@@ -23,7 +23,7 @@ type databaseConf struct {
 }
 
 // SettingDatabase 数据库的配置
-var SettingDatabase = &databaseConf{}
+var Database = &databaseConf{}
 
 type adminConf struct {
 	Username string
@@ -77,13 +77,13 @@ func ReadConfigure() {
 
 	mapTo("common", CommonSetting)
 	mapTo("etcd", EtcdSetting)
-	mapTo("database", SettingDatabase)
+	mapTo("database", Database)
 	mapTo("admin", AdminConf)
 
-	DialInfo.Addrs = []string{SettingDatabase.MongoHost}
-	DialInfo.Source = SettingDatabase.MongoDB
-	DialInfo.Username = SettingDatabase.MongoUser
-	DialInfo.Password = SettingDatabase.MongoPwd
+	DialInfo.Addrs = []string{Database.MongoHost}
+	DialInfo.Source = Database.MongoDB
+	DialInfo.Username = Database.MongoUser
+	DialInfo.Password = Database.MongoPwd
 
 	GlobalSetting = &global{
 		LocalHost:  getIntranetIP(),
@@ -100,7 +100,7 @@ func DefaultSetting() {
 		CryptoKey: "785744acc225bf22",
 	}
 
-	SettingDatabase = &databaseConf{
+	Database = &databaseConf{
 		PgsqlHost: "go.htdocs.net",
 		PgsqlUser: "educator",
 		PgsqlPwd:  "EduHacks2020.*",
@@ -112,6 +112,11 @@ func DefaultSetting() {
 		RedisHost: "go.htdocs.net:6379",
 		RedisPwd:  "EduHacks2020.*",
 	}
+
+	DialInfo.Addrs = []string{Database.MongoHost}
+	DialInfo.Source = Database.MongoDB
+	DialInfo.Username = Database.MongoUser
+	DialInfo.Password = Database.MongoPwd
 
 	AdminConf = &adminConf{
 		Username: "dirname",
