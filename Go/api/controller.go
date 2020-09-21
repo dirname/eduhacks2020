@@ -16,7 +16,7 @@ import (
 	"net/http"
 )
 
-// RetData
+// RetData 响应数据
 type RetData struct {
 	Code int         `json:"code"`
 	Msg  string      `json:"msg"`
@@ -34,7 +34,7 @@ func xorData(data []byte, decrypt bool) []byte {
 	return res
 }
 
-// ConnRender
+// ConnRender 连接事件渲染
 func ConnRender(conn *websocket.Conn, data interface{}) (err error) {
 	js, _ := json.Marshal(RetData{
 		Code: retcode.SUCCESS,
@@ -54,7 +54,8 @@ func ConnRender(conn *websocket.Conn, data interface{}) (err error) {
 	err = conn.WriteMessage(2, xorData(msg, false))
 	return
 }
-// Render
+
+// Render 渲染器
 func Render(w http.ResponseWriter, code int, msg string, data interface{}) (str string) {
 	var retData RetData
 
@@ -69,7 +70,8 @@ func Render(w http.ResponseWriter, code int, msg string, data interface{}) (str 
 	_, _ = io.WriteString(w, str)
 	return
 }
-// Validate
+
+// Validate 验证器
 func Validate(inputData interface{}) error {
 
 	validate := validator.New()

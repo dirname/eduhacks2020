@@ -6,13 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type databaseManager struct {
+type DatabaseManager struct {
 	ORM   *database.ORM
 	Redis *database.RedisClient
 }
 
 // Init 初始化的路由
-func Init(engine *gin.Engine) *databaseManager {
+func (d *DatabaseManager) Init(engine *gin.Engine) {
 
 	orm := database.ORM{}
 	orm.Init()
@@ -20,10 +20,8 @@ func Init(engine *gin.Engine) *databaseManager {
 	redis := database.RedisClient{}
 	redis.Init()
 
-	dm := databaseManager{
-		ORM:   &orm,
-		Redis: &redis,
-	}
+	d.ORM = &orm
+	d.Redis = &redis
 
 	engine.GET("/get/client", func(context *gin.Context) {
 		context.JSON(200, websocket.Manager.AllClient())
@@ -31,11 +29,10 @@ func Init(engine *gin.Engine) *databaseManager {
 
 	websocket.StartWebSocket(engine, &orm, &redis)
 	go websocket.WriteMessage()
-	return &dm
 }
 
 // Close
-func (d *databaseManager) Close() {
+func (d *DatabaseManager) Close() {
 	d.ORM.Close()
 	d.Redis.Close()
 }

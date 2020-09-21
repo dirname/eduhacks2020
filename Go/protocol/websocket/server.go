@@ -23,7 +23,7 @@ type clientInfo struct {
 	Data       *string
 }
 
-// RetData
+// RetData 响应数据
 type RetData struct {
 	MessageID  string      `json:"messageId"`
 	SendUserID string      `json:"sendUserId"`
@@ -39,10 +39,10 @@ func init() {
 	ToClientChan = make(chan clientInfo, 1000)
 }
 
-// Manager
+// Manager 管理
 var Manager = NewClientManager() // 管理者
 
-// StartWebSocket
+// StartWebSocket 启动 ws
 func StartWebSocket(engine *gin.Engine, o *database.ORM, r *database.RedisClient) {
 	websocketHandler := &Controller{}
 	engine.GET("/ws", func(c *gin.Context) {
@@ -54,7 +54,7 @@ func StartWebSocket(engine *gin.Engine, o *database.ORM, r *database.RedisClient
 }
 
 // SendMessage2Client 发送信息到指定客户端
-func SendMessage2Client(clientID string, sendUserId string, code int, msg string, data *string) (messageId string) {
+func SendMessage2Client(clientID string, sendUserID string, code int, msg string, data *string) (messageId string) {
 	messageId = utils.GenUUID()
 	if utils.IsCluster() {
 		addr, _, _, isLocal, err := utils.GetAddrInfoAndIsLocal(clientID)
@@ -65,21 +65,21 @@ func SendMessage2Client(clientID string, sendUserId string, code int, msg string
 
 		//如果是本机则发送到本机
 		if isLocal {
-			SendMessage2LocalClient(messageId, clientID, sendUserId, code, msg, data)
+			SendMessage2LocalClient(messageId, clientID, sendUserID, code, msg, data)
 		} else {
 			//发送到指定机器
-			SendRPC2Client(addr, messageId, sendUserId, clientID, code, msg, data)
+			SendRPC2Client(addr, messageId, sendUserID, clientID, code, msg, data)
 		}
 	} else {
 		//如果是单机服务，则只发送到本机
-		SendMessage2LocalClient(messageId, clientID, sendUserId, code, msg, data)
+		SendMessage2LocalClient(messageId, clientID, sendUserID, code, msg, data)
 	}
 
 	return
 }
 
 // CloseClient 关闭客户端
-func CloseClient(clientID, systemId string) {
+func CloseClient(clientID, systemID string) {
 	if utils.IsCluster() {
 		addr, _, _, isLocal, err := utils.GetAddrInfoAndIsLocal(clientID)
 		if err != nil {
@@ -89,71 +89,71 @@ func CloseClient(clientID, systemId string) {
 
 		//如果是本机则发送到本机
 		if isLocal {
-			CloseLocalClient(clientID, systemId)
+			CloseLocalClient(clientID, systemID)
 		} else {
 			//发送到指定机器
-			CloseRPCClient(addr, clientID, systemId)
+			CloseRPCClient(addr, clientID, systemID)
 		}
 	} else {
 		//如果是单机服务，则只发送到本机
-		CloseLocalClient(clientID, systemId)
+		CloseLocalClient(clientID, systemID)
 	}
 
 	return
 }
 
 // AddClient2Group 添加客户端到分组
-func AddClient2Group(systemID string, groupName string, clientId string, userId string, extend string) {
+func AddClient2Group(systemID string, groupName string, clientID string, userID string, extend string) {
 	//如果是集群则用redis共享数据
 	if utils.IsCluster() {
 		//判断key是否存在
-		addr, _, _, isLocal, err := utils.GetAddrInfoAndIsLocal(clientId)
+		addr, _, _, isLocal, err := utils.GetAddrInfoAndIsLocal(clientID)
 		if err != nil {
 			log.Errorf("%s", err)
 			return
 		}
 
 		if isLocal {
-			if client, err := Manager.GetByClientID(clientId); err == nil {
+			if client, err := Manager.GetByClientID(clientID); err == nil {
 				//添加到本地
-				Manager.AddClient2LocalGroup(groupName, client, userId, extend)
+				Manager.AddClient2LocalGroup(groupName, client, userID, extend)
 			} else {
 				log.Error(err)
 			}
 		} else {
 			//发送到指定的机器
-			SendRPCBindGroup(addr, systemID, groupName, clientId, userId, extend)
+			SendRPCBindGroup(addr, systemID, groupName, clientID, userID, extend)
 		}
 	} else {
-		if client, err := Manager.GetByClientID(clientId); err == nil {
+		if client, err := Manager.GetByClientID(clientID); err == nil {
 			//如果是单机，就直接添加到本地group了
-			Manager.AddClient2LocalGroup(groupName, client, userId, extend)
+			Manager.AddClient2LocalGroup(groupName, client, userID, extend)
 		}
 	}
 }
 
 // SendMessage2Group 发送信息到指定分组
-func SendMessage2Group(systemID, sendUserId, groupName string, code int, msg string, data *string) (messageID string) {
+func SendMessage2Group(systemID, sendUserID, groupName string, code int, msg string, data *string) (messageID string) {
 	messageID = utils.GenUUID()
 	if utils.IsCluster() {
 		//发送分组消息给指定广播
-		go SendGroupBroadcast(systemID, messageID, sendUserId, groupName, code, msg, data)
+		go SendGroupBroadcast(systemID, messageID, sendUserID, groupName, code, msg, data)
 	} else {
 		//如果是单机服务，则只发送到本机
-		Manager.SendMessage2LocalGroup(systemID, messageID, sendUserId, groupName, code, msg, data)
+		Manager.SendMessage2LocalGroup(systemID, messageID, sendUserID, groupName, code, msg, data)
 	}
 	return
 }
 
 // SendMessage2System 发送信息到指定系统
-func SendMessage2System(systemID, sendUserId string, code int, msg string, data string) {
+func SendMessage2System(systemID, sendUserID string, code int, msg string, data string) {
 	messageID := utils.GenUUID()
 	if utils.IsCluster() {
 		//发送到系统广播
-		SendSystemBroadcast(systemID, messageID, sendUserId, code, msg, &data)
+		SendSystemBroadcast(systemID, messageID, sendUserID, code, msg, &data)
 	} else {
 		//如果是单机服务，则只发送到本机
-		Manager.SendMessage2LocalSystem(systemID, messageID, sendUserId, code, msg, &data)
+		Manager.SendMessage2LocalSystem(systemID, messageID, sendUserID, code, msg, &data)
 	}
 }
 
@@ -176,20 +176,20 @@ func GetOnlineList(systemID *string, groupName *string) map[string]interface{} {
 }
 
 // SendMessage2LocalClient 通过本服务器发送信息
-func SendMessage2LocalClient(messageID, clientId string, sendUserId string, code int, msg string, data *string) {
+func SendMessage2LocalClient(messageID, clientID string, sendUserID string, code int, msg string, data *string) {
 	log.WithFields(log.Fields{
 		"host":     setting.GlobalSetting.LocalHost,
 		"port":     setting.CommonSetting.Port,
-		"clientId": clientId,
+		"clientID": clientID,
 	}).Info("发送到通道")
-	ToClientChan <- clientInfo{ClientID: clientId, MessageID: messageID, SendUserID: sendUserId, Code: code, Msg: msg, Data: data}
+	ToClientChan <- clientInfo{ClientID: clientID, MessageID: messageID, SendUserID: sendUserID, Code: code, Msg: msg, Data: data}
 	return
 }
 
 // CloseLocalClient 发送关闭信号
-func CloseLocalClient(clientID, systemId string) {
+func CloseLocalClient(clientID, systemID string) {
 	if conn, err := Manager.GetByClientID(clientID); err == nil && conn != nil {
-		if conn.SystemID != systemId {
+		if conn.SystemID != systemID {
 			return
 		}
 		Manager.DisConnect <- conn
@@ -231,11 +231,11 @@ func WriteMessage() {
 }
 
 // Render 渲染
-func Render(conn *websocket.Conn, messageID string, sendUserId string, code int, message string, data interface{}) error {
+func Render(conn *websocket.Conn, messageID string, sendUserID string, code int, message string, data interface{}) error {
 	return conn.WriteJSON(RetData{
 		Code:       code,
 		MessageID:  messageID,
-		SendUserID: sendUserId,
+		SendUserID: sendUserID,
 		Msg:        message,
 		Data:       data,
 	})

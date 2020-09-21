@@ -15,10 +15,10 @@ type accountInfo struct {
 	RegisterTime int64  `json:"registerTime"`
 }
 
-// SystemMap
+// SystemMap 系统 Map
 var SystemMap sync.Map
 
-// Register
+// Register 注册
 func Register(systemID string) (err error) {
 	//校验是否为空
 	if len(systemID) == 0 {

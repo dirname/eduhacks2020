@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-// Controller
+// Controller 控制器
 type Controller struct {
 }
 
@@ -19,7 +19,7 @@ type inputData struct {
 	Data      interface{} `json:"data"`
 }
 
-// Run
+// Run 运行实例
 func (c *Controller) Run(w http.ResponseWriter, r *http.Request) {
 	var inputData inputData
 	if err := json.NewDecoder(r.Body).Decode(&inputData); err != nil {

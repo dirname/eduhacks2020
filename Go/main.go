@@ -69,7 +69,8 @@ func main() {
 	// 注册 etcd
 	registerServer()
 	// 初始化路由
-	dm := routers.Init(router)
+	dm := routers.DatabaseManager{}
+	dm.Init(router)
 	defer dm.Close()
 	// 定时发送心跳包
 	websocket.PingTimer()

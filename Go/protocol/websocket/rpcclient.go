@@ -17,8 +17,8 @@ func grpcConn(addr string) *grpc.ClientConn {
 	return conn
 }
 
-// SendRPC2Client
-func SendRPC2Client(addr string, messageID, sendUserID, clientId string, code int, message string, data *string) {
+// SendRPC2Client 发送到 RPC 客户端
+func SendRPC2Client(addr string, messageID, sendUserID, clientID string, code int, message string, data *string) {
 	conn := grpcConn(addr)
 	defer conn.Close()
 
@@ -26,7 +26,7 @@ func SendRPC2Client(addr string, messageID, sendUserID, clientId string, code in
 		"host":     setting.GlobalSetting.LocalHost,
 		"port":     setting.CommonSetting.Port,
 		"add":      addr,
-		"clientId": clientId,
+		"clientID": clientID,
 		"msg":      data,
 	}).Info("发送到服务器")
 
@@ -34,7 +34,7 @@ func SendRPC2Client(addr string, messageID, sendUserID, clientId string, code in
 	_, err := c.Send2Client(context.Background(), &pb.Send2ClientReq{
 		MessageID:  messageID,
 		SendUserID: sendUserID,
-		ClientID:   clientId,
+		ClientID:   clientID,
 		Code:       int32(code),
 		Message:    message,
 		Data:       *data,
@@ -44,8 +44,8 @@ func SendRPC2Client(addr string, messageID, sendUserID, clientId string, code in
 	}
 }
 
-// CloseRPCClient
-func CloseRPCClient(addr string, clientId, systemID string) {
+// CloseRPCClient 关闭 RPC 客户端
+func CloseRPCClient(addr string, clientID, systemID string) {
 	conn := grpcConn(addr)
 	defer conn.Close()
 
@@ -53,13 +53,13 @@ func CloseRPCClient(addr string, clientId, systemID string) {
 		"host":     setting.GlobalSetting.LocalHost,
 		"port":     setting.CommonSetting.Port,
 		"add":      addr,
-		"clientId": clientId,
+		"clientID": clientID,
 	}).Info("发送关闭连接到服务器")
 
 	c := pb.NewCommonServiceClient(conn)
 	_, err := c.CloseClient(context.Background(), &pb.CloseClientReq{
 		SystemID: systemID,
-		ClientID: clientId,
+		ClientID: clientID,
 	})
 	if err != nil {
 		log.Errorf("failed to call: %v", err)
@@ -67,7 +67,7 @@ func CloseRPCClient(addr string, clientId, systemID string) {
 }
 
 // SendRPCBindGroup 绑定分组
-func SendRPCBindGroup(addr string, systemID string, groupName string, clientId string, userId string, extend string) {
+func SendRPCBindGroup(addr string, systemID string, groupName string, clientID string, userId string, extend string) {
 	conn := grpcConn(addr)
 	defer conn.Close()
 
@@ -75,7 +75,7 @@ func SendRPCBindGroup(addr string, systemID string, groupName string, clientId s
 	_, err := c.BindGroup(context.Background(), &pb.BindGroupReq{
 		SystemID:  systemID,
 		GroupName: groupName,
-		ClientID:  clientId,
+		ClientID:  clientID,
 		UserID:    userId,
 		Extend:    extend,
 	})
@@ -108,7 +108,7 @@ func SendGroupBroadcast(systemID string, messageID, sendUserID, groupName string
 	}
 }
 
-//发送系统信息
+// SendSystemBroadcast 发送系统信息
 func SendSystemBroadcast(systemID string, messageID, sendUserID string, code int, message string, data *string) {
 	setting.GlobalSetting.ServerListLock.Lock()
 	defer setting.GlobalSetting.ServerListLock.Unlock()
@@ -131,8 +131,8 @@ func SendSystemBroadcast(systemID string, messageID, sendUserID string, code int
 	}
 }
 
-// GetOnlineListBroadcast
-func GetOnlineListBroadcast(systemID *string, groupName *string) (clientIdList []string) {
+// GetOnlineListBroadcast 获取在线列表广播
+func GetOnlineListBroadcast(systemID *string, groupName *string) (clientIDList []string) {
 	setting.GlobalSetting.ServerListLock.Lock()
 	defer setting.GlobalSetting.ServerListLock.Unlock()
 
@@ -166,7 +166,7 @@ func GetOnlineListBroadcast(systemID *string, groupName *string) (clientIdList [
 	for i := 1; i <= serverCount; i++ {
 		list, ok := <-onlineListChan
 		if ok {
-			clientIdList = append(clientIdList, list...)
+			clientIDList = append(clientIDList, list...)
 		} else {
 			return
 		}

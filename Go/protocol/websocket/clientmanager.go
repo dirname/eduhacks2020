@@ -26,7 +26,7 @@ type ClientManager struct {
 	SystemClients     map[string][]string
 }
 
-// NewClientManager
+// NewClientManager 新的实例
 func NewClientManager() (clientManager *ClientManager) {
 	clientManager = &ClientManager{
 		ClientIDMap:   make(map[string]*Client),
@@ -77,12 +77,12 @@ func (manager *ClientManager) EventDisconnect(client *Client) {
 		"extend":   client.Extend,
 	})
 	data := string(mJSON)
-	sendUserId := ""
+	sendUserID := ""
 
 	//发送下线通知
 	if len(client.GroupList) > 0 {
 		for _, groupName := range client.GroupList {
-			SendMessage2Group(client.SystemID, sendUserId, groupName, retcode.OfflineMessageCode, "客户端下线", &data)
+			SendMessage2Group(client.SystemID, sendUserID, groupName, retcode.OfflineMessageCode, "客户端下线", &data)
 		}
 	}
 
@@ -138,19 +138,19 @@ func (manager *ClientManager) DelClient(client *Client) {
 }
 
 // 删除clientIdMap
-func (manager *ClientManager) delClientIDMap(clientId string) {
+func (manager *ClientManager) delClientIDMap(clientID string) {
 	manager.ClientIDMapLock.Lock()
 	defer manager.ClientIDMapLock.Unlock()
 
-	delete(manager.ClientIDMap, clientId)
+	delete(manager.ClientIDMap, clientID)
 }
 
 // GetByClientID 通过clientId获取
-func (manager *ClientManager) GetByClientID(clientId string) (*Client, error) {
+func (manager *ClientManager) GetByClientID(clientID string) (*Client, error) {
 	manager.ClientIDMapLock.RLock()
 	defer manager.ClientIDMapLock.RUnlock()
 
-	client, ok := manager.ClientIDMap[clientId]
+	client, ok := manager.ClientIDMap[clientID]
 	if !ok {
 		return nil, errors.New("客户端不存在")
 	}
@@ -158,14 +158,14 @@ func (manager *ClientManager) GetByClientID(clientId string) (*Client, error) {
 }
 
 // SendMessage2LocalGroup 发送到本机分组
-func (manager *ClientManager) SendMessage2LocalGroup(systemID, messageId, sendUserId, groupName string, code int, msg string, data *string) {
+func (manager *ClientManager) SendMessage2LocalGroup(systemID, messageID, sendUserID, groupName string, code int, msg string, data *string) {
 	if len(groupName) > 0 {
 		clientIds := manager.GetGroupClientList(utils.GenGroupKey(systemID, groupName))
 		if len(clientIds) > 0 {
 			for _, clientID := range clientIds {
 				if _, err := Manager.GetByClientID(clientID); err == nil {
 					//添加到本地
-					SendMessage2LocalClient(messageId, clientID, sendUserId, code, msg, data)
+					SendMessage2LocalClient(messageID, clientID, sendUserID, code, msg, data)
 				} else {
 					//删除分组
 					manager.delGroupClient(utils.GenGroupKey(systemID, groupName), clientID)
@@ -176,12 +176,12 @@ func (manager *ClientManager) SendMessage2LocalGroup(systemID, messageId, sendUs
 }
 
 // SendMessage2LocalSystem 发送给指定业务系统
-func (manager *ClientManager) SendMessage2LocalSystem(systemID, messageId string, sendUserId string, code int, msg string, data *string) {
+func (manager *ClientManager) SendMessage2LocalSystem(systemID, messageID string, sendUserId string, code int, msg string, data *string) {
 	if len(systemID) > 0 {
 		clientIds := Manager.GetSystemClientList(systemID)
 		if len(clientIds) > 0 {
-			for _, clientId := range clientIds {
-				SendMessage2LocalClient(messageId, clientId, sendUserId, code, msg, data)
+			for _, clientID := range clientIds {
+				SendMessage2LocalClient(messageID, clientID, sendUserId, code, msg, data)
 			}
 		}
 	}
@@ -207,12 +207,12 @@ func (manager *ClientManager) AddClient2LocalGroup(groupName string, client *Cli
 
 	client.GroupList = append(client.GroupList, groupName)
 
-	mJson, _ := json.Marshal(map[string]string{
+	mJSON, _ := json.Marshal(map[string]string{
 		"clientId": client.ClientID,
 		"userID":   client.UserID,
 		"extend":   client.Extend,
 	})
-	data := string(mJson)
+	data := string(mJSON)
 	sendUserId := ""
 
 	//发送系统通知
