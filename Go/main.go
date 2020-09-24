@@ -13,6 +13,8 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/gorilla/websocket"
 	"net"
+	"os"
+	"os/signal"
 )
 
 func init() {
@@ -60,7 +62,7 @@ func main() {
 	gin.SetMode(gin.DebugMode) // 生产模式中改写成 release
 
 	router := gin.Default()
-
+	router.Use(middleware.CORS()) // 跨域
 	router.Use(middleware.Logger())
 	router.Use(middleware.CSRF())
 	router.Use(middleware.Auth()) // 授权的中间件
@@ -71,53 +73,16 @@ func main() {
 	// 初始化路由
 	dm := routers.DatabaseManager{}
 	dm.Init(router)
-	defer dm.Close()
+	// 捕获关闭的信号
+	c := make(chan os.Signal)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		<-c
+		dm.Close()
+		os.Exit(1)
+	}()
 	// 定时发送心跳包
 	websocket.PingTimer()
-	//database.DefaultSetting()
-	// 数据库的一些初始化, 全局引用
 
-	//if err := redis.Instance.Set(context.Background(), "AdminUser", setting.AdminConf.Username, 0).Err(); err != nil {
-	//	log.Errorf("Set Admin User Failed: %s", err.Error())
-	//}
-	//
-	//if err := redis.Instance.Set(context.Background(), "AdminPassword", setting.AdminConf.Password, 0).Err(); err != nil {
-	//	log.Errorf("Set Admin Password Failed: %s", err.Error())
-	//}
-
-	//defer redis.Close()
-
-	//router.POST("/sessions", func(c *gin.Context) {
-	//	// 创建一个 sessions 存储容器
-	//	store, dbSession := database.CreateMongoStore()
-	//	defer dbSession.Close()
-	//	session, err := store.Get(c.Request, database.SessionName)
-	//	if err != nil {
-	//		log.Error(err.Error())
-	//	}
-	//	c.JSON(200, gin.H{"count": session.Values["pv"], "id": session.ID})
-	//})
-	//router.GET("/login", func(context *gin.Context) {
-	//	store, dbSession := database.CreateMongoStore()
-	//	defer dbSession.Close()
-	//	session, err := store.Get(context.Request, database.SessionName)
-	//	if err != nil {
-	//		log.Error(err.Error())
-	//	}
-	//	session.Values["login"] = true
-	//	session.Save(context.Request, context.Writer)
-	//	context.JSON(200, gin.H{"msg": "ok", "id": session.ID})
-	//})
-	//router.GET("/logout", func(context *gin.Context) {
-	//	store, dbSession := database.CreateMongoStore()
-	//	defer dbSession.Close()
-	//	session, err := store.Get(context.Request, database.SessionName)
-	//	if err != nil {
-	//		log.Error(err.Error())
-	//	}
-	//	session.Values["login"] = true
-	//	session.Save(context.Request, context.Writer)
-	//	context.JSON(200, gin.H{"msg": "ok", "id": session.ID})
-	//})
-	router.Run(":555")
+	router.Run(":" + setting.CommonSetting.Port)
 }

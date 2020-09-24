@@ -17,16 +17,17 @@ import (
 
 // Client websocket 的客户端结构
 type Client struct {
-	ClientID    string          // 标识ID
-	SystemID    string          // 系统ID
-	Socket      *websocket.Conn // 用户连接
-	ConnectTime uint64          // 首次连接时间
-	IsDeleted   bool            // 是否删除或下线
-	UserID      string          // 业务端标识用户ID
-	UserName    string          // 业务端标识用户账号
-	NickName    string          // 业务端标识用户昵称
-	UserRole    int             // 业务端标识用户角色
-	Extend      string          // 扩展字段，用户可以自定义
+	ClientID    string                      // 标识ID
+	SystemID    string                      // 系统ID
+	Socket      *websocket.Conn             // 用户连接
+	ConnectTime uint64                      // 首次连接时间
+	IsDeleted   bool                        // 是否删除或下线
+	UserID      string                      // 业务端标识用户ID
+	UserName    string                      // 业务端标识用户账号
+	NickName    string                      // 业务端标识用户昵称
+	UserRole    int                         // 业务端标识用户角色
+	Extend      string                      // 扩展字段，用户可以自定义
+	Manager     *database.MongoClientDevice // 用来管里客户端连接信息的
 	GroupList   []string
 }
 
@@ -38,18 +39,19 @@ type SendData struct {
 }
 
 // NewClient 创建一个新的 websocket 客户端
-func NewClient(clientID string, systemID string, socket *websocket.Conn) *Client {
+func NewClient(clientID string, systemID string, socket *websocket.Conn, manager *database.MongoClientDevice) *Client {
 	return &Client{
 		ClientID:    clientID,
 		SystemID:    systemID,
 		Socket:      socket,
 		ConnectTime: uint64(time.Now().Unix()),
 		IsDeleted:   false,
+		Manager:     manager,
 	}
 }
 
 // Read 客户端读取消息
-func (c *Client) Read(d *database.ORM, r2 *database.RedisClient, id string) {
+func (c *Client) Read(d *database.ORM, r2 *database.RedisClient, id string, m *database.MongoClientDevice, collectionName string) {
 	go func() {
 		for {
 			messageType, msg, err := c.Socket.ReadMessage()
@@ -61,7 +63,7 @@ func (c *Client) Read(d *database.ORM, r2 *database.RedisClient, id string) {
 					return
 				}
 			} else {
-				c.Router(msg, d, r2, id)
+				c.Router(msg, d, r2, id, m, collectionName)
 				if c.NickName == "" || c.UserName == "" || c.UserRole == 0 {
 					c.setInfo(id)
 				}
@@ -96,6 +98,9 @@ func (c *Client) setInfo(sessionID string) {
 	session := database.SessionManager{Values: make(map[interface{}]interface{})}
 	data, err := session.GetData(sessionID)
 	if err != nil {
+		log.WithFields(log.Fields{
+			"reason": err.Error(),
+		}).Error("failed to get data from session")
 		return
 	}
 	session.DecryptedData(data.(string), database.SessionName)
@@ -112,10 +117,11 @@ func (c *Client) setInfo(sessionID string) {
 	c.UserName = claims.Username
 	c.NickName = claims.Name
 	c.UserRole = claims.Role
+	c.Manager.SetUser(c.ClientID, c.UserName, c.NickName, c.UserRole)
 }
 
 // Router 客户端处理路由
-func (c *Client) Router(msg []byte, d *database.ORM, r *database.RedisClient, id string) {
+func (c *Client) Router(msg []byte, d *database.ORM, r *database.RedisClient, id string, m *database.MongoClientDevice, name string) {
 	msg = xorData(msg, true)
 	var req protobuf.Request
 	err := proto.Unmarshal(msg, &req)
@@ -141,11 +147,13 @@ func (c *Client) Router(msg []byte, d *database.ORM, r *database.RedisClient, id
 	}
 	router := websocket2.Router{}
 	param := &websocket2.ProtoParam{
-		Request:   &req,
-		Response:  res,
-		SessionID: id,
-		Redis:     r.Instance,
-		DB:        d.DB,
+		Request:        &req,
+		Response:       res,
+		SessionID:      id,
+		Redis:          r.Instance,
+		DB:             d.DB,
+		Mongo:          m.Session,
+		CollectionName: name,
 	}
 	router.Find(param, websocket2.Handler)
 	data, _ := proto.Marshal(res)

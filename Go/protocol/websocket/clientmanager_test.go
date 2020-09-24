@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"eduhacks2020/Go/database"
 	"eduhacks2020/Go/pkg/setting"
 	"eduhacks2020/Go/utils"
 	"github.com/gorilla/websocket"
@@ -12,8 +13,9 @@ func TestAddClient(t *testing.T) {
 	clientID := "clientID"
 	systemID := "publishSystem"
 	var manager = NewClientManager() // 管理者
+	m := &database.MongoClientDevice{}
 	conn := &websocket.Conn{}
-	clientSocket := NewClient(clientID, systemID, conn)
+	clientSocket := NewClient(clientID, systemID, conn, m)
 
 	manager.AddClient(clientSocket)
 
@@ -34,7 +36,8 @@ func TestDelClient(t *testing.T) {
 	systemID := "publishSystem"
 	var manager = NewClientManager() // 管理者
 	conn := &websocket.Conn{}
-	clientSocket := NewClient(clientID, systemID, conn)
+	m := &database.MongoClientDevice{}
+	clientSocket := NewClient(clientID, systemID, conn, m)
 	manager.AddClient(clientSocket)
 
 	manager.DelClient(clientSocket)
@@ -56,7 +59,8 @@ func TestCount(t *testing.T) {
 	systemID := "publishSystem"
 	var manager = NewClientManager() // 管理者
 	conn := &websocket.Conn{}
-	clientSocket := NewClient(clientID, systemID, conn)
+	m := &database.MongoClientDevice{}
+	clientSocket := NewClient(clientID, systemID, conn, m)
 
 	Convey("测试获取客户端数量", t, func() {
 		Convey("添加一个客户端后", func() {
@@ -82,7 +86,8 @@ func TestGetByClientId(t *testing.T) {
 	systemID := "publishSystem"
 	var manager = NewClientManager() // 管理者
 	conn := &websocket.Conn{}
-	clientSocket := NewClient(clientID, systemID, conn)
+	m := &database.MongoClientDevice{}
+	clientSocket := NewClient(clientID, systemID, conn, m)
 
 	Convey("测试通过clientId获取客户端", t, func() {
 		Convey("获取一个存在的clientId", func() {
@@ -105,7 +110,8 @@ func TestAddClient2LocalGroup(t *testing.T) {
 	userID := "userID"
 	var manager = NewClientManager() // 管理者
 	conn := &websocket.Conn{}
-	clientSocket := NewClient(clientID, systemID, conn)
+	m := &database.MongoClientDevice{}
+	clientSocket := NewClient(clientID, systemID, conn, m)
 	manager.AddClient(clientSocket)
 	groupName := "testGroup"
 
@@ -128,7 +134,8 @@ func TestGetGroupClientList(t *testing.T) {
 	userID := "userID"
 	var manager = NewClientManager() // 管理者
 	conn := &websocket.Conn{}
-	clientSocket := NewClient(clientID, systemID, conn)
+	m := &database.MongoClientDevice{}
+	clientSocket := NewClient(clientID, systemID, conn, m)
 	manager.AddClient(clientSocket)
 	groupName := "testGroup"
 

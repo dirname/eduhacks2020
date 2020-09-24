@@ -27,7 +27,7 @@ type renderData struct {
 }
 
 // Run 建立 Websocket 连接
-func (c *Controller) Run(w http.ResponseWriter, r *http.Request, orm *database.ORM, r2 *database.RedisClient) {
+func (c *Controller) Run(w http.ResponseWriter, r *http.Request, orm *database.ORM, r2 *database.RedisClient, m *database.MongoClientDevice, name string) {
 	conn, err := (&websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
@@ -55,7 +55,7 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request, orm *database.O
 
 	clientID := utils.GenClientID()
 
-	clientSocket := NewClient(clientID, systemID, conn)
+	clientSocket := NewClient(clientID, systemID, conn, m)
 
 	Manager.AddClient2SystemClient(systemID, clientSocket)
 
@@ -68,7 +68,7 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request, orm *database.O
 	}
 
 	//读取客户端消息
-	clientSocket.Read(orm, r2, session.ID)
+	clientSocket.Read(orm, r2, session.ID, m, name)
 
 	if err = api.ConnRender(conn, renderData{ClientID: clientID}); err != nil {
 		_ = conn.Close()

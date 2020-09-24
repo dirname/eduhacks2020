@@ -241,7 +241,7 @@ func (c *MajorGetParam) Exec(db *gorm.DB, redis *redis.Client, request *protobuf
 			var collegeRows []MajorResInfo
 			result := db.Model(&psql.Major{}).Select("majors.*, colleges.college_name, colleges.deleted_at").Joins("LEFT JOIN college.colleges on majors.college_id = colleges.id").Where(&psql.Major{
 				CollegeID: c.CollegeID,
-			}).Where("majors.major_name LIKE ?", fmt.Sprintf("%%%s%%", c.Name)).Where("colleges.deleted_at is null").Find(&collegeRows)
+			}).Where("majors.major_name LIKE ?", fmt.Sprintf("%%%s%%", c.Name)).Where("colleges.deleted_at is null").Find(&collegeRows).Offset(c.Limit * (c.Page - 1)).Limit(c.Limit)
 			res := response.TableResponse{
 				Code:    0,
 				Data:    collegeRows,

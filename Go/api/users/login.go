@@ -66,8 +66,10 @@ func (l *LoginParam) Exec(db *gorm.DB, redis *redis.Client, sessionID string, re
 	case -1:
 		data, errMsg, err = l.adminLogin(redis, sessionID)
 	case 1:
-		data, errMsg, err = l.teacherLogin(db, redis, sessionID)
+		// managerLogin 教务登录
 	case 2:
+		data, errMsg, err = l.teacherLogin(db, redis, sessionID)
+	case 3:
 		data, errMsg, err = l.studentLogin(db, redis, sessionID)
 	default:
 		data, errMsg, err = nil, "未知的登录域", errors.New(unknownLogin)
@@ -171,7 +173,7 @@ func (l *LoginParam) teacherLogin(db *gorm.DB, redis *redis.Client, sessionID st
 		Name:     result.Nickname,
 		Username: result.Username,
 		Phone:    result.Phone,
-		Role:     1,
+		Role:     2,
 		Flag:     userFlag,
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 1000, // 签名生效时间
@@ -229,7 +231,7 @@ func (l *LoginParam) studentLogin(db *gorm.DB, redis *redis.Client, sessionID st
 		Name:     result.Nickname,
 		Username: result.Username,
 		Phone:    result.Phone,
-		Role:     2,
+		Role:     3,
 		Flag:     userFlag,
 		StandardClaims: jwt.StandardClaims{
 			NotBefore: time.Now().Unix() - 1000, // 签名生效时间

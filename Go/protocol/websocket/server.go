@@ -43,10 +43,10 @@ func init() {
 var Manager = NewClientManager() // 管理者
 
 // StartWebSocket 启动 ws
-func StartWebSocket(engine *gin.Engine, o *database.ORM, r *database.RedisClient) {
+func StartWebSocket(engine *gin.Engine, o *database.ORM, r *database.RedisClient, m *database.MongoClientDevice, name string) {
 	websocketHandler := &Controller{}
 	engine.GET("/ws", func(c *gin.Context) {
-		websocketHandler.Run(c.Writer, c.Request, o, r)
+		websocketHandler.Run(c.Writer, c.Request, o, r, m, name)
 	})
 	//websocketHandler := &Controller{}
 	//http.HandleFunc("/ws", websocketHandler.Run)
@@ -250,10 +250,9 @@ func PingTimer() {
 			<-ticker.C
 			//发送心跳
 			for clientID, conn := range Manager.AllClient() {
-				log.Info("心跳包来了")
 				if err := conn.Socket.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second)); err != nil {
 					Manager.DisConnect <- conn
-					log.Errorf("发送心跳失败: %s 总连接数：%d", clientID, Manager.Count())
+					log.Errorf("failed to send heartbeat: %s total connections：%d", clientID, Manager.Count())
 				}
 			}
 		}

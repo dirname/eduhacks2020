@@ -221,7 +221,7 @@ func (c *GetParam) Exec(db *gorm.DB, redis *redis.Client, request *protobuf.Requ
 			errMsg = users.TokenInvalid
 		} else {
 			var collegeRows []ResInfo
-			result := db.Model(&psql.College{}).Find(&collegeRows)
+			result := db.Model(&psql.College{}).Find(&collegeRows).Offset(c.Limit * (c.Page - 1)).Limit(c.Limit)
 			res := response.TableResponse{
 				Code:    0,
 				Data:    collegeRows,

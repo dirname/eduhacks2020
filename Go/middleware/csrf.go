@@ -49,7 +49,7 @@ func CSRF() gin.HandlerFunc {
 			IP:     clientIP,
 		}
 
-		csrf := context.Request.FormValue("csrf")
+		csrf := context.Request.Header.Get("X-CSRF-Token")
 		if csrf == "" {
 			context.Abort()
 			context.JSON(res.Code, res)

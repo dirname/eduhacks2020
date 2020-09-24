@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"eduhacks2020/Go/api/control"
 	"eduhacks2020/Go/database"
 	"eduhacks2020/Go/protocol/websocket"
 	"github.com/gin-gonic/gin"
@@ -10,6 +11,7 @@ import (
 type DatabaseManager struct {
 	ORM   *database.ORM
 	Redis *database.RedisClient
+	Mongo *database.MongoClientDevice
 }
 
 // Init 初始化的路由
@@ -21,14 +23,18 @@ func (d *DatabaseManager) Init(engine *gin.Engine) {
 	redis := database.RedisClient{}
 	redis.Init()
 
+	mongo := database.MongoClientDevice{}
+	mongo.Init()
+
 	d.ORM = &orm
 	d.Redis = &redis
+	d.Mongo = &mongo
 
-	engine.GET("/get/client", func(context *gin.Context) {
-		context.JSON(200, websocket.Manager.AllClient())
-	})
+	c := control.DevicesControl{Mongo: d.Mongo}
 
-	websocket.StartWebSocket(engine, &orm, &redis)
+	engine.GET(APIManagerClientGet, c.GetDevices)
+
+	websocket.StartWebSocket(engine, &orm, &redis, &mongo, d.Mongo.CollectionName)
 	go websocket.WriteMessage()
 }
 
@@ -36,4 +42,5 @@ func (d *DatabaseManager) Init(engine *gin.Engine) {
 func (d *DatabaseManager) Close() {
 	d.ORM.Close()
 	d.Redis.Close()
+	d.Mongo.Close() // 删除客户端连接表
 }

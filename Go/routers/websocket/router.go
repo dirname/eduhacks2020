@@ -4,6 +4,7 @@ import (
 	"eduhacks2020/Go/api/college"
 	"eduhacks2020/Go/api/users"
 	"eduhacks2020/Go/protobuf"
+	"github.com/globalsign/mgo"
 	"github.com/go-redis/redis/v8"
 	"gorm.io/gorm"
 )
@@ -14,11 +15,13 @@ type Router struct {
 
 // ProtoParam 这里包含了 websocket 中的 sessionId 请求体和响应体
 type ProtoParam struct {
-	Request   *protobuf.Request
-	Response  *protobuf.Response
-	SessionID string
-	DB        *gorm.DB
-	Redis     *redis.Client
+	Request        *protobuf.Request
+	Response       *protobuf.Response
+	SessionID      string
+	DB             *gorm.DB
+	Redis          *redis.Client
+	Mongo          *mgo.Session
+	CollectionName string
 }
 
 type fun func(*ProtoParam)
@@ -97,6 +100,6 @@ func Handler(p *ProtoParam) {
 		edit.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APILogout:
 		logout := users.LogoutParam{}
-		logout.Exec(p.Redis, p.Request, p.Response, p.SessionID)
+		logout.Exec(p.Redis, p.Request, p.Response, p.SessionID, p.Mongo, p.CollectionName)
 	}
 }

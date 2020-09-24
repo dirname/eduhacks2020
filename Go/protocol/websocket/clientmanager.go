@@ -1,6 +1,7 @@
 package websocket
 
 import (
+	"eduhacks2020/Go/database"
 	"eduhacks2020/Go/define/retcode"
 	"eduhacks2020/Go/pkg/setting"
 	"eduhacks2020/Go/utils"
@@ -56,13 +57,22 @@ func (manager *ClientManager) Start() {
 // EventConnect 建立连接事件
 func (manager *ClientManager) EventConnect(client *Client) {
 	manager.AddClient(client)
-
+	client.Manager.Online(&database.ClientDevice{
+		ClientID:    client.ClientID,
+		SystemID:    client.SystemID,
+		ConnectTime: client.ConnectTime,
+		IsDeleted:   client.IsDeleted,
+		UserName:    client.UserName,
+		NickName:    client.NickName,
+		UserRole:    client.UserRole,
+	})
 	log.WithFields(log.Fields{
 		"host":     setting.GlobalSetting.LocalHost,
 		"port":     setting.CommonSetting.Port,
 		"clientId": client.ClientID,
+		"systemId": client.SystemID,
 		"counts":   Manager.Count(),
-	}).Info("客户端已连接")
+	}).Info("client connected")
 }
 
 // EventDisconnect 断开连接时间
@@ -92,8 +102,8 @@ func (manager *ClientManager) EventDisconnect(client *Client) {
 		"clientId": client.ClientID,
 		"counts":   Manager.Count(),
 		"seconds":  uint64(time.Now().Unix()) - client.ConnectTime,
-	}).Info("客户端已断开")
-
+	}).Info("client disconnected")
+	client.Manager.Offline(client.ClientID)
 	//标记销毁
 	client.IsDeleted = true
 	client = nil

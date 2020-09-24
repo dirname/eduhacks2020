@@ -198,7 +198,7 @@ func (c *ClassGetParam) Exec(db *gorm.DB, redis *redis.Client, request *protobuf
 			var classRows []ClassResInfo
 			result := db.Model(&psql.Class{}).Select("classes.*, majors.college_id, majors.major_name, majors.deleted_at, colleges.college_name, colleges.deleted_at").Joins("LEFT JOIN college.majors on classes.major_id = majors.id LEFT JOIN college.colleges on majors.college_id = colleges.id").Where(&psql.Class{
 				MajorID: c.MajorID,
-			}).Where("classes.class_name LIKE ?", fmt.Sprintf("%%%s%%", c.Name)).Where("colleges.deleted_at is null").Where("majors.deleted_at is null").Find(&classRows)
+			}).Where("classes.class_name LIKE ?", fmt.Sprintf("%%%s%%", c.Name)).Where("colleges.deleted_at is null").Where("majors.deleted_at is null").Find(&classRows).Offset(c.Limit * (c.Page - 1)).Limit(c.Limit)
 			res := response.TableResponse{
 				Code:    0,
 				Data:    classRows,
