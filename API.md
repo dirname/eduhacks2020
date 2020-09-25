@@ -1,8 +1,9 @@
 ## API 文档
-
--   [入门](#入门)
--   [用户](#用户)
-    -   [登录 Login](#登录)
+-   Webscoket
+    -   [入门](#入门)
+    -   [用户](#用户)
+        -   [登录 Login](#登录)
+-   HTTP
 
 ### 入门
 
@@ -20,13 +21,13 @@
 
 **响应体 Response**
 | 键名 | 值类型 | 说明 |
-\|----\|----\|----\|
-| code | int | [状态码](#code-状态码) \|
-| msg | string | [消息](#msg) \|
-| type | int | [消息类型](#type-消息类型) \|
-| data | bytes | [回应的参数](#data-回应的参数) \|
-| render | bool | [是否渲染](#render) \|
-| html | object | [前端渲染代码](#html) \|
+| ---- | ---- | ---- |
+| code | int | [状态码](#code-状态码)|
+| msg | string | [消息](#msg)|
+| type | int | [消息类型](#type-消息类型)|
+| data | bytes | [回应的参数](#data-回应的参数)|
+| render | bool | [是否渲染](#render)|
+| html | object | [前端渲染代码](#html)|
 
 #### 键说明
 
@@ -119,7 +120,7 @@
 
 `data` 中的参数
 | 键名 | 值类型 | 说明 |
-\|----\|----\|----\|
+| ---- | ---- |---- |
 | user | string | 用户凭据 |
 | password | string | 用户密码 |
 | type | int | 登录类型 0为教务 1为教师 2为学生 |

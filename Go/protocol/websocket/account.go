@@ -22,7 +22,7 @@ var SystemMap sync.Map
 func Register(systemID string) (err error) {
 	//校验是否为空
 	if len(systemID) == 0 {
-		return errors.New("系统ID不能为空")
+		return errors.New("systemID cannot be empty")
 	}
 
 	accountInfo := accountInfo{
@@ -38,7 +38,7 @@ func Register(systemID string) (err error) {
 		}
 
 		if resp.Count > 0 {
-			return errors.New("该系统ID已被注册")
+			return errors.New("the systemID has been registered")
 		}
 
 		jsonBytes, _ := json.Marshal(accountInfo)
@@ -51,7 +51,7 @@ func Register(systemID string) (err error) {
 		}
 	} else {
 		if _, ok := SystemMap.Load(systemID); ok {
-			return errors.New("该系统ID已被注册")
+			return errors.New("the systemID has been registered")
 		}
 
 		SystemMap.Store(systemID, accountInfo)

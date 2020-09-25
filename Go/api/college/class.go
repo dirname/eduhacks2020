@@ -297,7 +297,7 @@ func (c *ClassGetView) Exec(db *gorm.DB, redis *redis.Client, request *protobuf.
 			errMsg = users.TokenInvalid
 		} else {
 			var classRows []ClassViewRes
-			result := db.Model(&psql.Major{}).Where("major_id = ?", c.MajorID).Find(&classRows)
+			result := db.Model(&psql.Class{}).Where("major_id = ?", c.MajorID).Find(&classRows)
 			html := ""
 			for _, row := range classRows {
 				html += fmt.Sprintf("<option value=\"%d\">%s</option>\n", row.ID, row.ClassName)

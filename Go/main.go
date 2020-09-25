@@ -64,7 +64,7 @@ func main() {
 	router := gin.Default()
 	router.Use(middleware.CORS()) // 跨域
 	router.Use(middleware.Logger())
-	router.Use(middleware.CSRF())
+	//router.Use(middleware.CSRF())
 	router.Use(middleware.Auth()) // 授权的中间件
 	//  RPC 初始
 	initRPCServer()

@@ -9,6 +9,7 @@ CREATE TABLE "teacher"."users"
     "password"   text NOT NULL,
     "nickname"   text NOT NULL,
     "gender"     boolean,
+    "full_time"  boolean,
     "phone"      text UNIQUE,
     "email"      text UNIQUE,
     "avatar"     text,

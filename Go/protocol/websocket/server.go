@@ -4,6 +4,7 @@ import (
 	"eduhacks2020/Go/database"
 	"eduhacks2020/Go/pkg/setting"
 	"eduhacks2020/Go/utils"
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
@@ -181,7 +182,7 @@ func SendMessage2LocalClient(messageID, clientID string, sendUserID string, code
 		"host":     setting.GlobalSetting.LocalHost,
 		"port":     setting.CommonSetting.Port,
 		"clientID": clientID,
-	}).Info("发送到通道")
+	}).Info("send to channel")
 	ToClientChan <- clientInfo{ClientID: clientID, MessageID: messageID, SendUserID: sendUserID, Code: code, Msg: msg, Data: data}
 	return
 }
@@ -189,15 +190,15 @@ func SendMessage2LocalClient(messageID, clientID string, sendUserID string, code
 // CloseLocalClient 发送关闭信号
 func CloseLocalClient(clientID, systemID string) {
 	if conn, err := Manager.GetByClientID(clientID); err == nil && conn != nil {
-		if conn.SystemID != systemID {
-			return
-		}
+		//if conn.SystemID != systemID {
+		//	return
+		//} 若取消这里的注释那么只能自己注销自己
 		Manager.DisConnect <- conn
 		log.WithFields(log.Fields{
 			"host":     setting.GlobalSetting.LocalHost,
 			"port":     setting.CommonSetting.Port,
 			"clientID": clientID,
-		}).Info("主动踢掉客户端")
+		}).Info("actively close the client")
 	}
 	return
 }
@@ -215,7 +216,7 @@ func WriteMessage() {
 			"code":       clientInfo.Code,
 			"msg":        clientInfo.Msg,
 			"data":       clientInfo.Data,
-		}).Info("发送到本机")
+		}).Info("send to local")
 		if conn, err := Manager.GetByClientID(clientInfo.ClientID); err == nil && conn != nil {
 			if err := Render(conn.Socket, clientInfo.MessageID, clientInfo.SendUserID, clientInfo.Code, clientInfo.Msg, clientInfo.Data); err != nil {
 				Manager.DisConnect <- conn
@@ -224,7 +225,7 @@ func WriteMessage() {
 					"port":     setting.CommonSetting.Port,
 					"clientId": clientInfo.ClientID,
 					"msg":      clientInfo.Msg,
-				}).Error("客户端异常离线：" + err.Error())
+				}).Error("The client is offline abnormally: " + err.Error())
 			}
 		}
 	}
@@ -232,13 +233,15 @@ func WriteMessage() {
 
 // Render 渲染
 func Render(conn *websocket.Conn, messageID string, sendUserID string, code int, message string, data interface{}) error {
-	return conn.WriteJSON(RetData{
-		Code:       code,
+	// 为了提供演示这里不使用 protobuf 来传输
+	js, _ := json.Marshal(RetData{
 		MessageID:  messageID,
 		SendUserID: sendUserID,
+		Code:       code,
 		Msg:        message,
 		Data:       data,
 	})
+	return conn.WriteMessage(2, xorData(js, false))
 }
 
 // PingTimer 启动定时器进行心跳检测

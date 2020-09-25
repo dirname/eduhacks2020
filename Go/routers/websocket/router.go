@@ -53,6 +53,21 @@ func Handler(p *ProtoParam) {
 	case APIManagerStudentGet:
 		get := users.StudentGetParam{}
 		get.Exec(p.DB, p.Redis, p.Request, p.Response)
+	case APIManagerStudentAdd:
+		add := users.StudentAddParam{}
+		add.Exec(p.DB, p.Redis, p.Request, p.Response)
+	case APIManagerStudentStatus:
+		do := users.StudentDelBanParam{}
+		do.Exec(p.DB, p.Redis, p.Request, p.Response)
+	case APIManagerTeacherGet:
+		get := users.TeacherGetParam{}
+		get.Exec(p.DB, p.Redis, p.Request, p.Response)
+	case APIManagerTeacherAdd:
+		add := users.TeacherAddParam{}
+		add.Exec(p.DB, p.Redis, p.Request, p.Response)
+	case APIManagerTeacherDel:
+		del := users.TeacherDelParam{}
+		del.Exec(p.DB, p.Redis, p.Request, p.Response)
 	case APIManagerCollegeGet:
 		get := college.GetParam{}
 		get.Exec(p.DB, p.Redis, p.Request, p.Response)

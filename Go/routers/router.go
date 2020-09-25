@@ -1,8 +1,16 @@
 package routers
 
 import (
+	"eduhacks2020/Go/api/bind2group"
+	"eduhacks2020/Go/api/closeclient"
 	"eduhacks2020/Go/api/control"
+	"eduhacks2020/Go/api/getonlinelist"
+	"eduhacks2020/Go/api/register"
+	"eduhacks2020/Go/api/send2client"
+	"eduhacks2020/Go/api/send2clients"
+	"eduhacks2020/Go/api/send2group"
 	"eduhacks2020/Go/database"
+	"eduhacks2020/Go/middleware"
 	"eduhacks2020/Go/protocol/websocket"
 	"github.com/gin-gonic/gin"
 )
@@ -31,8 +39,22 @@ func (d *DatabaseManager) Init(engine *gin.Engine) {
 	d.Mongo = &mongo
 
 	c := control.DevicesControl{Mongo: d.Mongo}
+	registerHandler := &register.Controller{}
+	sendToClientHandler := &send2client.Controller{}
+	sendToClientsHandler := &send2clients.Controller{}
+	sendToGroupHandler := &send2group.Controller{}
+	bindToGroupHandler := &bind2group.Controller{}
+	getGroupListHandler := &getonlinelist.Controller{}
+	closeClientHandler := &closeclient.Controller{}
 
 	engine.GET(APIManagerClientGet, c.GetDevices)
+	engine.POST(APIManagerRegister, registerHandler.Run)
+	engine.POST(APIManagerMsgSend, middleware.SystemIDMiddleware(), sendToClientHandler.Run)
+	engine.POST(APIManagerCloseClient, middleware.SystemIDMiddleware(), closeClientHandler.Run)
+	engine.POST(APIManagerMsgSends, middleware.SystemIDMiddleware(), sendToClientsHandler.Run)
+	engine.POST(APIManagerGroupSend, middleware.SystemIDMiddleware(), sendToGroupHandler.Run)
+	engine.POST(APIManagerGroupBind, middleware.SystemIDMiddleware(), bindToGroupHandler.Run)
+	engine.POST(APIManagerGroupGet, middleware.SystemIDMiddleware(), getGroupListHandler.Run)
 
 	websocket.StartWebSocket(engine, &orm, &redis, &mongo, d.Mongo.CollectionName)
 	go websocket.WriteMessage()
