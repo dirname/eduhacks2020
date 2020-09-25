@@ -28,7 +28,7 @@ func SendRPC2Client(addr string, messageID, sendUserID, clientID string, code in
 		"add":      addr,
 		"clientID": clientID,
 		"msg":      data,
-	}).Info("发送到服务器")
+	}).Info("send to server")
 
 	c := pb.NewCommonServiceClient(conn)
 	_, err := c.Send2Client(context.Background(), &pb.Send2ClientReq{
@@ -54,7 +54,7 @@ func CloseRPCClient(addr string, clientID, systemID string) {
 		"port":     setting.CommonSetting.Port,
 		"add":      addr,
 		"clientID": clientID,
-	}).Info("发送关闭连接到服务器")
+	}).Info("send close connection to server")
 
 	c := pb.NewCommonServiceClient(conn)
 	_, err := c.CloseClient(context.Background(), &pb.CloseClientReq{

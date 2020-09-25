@@ -19,7 +19,7 @@ func (s *CommonServiceServer) Send2Client(ctx context.Context, req *pb.Send2Clie
 		"host":     setting.GlobalSetting.LocalHost,
 		"port":     setting.CommonSetting.Port,
 		"clientId": req.ClientID,
-	}).Info("接收到RPC指定客户端消息")
+	}).Info("received RPC specified client message")
 	SendMessage2LocalClient(req.MessageID, req.ClientID, req.SendUserID, int(req.Code), req.Message, &req.Data)
 	return &pb.Send2ClientReply{}, nil
 }
@@ -30,7 +30,7 @@ func (s *CommonServiceServer) CloseClient(ctx context.Context, req *pb.CloseClie
 		"host":     setting.GlobalSetting.LocalHost,
 		"port":     setting.CommonSetting.Port,
 		"clientId": req.ClientID,
-	}).Info("接收到RPC关闭连接")
+	}).Info("received RPC to close the connection")
 	CloseLocalClient(req.ClientID, req.SystemID)
 	return &pb.CloseClientReply{}, nil
 }
@@ -41,7 +41,7 @@ func (s *CommonServiceServer) BindGroup(ctx context.Context, req *pb.BindGroupRe
 		//添加到本地
 		Manager.AddClient2LocalGroup(req.GroupName, client, req.UserID, req.Extend)
 	} else {
-		log.Error("添加分组失败" + err.Error())
+		log.Error("failed to add group" + err.Error())
 	}
 	return &pb.BindGroupReply{}, nil
 }
@@ -51,7 +51,7 @@ func (s *CommonServiceServer) Send2Group(ctx context.Context, req *pb.Send2Group
 	log.WithFields(log.Fields{
 		"host": setting.GlobalSetting.LocalHost,
 		"port": setting.CommonSetting.Port,
-	}).Info("接收到RPC发送分组消息")
+	}).Info("received RPC sent packet message")
 	Manager.SendMessage2LocalGroup(req.SystemID, req.MessageID, req.SendUserID, req.GroupName, int(req.Code), req.Message, &req.Data)
 	return &pb.Send2GroupReply{}, nil
 }
@@ -61,7 +61,7 @@ func (s *CommonServiceServer) Send2System(ctx context.Context, req *pb.Send2Syst
 	log.WithFields(log.Fields{
 		"host": setting.GlobalSetting.LocalHost,
 		"port": setting.CommonSetting.Port,
-	}).Info("接收到RPC发送系统消息")
+	}).Info("received RPC sending system message")
 	Manager.SendMessage2LocalSystem(req.SystemID, req.MessageID, req.SendUserID, int(req.Code), req.Message, &req.Data)
 	return &pb.Send2SystemReply{}, nil
 }

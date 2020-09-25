@@ -48,7 +48,7 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request, orm *database.O
 	//解析参数
 	systemID := r.FormValue("systemId")
 	if len(systemID) == 0 {
-		_ = Render(conn, "", "", retcode.SystemIDError, "系统ID不能为空", []string{})
+		_ = Render(conn, "", "", retcode.SystemIDError, "system ID cannot be empty", []string{})
 		_ = conn.Close()
 		return
 	}
