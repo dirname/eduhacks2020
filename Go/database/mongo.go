@@ -19,7 +19,7 @@ type ClientDevice struct {
 	UserRole    int    `json:"role" bson:"role"`               // 业务端标识用户角色
 }
 
-// MongoSession Mongo 来保存 ws 客户端的信息
+// MongoClientDevice Mongo 来保存 ws 客户端的信息
 type MongoClientDevice struct {
 	Session        *mgo.Session
 	CollectionName string

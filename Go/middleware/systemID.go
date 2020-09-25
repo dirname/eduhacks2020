@@ -11,6 +11,7 @@ import (
 	"net/http"
 )
 
+// SystemIDMiddleware 的中间件
 func SystemIDMiddleware() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		if context.Request.Method != http.MethodPost {
@@ -19,8 +20,8 @@ func SystemIDMiddleware() gin.HandlerFunc {
 		}
 
 		//检查header是否设置SystemId
-		systemId := context.Request.Header.Get("SystemID")
-		if len(systemId) == 0 {
+		systemID := context.Request.Header.Get("SystemID")
+		if len(systemID) == 0 {
 			context.Abort()
 			api.Render(context.Writer, retcode.FAIL, "SystemID cannot be empty", []string{})
 			return
@@ -28,7 +29,7 @@ func SystemIDMiddleware() gin.HandlerFunc {
 
 		//判断是否被注册
 		if utils.IsCluster() {
-			resp, err := etcd.Get(define.EtcdPrefixAccountInfo + systemId)
+			resp, err := etcd.Get(define.EtcdPrefixAccountInfo + systemID)
 			if err != nil {
 				context.Abort()
 				api.Render(context.Writer, retcode.FAIL, "Etcd server error", []string{})
@@ -41,7 +42,7 @@ func SystemIDMiddleware() gin.HandlerFunc {
 				return
 			}
 		} else {
-			if _, ok := websocket.SystemMap.Load(systemId); !ok {
+			if _, ok := websocket.SystemMap.Load(systemID); !ok {
 				context.Abort()
 				api.Render(context.Writer, retcode.FAIL, "Invalid SystemID", []string{})
 				return
