@@ -22,3 +22,6 @@ Demo/
 
 # log
 *.log
+
+# Blog
+Blog/
