@@ -59,7 +59,7 @@ func registerServer() {
 }
 
 func main() {
-	gin.SetMode(gin.DebugMode) // 生产模式中改写成 release
+	gin.SetMode(gin.ReleaseMode) // 生产模式中改写成 release
 
 	router := gin.Default()
 	router.Use(middleware.CORS()) // 跨域

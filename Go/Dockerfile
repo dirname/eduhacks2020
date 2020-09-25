@@ -9,6 +9,6 @@ WORKDIR /data/Go
 COPY --from=build-dist /data/release/Go ./
 COPY --from=build-dist /data/release/conf /data/Go/conf
 
-EXPOSE 6000
+EXPOSE 555
 
 CMD ["/data/Go/Go","-c","./conf/app.ini"]
