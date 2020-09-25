@@ -9,7 +9,7 @@ import (
 var systemTest *bool
 
 func init() {
-	systemTest = flag.Bool("systemTest", true, "Set to true when running system tests")
+	systemTest = flag.Bool("systemTest", false, "Set to true when running system tests")
 }
 
 // Test started when the test binary is started. Only calls main.
