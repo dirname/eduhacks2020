@@ -74,7 +74,7 @@ func (d *ClientDis) SetServiceList(key, val string) {
 	setting.GlobalSetting.ServerListLock.Lock()
 	defer setting.GlobalSetting.ServerListLock.Unlock()
 	setting.GlobalSetting.ServerList[key] = val
-	log.Info("发现服务：", key, " 地址:", val)
+	log.Info("Discovery Service: ", key, " address: ", val)
 }
 
 // DelServiceList 下线服务
@@ -82,5 +82,5 @@ func (d *ClientDis) DelServiceList(key string) {
 	setting.GlobalSetting.ServerListLock.Lock()
 	defer setting.GlobalSetting.ServerListLock.Unlock()
 	delete(setting.GlobalSetting.ServerList, key)
-	log.Println("服务下线:", key)
+	log.Println("Service offline: ", key)
 }

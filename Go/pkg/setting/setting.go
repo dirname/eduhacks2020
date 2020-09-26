@@ -64,10 +64,13 @@ var DialInfo = &mgo.DialInfo{}
 
 var cfg *ini.File
 
+var ConfigFileName *string
+
 // ReadConfigure 读取配置文件
 func ReadConfigure() {
 	configFile := flag.String("c", "conf/app.ini", "-c conf/app.ini")
-
+	flag.Parse()
+	ConfigFileName = configFile
 	var err error
 
 	cfg, err = ini.Load(*configFile)

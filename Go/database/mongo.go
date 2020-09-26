@@ -2,10 +2,13 @@ package database
 
 import (
 	"eduhacks2020/Go/pkg/setting"
-	"eduhacks2020/Go/utils"
+	"fmt"
 	"github.com/globalsign/mgo"
 	"github.com/globalsign/mgo/bson"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"runtime"
+	"time"
 )
 
 // ClientDevice 客户端的信息集合
@@ -32,7 +35,11 @@ func (m *MongoClientDevice) Init() {
 		log.Errorf("failed to open mongo: %s", err.Error())
 	}
 	m.Session = session
-	m.CollectionName = utils.GenUUIDv4()
+	hostname, _ := os.Hostname()
+	os := runtime.GOOS
+	arch := runtime.GOARCH
+	time := time.Now().Format("2006-01-02-15:04:05")
+	m.CollectionName = fmt.Sprintf("%s-%s-%s-%s", time, hostname, os, arch)
 	log.Infof("save the client device info to the collection %s", m.CollectionName)
 }
 

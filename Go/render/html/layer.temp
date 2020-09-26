@@ -1,0 +1,8 @@
+<script>
+    layer.open({
+        type: %d
+        , title: '%s'
+        , content: '%s'
+        , icon: %d
+    });
+</script>

@@ -9,9 +9,9 @@ import (
 	"eduhacks2020/Go/routers"
 	"eduhacks2020/Go/utils"
 	"eduhacks2020/Go/utils/log"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	_ "github.com/gorilla/websocket"
+	log2 "github.com/sirupsen/logrus"
 	"net"
 	"os"
 	"os/signal"
@@ -20,14 +20,15 @@ import (
 func init() {
 	setting.ReadConfigure()
 	log.Setup()
+	log2.Infof("Read the configuration and initialization from %s successfully completed", *setting.ConfigFileName)
 }
 
 func initRPCServer() {
 	//如果是集群，则启用RPC进行通讯
 	if utils.IsCluster() {
 		//初始化RPC服务
+		log2.Infof("start RPC listening on :%s", setting.CommonSetting.RPCPort)
 		websocket.InitGRPCServer()
-		fmt.Printf("Start RPC Listening on :%s\n", setting.CommonSetting.RPCPort)
 	}
 }
 
@@ -60,7 +61,6 @@ func registerServer() {
 
 func main() {
 	gin.SetMode(gin.ReleaseMode) // 生产模式中改写成 release
-
 	router := gin.Default()
 	router.Use(middleware.CORS()) // 跨域
 	router.Use(middleware.Logger())
@@ -83,6 +83,6 @@ func main() {
 	}()
 	// 定时发送心跳包
 	websocket.PingTimer()
-
+	log2.Infof("listening on :%s", setting.CommonSetting.Port)
 	router.Run(":" + setting.CommonSetting.Port)
 }

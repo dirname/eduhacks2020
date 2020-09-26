@@ -54,6 +54,10 @@ func Setup() {
 	//	}})
 	//logrus.SetReportCaller(true) //是否记录代码位置
 	logrus.AddHook(lfHook)
+	logrus.SetFormatter(&logrus.TextFormatter{
+		ForceColors:     true,
+	})
+	//logrus.SetOutput()
 }
 
 //获取当前程序运行的文件夹

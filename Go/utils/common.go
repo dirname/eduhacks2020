@@ -31,12 +31,12 @@ func GenClientID() string {
 // ParseRedisAddrValue 解析redis的地址格式
 func ParseRedisAddrValue(redisValue string) (host string, port string, err error) {
 	if redisValue == "" {
-		err = errors.New("解析地址错误")
+		err = errors.New("parsing address error")
 		return
 	}
 	addr := strings.Split(redisValue, ":")
 	if len(addr) != 2 {
-		err = errors.New("解析地址错误")
+		err = errors.New("parsing address error")
 		return
 	}
 	host, port = addr[0], addr[1]
