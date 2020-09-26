@@ -7,6 +7,7 @@ import (
 	"log"
 	"net"
 	"sync"
+	"testing"
 )
 
 type databaseConf struct {
@@ -69,6 +70,7 @@ var ConfigFileName *string
 // ReadConfigure 读取配置文件
 func ReadConfigure() {
 	configFile := flag.String("c", "conf/app.ini", "-c conf/app.ini")
+	testing.Init()
 	flag.Parse()
 	ConfigFileName = configFile
 	var err error

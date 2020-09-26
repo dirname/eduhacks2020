@@ -13,7 +13,7 @@ func TestGenerateToken(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			token, _ := GenerateToken(CustomClaims{
+			token, err := GenerateToken(CustomClaims{
 				UID:            "",
 				Username:       "",
 				Name:           "",
@@ -22,7 +22,9 @@ func TestGenerateToken(t *testing.T) {
 				Role:           0,
 				StandardClaims: jwt.StandardClaims{},
 			})
-			t.Log(token)
+			if token == "" {
+				t.Errorf("err:%s", err.Error())
+			}
 		})
 	}
 }
