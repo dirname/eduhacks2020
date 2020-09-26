@@ -1,0 +1,107 @@
+<title>设置我的资料</title>
+
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>个人中心</cite></a>
+        <a><cite>基本资料</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">我的资料</div>
+                <div class="layui-card-body" pad15>
+                    <div class="layui-form" lay-filter="base_info-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label" style="color: lightgray">用户名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="username" readonly class="layui-input" disabled
+                                       style="color: lightgray" id="username">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">昵称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="nickname" placeholder="请输入昵称" lay-verify="nickname"
+                                       autocomplete="off"
+                                       placeholder="请输入昵称" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">性别</label>
+                            <div class="layui-input-block">
+                                <input type="radio" name="sex" value="1" title="男">
+                                <input type="radio" name="sex" value="0" title="女">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div style="height: 60px;display: flex;">
+                                <label class="layui-form-label" style="line-height: 45px">头像</label>
+                                <div style="display: flex;width: 60px;">
+                                    <img src=""
+                                         alt="" name="avatar"
+                                         style="height: 60px;width: 60px;border-radius: 50%;overflow: hidden;" id="avatar">
+                                </div>
+                                <div class="layui-input-inline layui-btn-container"
+                                     style="width: auto;margin-top: 10px">
+                                    <button type="button" class="layui-btn layui-btn-primary layui-inline" id="LAY_avatarUpload"
+                                            style="margin-left: 15px;">
+                                        <i class="layui-icon">&#xe67c;</i>更改头像
+                                    </button>
+                                </div>
+                                <div class="layui-input-inline" style="margin-top: -7px">
+                                    <span style="line-height: 65px">预览图：</span><div class="layui-upload-list layui-inline" id="preview" style="height: 60px;width: 60px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">手机</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="cellphone" placeholder="请输入手机号" value="" lay-verify="phone"
+                                       autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">邮箱</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="email" value="" placeholder="请输入邮箱" lay-verify="email"
+                                       autocomplete="off"
+                                       class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">我的角色</label>
+                            <div class="layui-input-inline">
+                                <select name="role" lay-verify="">
+                                    <option value="1" selected>学生</option>
+                                    <option value="2" disabled>老师</option>
+                                    <option value="3" disabled>管理员</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">个人简介</label>
+                            <div class="layui-input-block">
+                                <textarea name="remarks" placeholder="请输入内容" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="setmyinfo">确认修改</button>
+<!--                                <button type="reset" class="layui-btn layui-btn-primary">重新填写</button>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use('set', layui.factory('set'))
+</script>

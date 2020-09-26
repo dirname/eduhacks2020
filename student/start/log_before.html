@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Bingo - 科技驱动在线教学的新工具、新方法和新技术</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="layui/css/layui.css" media="all">
+    <link rel="stylesheet"
+          href="../dist/style/admin.css"
+          media="all">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1981219_s1pvywee3re.css">
+    <script src="layui/layui.all.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="layui/css/index.css">
+    <script>
+        /^http(s*):\/\//.test(location.href) || alert('请先部署到 localhost 下再访问');
+    </script>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div id="LAY_app">
+        <div class="layui-layout layui-layout-admin">
+            <div class="layui-header">
+                <ul class="layui-nav clearfix" lay-filter="">
+                    <li class="layui-nav-item layui-this" style="margin-left: 25%;"><a href="">首页</a></li>
+                    <li class="layui-nav-item"><a href="">全部课程</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="">直播中心</a></dd>
+                            <dd><a href="">录播中心</a></dd>
+                            <dd><a href="">慕课在线</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:;">数字资源</a>
+                        <dl class="layui-nav-child"> <!-- 二级菜单 -->
+                            <dd><a href="">资源下载</a></dd>
+                            <dd><a href=""></a></dd>
+                            <dd><a href="">积分兑换</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item"><a href="">站外搜索</a></li>
+<!--                    <input type="text" placeholder="搜索..." autocomplete="off" class="layui-input layui-input-search"-->
+<!--                           layadmin-event="serach" lay-action="template/search/keywords=">-->
+                    <li class="layui-nav-item layui-layout-right" lay-unselect="" style="margin-right: 5%;">
+                        <a lay-href="../view/user/login">
+                            <i class="iconfont icon-user"></i>
+                            登录 / 注册
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <!-- 主体内容 -->
+            <div class="middle-content clearfix" style="padding-top: 50px;position: relative;width: 64%;margin: auto;">
+                <!-- 内容主体区域 -->
+                <div class="layui-carousel" id="body-carousel"
+                     style="margin-left:0;float: left;border: 1px solid rgb(253,253,254);border-radius: 3px">
+                    <div carousel-item="">
+                        <div><img src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=4112299261,1101226847&fm=26&gp=0.jpg" style="height: 100%;width: 100%;"></div>
+                        <div><img src="https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3314702515,2522037311&fm=26&gp=0.jpg" style="height: 100%;width: 100%;"></div>
+                        <div><img src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=94425882,861859561&fm=26&gp=0.jpg" style="height: 100%;width: 100%;"></div>
+                        <div><img src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=4165877990,2780286798&fm=26&gp=0.jpg" style="height: 100%;width: 100%;"></div>
+                    </div>
+                </div>
+                <div class="layui-personal-box"
+                     style="position:absolute;right: 0;border: 1px solid #009486;">
+                    <div style="text-align: center;">
+                        <h3 style="margin-top: 30px;">你当前的学习进度</h3>
+                        <div class="no-login" style="height: 200px;line-height: 180px;width: 100%;margin-top: 20px;">
+                            <i class="iconfont icon-weidenglu" style="font-size: 100px;"></i>
+                        </div>
+                    </div>
+                    <div style="width: 100%;height: 89px;">
+                        <a url-href="">
+                            <input class="layui-btn layui-btn-lg" type="button" value="登录"
+                                   style="margin-top: 12px;margin-left: 25%;width: 50%">
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="content-msg">
+                <h1 style="text-align: center;margin-top: 70px;">优质慕课推荐</h1>
+                <div class="msg-content clearfix" style="padding: 10px;">
+                    <ul class="hot-recommend clearfix" style="">
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <h1 style="text-align: center;margin-top: 70px;">优质慕课推荐</h1>
+                <div class="msg-content clearfix" style="padding: 10px;">
+                    <ul class="hot-recommend clearfix" style="">
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="msg">
+                                <a href="">
+                                    <img src="https://res.shiguangkey.com/file/201908/19/20190819162133160373259.png?x-oss-process=image/format,png"
+                                         alt="马士兵/java/python/AI/Web前端/从零到年薪百万" width="250" height="150"
+                                         style="vertical-align: bottom">
+                                </a>
+                                <p>
+                                <h4>
+                                    <a href="" target="_blank" title="马士兵/java/python/AI/Web前端/从零到年薪百万">马士兵/java/python/AI/Web前端/从零到年薪百万</a>
+                                </h4>
+                                <div>
+                                    <span class="free">免费</span>
+                                    <span class="members">1.2w 人在学</span>
+                                </div>
+                                </p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 辅助元素，一般用于移动设备下遮罩 -->
+            <div class="layadmin-body-shade" layadmin-event="shade"></div>
+        </div>
+    </div>
+    <div class="bottom-up">
+        <div class="up-content clearfix">
+            <div class="logo"></div>
+            <p class="top-content">
+                <span class="link">
+                    <a href="javascript:void(0);">Bingo官网</a> |
+                    <a href="javascript:void(0);">SEO研究中心</a> |
+                    <a href="javascript:void(0);">Bingo商城</a> |
+                    <a href="javascript:void(0);">天猫旗舰店</a> |
+                    <a href="javascript:void(0);">安全中心</a>
+                </span>
+                <span class="about-me">
+                    关于我：
+                    <i class="iconfont icon-weixin" style="color: green"></i>
+                    jiang898575519
+                </span>
+            </p>
+            <p class="bottom-content">
+                <span>地址：云南省师范大学商学院</span>
+                <span class="tel">联系方式：
+                    <a href="tel:400-8820-820">400-8820-820</a>
+                    (24小时在线)
+                </span>
+            </p>
+
+        </div>
+    </div>
+    <div class="bottom-down">
+        <div class="down-content">
+            <p>
+                Copyright &copy; 2019 - 2020 Bingo(eduHacks2020).All Rights Reserved
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.config({
+        base: '../layuiadmin/' //静态资源所在路径
+    }).extend({
+        index: 'lib/index' //主入口模块
+    }).use('index');
+</script>
+
+<!-- 百度统计 -->
+<script>
+    var _hmt = _hmt || [];
+    (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?d214947968792b839fd669a4decaaffc";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+<script>
+    //导航栏的依赖包
+    layui.use(['element', 'jquery', 'carousel'], function () {
+        var $ = layui.jquery;
+        var element = layui.element;
+        var carousel = layui.carousel;
+        element.render({
+            // elem: '#',
+        })
+        //图片轮播
+        carousel.render({
+            elem: '#body-carousel'
+            , width: '972px'
+            , height: '360px'
+            , interval: 4000
+        });
+    });
+</script>
+</body>
+</html>

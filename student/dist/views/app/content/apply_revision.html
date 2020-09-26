@@ -1,0 +1,34 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-comment" id="layuiadmin-form-comment" style="padding: 20px 0 0 0;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">课程ID</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="id" value="{{ d.params.courseID || '' }}" lay-verify="required" autocomplete="off" class="layui-input layui-disabled" disabled>
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">学生姓名</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="studentName" value="{{ d.params.studentName || '' }}" lay-verify="required" autocomplete="off" class="layui-input layui-disabled" disabled>
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">课程学分</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="credit" value="{{ d.params.credit || '' }}" lay-verify="required" autocomplete="off" class="layui-input layui-disabled" disabled>
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="layuiadmin-app-com-submit" value="确认申请重修" class="layui-btn">
+        </div>
+    </div>
+</div>

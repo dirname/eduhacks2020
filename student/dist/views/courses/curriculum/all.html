@@ -1,0 +1,165 @@
+<script type="text/html" template>
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/template.css?v={{ layui.admin.v }}-1" media="all">
+</script>
+
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>院校课程</cite></a>
+        <a><cite>全部课程</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid layadmin-cmdlist-fluid">
+    <div class="layui-row layui-col-space30">
+        <div class="layui-col-md2 layui-col-sm4">
+            <div class="cmdlist-container" id="course_all_container">
+            </div>
+        </div>
+        <div class="layui-col-md12 layui-col-sm12">
+            <div id="pager"></div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['admin', 'laypage', 'layer', 'laytpl', 'jquery'], function () {
+        var $ = layui.jquery
+            , admin = layui.admin
+            , laypage = layui.laypage
+            , laytpl = layui.laytpl
+            , layer = layui.layer;
+
+        $.ajax({
+            type: "get",
+            url: "json/courses/all.js",
+            data: {},
+            dataType: "json",
+            success: function (res) {
+                var json = eval(res);
+                $.each(json.data, function (index, item) {
+                    $("#course_all_container").append("<div id=\"course_all\">\n" +
+                        "    <a href=\"javascript:;\">\n" +
+                        "        <img style=\"height: 150px;width: 100%\"\n" +
+                        "             src=\"\" class=\"courseImg\">\n" +
+                        "    </a>\n" +
+                        "    <a href=\"javascript:;\">\n" +
+                        "        <div class=\"cmdlist-text\">\n" +
+                        "            <p class=\"info\"></p>\n" +
+                        "            <div class=\"msg_detail\">\n" +
+                        "                <b class=\"school\"></b><br>\n" +
+                        "                <b class=\"teacher\" style=\"float: right;padding-top: 1px;margin-right: -10px\"></b>\n" +
+                        "            </div>\n" +
+                        "        </div>\n" +
+                        "    </a>\n" +
+                        "</div>");
+                    $('.courseImg').eq(index).attr('src', item.img);
+                    $('.info').eq(index).text(item.course_name);
+                    $('.school').eq(index).text(item.school);
+                    $('.teacher').eq(index).text('--' + item.teacher);
+                })
+            },
+            error: function () {
+                layer.msg("错误")
+            }
+        });
+        // $.get('json/courses/all.js', data => {
+        //     laypage.render({ //异步
+        //         elem: 'pager', //注意，这里的 pager 是 ID，不用加 # 号
+        //         count: data.count, //数据总数，从服务端得到
+        //         limit: 10,
+        //         jump: function (obj) {
+        // console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+        // console.log(obj.limit); //得到每页显示的条数
+        // $.get('json/courses/all.js', {
+        //     // pageIndex: obj.curr,
+        //     // pageSize: obj.limit //给后台传参
+        // }, data => {
+        //     laytpl($("#course_all").html()).render(data, function (html) {
+        //         $('#course_all_container').html(html);
+        //     });
+        // })
+        //         }
+        //     });
+        // })
+        // laypage.render({
+        //     elem: 'pager'
+        //     , count: 11 //数据总数
+        // });
+        //
+        // laytpl($("#course_all").html()).render(data, function (html) {
+        //     $('#course_all_container').html(html);
+        // });
+    });
+</script>
+<!--<script>-->
+<!--    var reconnect = false;-->
+<!--    var ws;-->
+<!--    // var $ = layui.jquery;-->
+<!--    var wsUrl = "ws://echo.websocket.org/echo"-->
+<!--    var ttl;-->
+
+
+<!--    if ("WebSocket" in window && typeof WebSocket != 'undefined') {-->
+<!--        console.log('Hello eduHacks2020')-->
+<!--    } else {-->
+<!--        layer.open({-->
+<!--            title: "error"-->
+<!--            , content: "您的浏览器不支持WebSocket，请下载谷歌（https://www.google.cn/chrome/）或者支持的其他浏览器"-->
+<!--            , icon: 5-->
+<!--        });-->
+<!--    }-->
+<!--    var createWebSocket = function (wsUrl) {-->
+<!--        try {-->
+<!--            ws = new WebSocket(wsUrl)-->
+<!--            console.log(ws.readyState);-->
+<!--            wsInit();//初始化-->
+<!--        } catch (e) {-->
+<!--            //失败重连-->
+<!--            console.log("reconnect..")-->
+<!--            wsReconnect(wsUrl);-->
+<!--        }-->
+<!--    };-->
+<!--    //初始化-->
+<!--    var wsInit = function () {-->
+<!--        ws.onopen = function () {-->
+<!--            // ws.send()//根据后台需要接受什么数据才能握手成功来发送数据-->
+<!--            console.log("Connection open..")-->
+<!--            // heartCheck.start();-->
+<!--        }-->
+<!--        ws.onmessage = function (evt) {-->
+<!--            var data = JSON.parse(evt.data)-->
+<!--            // layui.use('laypage', function () {-->
+<!--            // heartCheck.reset(); //收到后台消息，心跳检查重置-->
+<!--        // })-->
+<!--        }-->
+<!--        ws.onerror = function () {-->
+<!--            console.log(this.readyState);-->
+<!--            layer.open({-->
+<!--                title: "error"-->
+<!--                , content: "出现了未知错误, 请刷新页面重试"-->
+<!--                , icon: 5-->
+<!--            });-->
+<!--        }-->
+<!--        ws.onclose = function () {-->
+<!--            layer.msg('与服务器断开连接，正在尝试重新建立连接..')-->
+<!--        }-->
+
+<!--        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。-->
+<!--        window.onbeforeunload = function () {-->
+<!--            closeWebSocket();-->
+<!--        }-->
+<!--    }-->
+<!--    //设置重连-->
+<!--    var wsReconnect = function (url) {-->
+<!--        if (reconnect) {-->
+<!--            return;-->
+<!--        }-->
+<!--        reconnect = true;-->
+<!--        //没连接上一直重连，直到成功-->
+<!--        //设置时间控制重连速度-->
+<!--        ttl && clearTimeout(ttl);-->
+<!--        ttl = setTimeout(function () {-->
+<!--            createWebSocket(url)-->
+<!--        }, 4000)-->
+<!--    }-->
+<!--</script>-->

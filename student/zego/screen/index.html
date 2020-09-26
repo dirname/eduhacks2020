@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <style>
+    .bg-f2{
+      background-color: #f8f9fa;
+    }
+    video{
+      width: 320px;
+      height: auto;
+        }
+    .videoRow{
+        margin-top: 30px;
+    }
+    #previewLabel{
+      display: block;
+      position: absolute;
+    }
+  </style>
+  <title class="screenSharing">Bingo-live</title>
+<link href="../index.e33f6e43.css" rel="stylesheet"></head>
+
+<body class="bg-f2">
+
+  <div class="container">
+
+    <div class="my-3 p-3 bg-white rounded box-shadow small">
+
+      <h6 class="border-bottom border-gray pb-2 mb-0 screenSharing">Bingo-live</h6>
+
+      <div class="row" style="margin-top:1%">
+
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="audioList"><strong class="text-gray-dark audioDevices">音频设备</strong></label>
+            </div>
+            <select class="custom-select" id="audioList" style="width: 50%; max-width: 200px;">
+            </select>
+          </div>
+        </div>
+
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="videoList"><strong class="text-gray-dark videoDevices">视频设备</strong></label>
+            </div>
+            <select class="custom-select" id="videoList" style="width: 50%; max-width: 200px;">
+            </select>
+          </div>
+        </div>
+
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="screenList"><strong class="text-gray-dark shareScreen">共享屏幕</strong></label>
+            </div>
+            <select class="custom-select" id="screenList" style="width: 50%; max-width: 200px;">
+            </select>
+          </div>
+        </div>
+
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="screenList"><strong class="text-gray-dark isScreenAudio">是否共享音频</strong></label>
+            </div>
+            <select class="custom-select" id="isScreenAudio" style="width: 50%; max-width: 200px;">
+              <option value="yes" class="yes">是</option>
+              <option value="no" class="no">否</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-sm">
+          <div class="input-group input-group-sm mb-3">
+            <div class="input-group-prepend">
+              <label class="input-group-text" for="roomId"><strong class="text-gray-dark roomid">房间号</strong></label>
+            </div>
+            <input type="email" class="form-control d-inline" id="roomId" style="width: 60%; max-width: 200px;" aria-describedby="emailHelp"
+              placeholder="please enter room ID">
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm">
+          <button type="button" id="createRoom" class="btn btn-primary btn-sm enterRoomPush">进入房间（推流）</button>
+          <button type="button" id="openRoom" class=" btn btn-primary btn-sm enterRoomPlay">进入房间</button>
+          <button type="button" id="screenShot" class="btn btn-primary btn-sm screenSharingContent">捕捉屏幕</button>
+          <button type="button" id="stopScreenShot" class="btn btn-primary btn-sm stopScreenSharing">停止捕捉</button>
+          <button type="button" id="enterRoom" class="btn btn-primary btn-sm">进房预览</button>
+          <button type="button" id="publish" class="btn btn-primary btn-sm">推流</button>
+          <button type="button" id="replaceScreenShot" class="btn btn-primary btn-sm">切换为屏幕共享</button>
+          <button type="button" id="replaceCamera" class="btn btn-primary btn-sm">切换为摄像头</button>
+          <button type="button" id="replaceExternalVideo" class="btn btn-primary btn-sm">切换外部视频轨</button>
+          <button type="button" id="replaceMicro" class="btn btn-primary btn-sm">切换为麦克风</button>
+          <button type="button" id="replaceExternalAudio" class="btn btn-primary btn-sm">切换外部音频轨</button>
+          <button type="button" id="leaveRoom" class="btn btn-secondary btn-sm leaveRoom">退出</button>
+        </div>
+      </div>
+
+      <div class="row videoRow">
+        <div class="col-sm">
+          <label id="previewLabel" class="text-white"></label>
+          <video id="previewVideo" autoplay muted playsinline></video>
+          <!-- <video id="previewScreenVideo"autoplay muted playsinline></video> -->
+          <div class="previewScreenVideo">
+          </div>
+          <video id="testVideo" autoplay muted playsinline></video>
+        </div>
+
+        <div class="col-sm remoteVideo">
+          <!--<video  autoplay muted playsinline></video>-->
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script type="text/javascript" src="screen.bundle.js"></script></body>
+</html>

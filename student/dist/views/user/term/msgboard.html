@@ -1,0 +1,130 @@
+
+
+<script type="text/html" template>
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/template.css?v={{ layui.admin.v }}-1" media="all">
+</script>
+
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>学期课程</cite></a>
+        <a><cite>答疑中心</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid layadmin-message-fluid">
+    <div class="layui-row">
+        <div class="layui-col-md12">
+            <div class="layui-form">
+                <div class="layui-form-item layui-form-text">
+                    <div class="layui-input-block">
+                        <textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+
+                <div class="layui-form-item" style="overflow: hidden;">
+                    <div class="layui-input-block layui-input-right">
+                        <button class="layui-btn" lay-submit lay-filter="formDemo">发表</button>
+                    </div>
+                    <div class="layadmin-messag-icon">
+                        <a href="javascript:;"><i class="layui-icon layui-icon-face-smile-b"></i></a>
+                        <a href="javascript:;"><i class="layui-icon layui-icon-picture"></i></a>
+                        <a href="javascript:;"><i class="layui-icon layui-icon-link"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">师生互动</div>
+                <div class="layui-card-body">
+                    <ul class="layuiadmin-card-status layuiadmin-home2-usernote" id="interact_container">
+                    </ul>
+                    <div class="layui-row message-content-btn" id="more">
+                        <a href="javascript:;" class="layui-btn">更多</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['admin', 'layer', 'form', 'laytpl', 'flow'], function () {
+        var $ = layui.$
+            , admin = layui.admin
+            , form = layui.form
+            , laytpl = layui.laytpl
+            , flow = laytpl.flow;
+
+        $.ajax({
+            type: "get",
+            url: "json/user/msgboard.js",
+            data: {},
+            dataType: "json",
+            success: function (res) {
+                var json = eval(res);
+                $.each(json.data, function (index, item) {
+                    $("#interact_container").append("<div id=\"interact\">\n" +
+                        "    <li>\n" +
+                        "        <h3 class=\"name\"></h3>\n" +
+                        "        <p class=\"note\"></p>\n" +
+                        "        <span class=\"time\"></span>\n" +
+                        "        <a href=\"javascript:;\" layadmin-event=\"replyNote\" data-id=\"\"\n" +
+                        "           class=\"layui-btn layui-btn-xs layuiadmin-reply\">回复</a>\n" +
+                        "    </li>\n" +
+                        "</div>");
+                    $('.layui-btn .layui-btn-xs .layuiadmin-reply').eq(index).attr('data-id', item.id);
+                    $('.name').eq(index).text(item.name);
+                    $('.note').eq(index).text(item.note);
+                    $('.time').eq(index).text(item.time);
+                })
+            },
+            error: function () {
+                layer.msg("错误")
+            }
+        });
+        $('#more').click(function () {
+            $.get('json/user/msgmore.js', {
+                //给后台传参
+            }, data => {
+                laytpl($("#interact").html()).render(data, function (html) {
+                    $('#interact_container').html(html);
+                });
+            })
+        })
+
+        form.on('submit(formDemo)',function (msg) {
+            $("#interact_container").append("<div id=\"interact\">\n" +
+                "    <li>\n" +
+                "        <h3 id=\"name\"></h3>\n" +
+                "        <p id=\"note\"></p>\n" +
+                "        <span id=\"time\"></span>\n" +
+                "        <a href=\"javascript:;\" layadmin-event=\"replyNote\" data-id=\"\"\n" +
+                "           class=\"layui-btn layui-btn-xs layuiadmin-reply\">回复</a>\n" +
+                "    </li>\n" +
+                "</div>");
+            $('#name').text("test");
+            $('#note').text(msg.field.desc);
+            $('#time').text("2020-09-25");
+            console.log(msg.field.desc);
+        })
+        //发表内容提交到服务器
+        // form.on('submit(formDemo)', function (msg) {
+        //     $.ajax({
+        //         url: '',
+        //         type: 'post',
+        //         dataType: 'text',
+        //         contentType: 'application/json',
+        //         data: JSON.stringify(msg),
+        //         timeout: 3000,
+        //         beforeSend: function (xhr) {
+        //             xhr.setRequestHeader(header, token);
+        //         },
+        //         success: function (data) {
+        //             layer.msg("发表成功");
+        //         }
+        //     })
+        //     return true; //刷新页面,重新获取json
+        // });
+    });
+</script>

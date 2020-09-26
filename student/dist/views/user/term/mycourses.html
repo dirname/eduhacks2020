@@ -1,0 +1,126 @@
+<div class="layui-card layadmin-header" id="header1">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>个人中心</cite></a>
+        <a><cite>我的课表</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-card" id="body_container">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto"
+             lay-filter="layadmin-userfront-formlist">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">课程名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="coursename" placeholder="请输入" autocomplete="off"
+                               class="layui-input" id="course_name">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">教师姓名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="teacher" placeholder="请输入" autocomplete="off" class="layui-input"
+                               id="teacher">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit data-type="getInfo"
+                            lay-filter="LAY-user-front-search" id="course_search">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <table id="LAY-user-manage" lay-filter="LAY-user-manage"></table>
+            <script type="text/html" id="table-useradmin-webuser">
+                <a class="showDetail layui-btn layui-btn-normal layui-btn-xs" lay-href="/user/term/studetail/courseId={{ d.id }}">
+                    <i class="iconfont icon-chakan"></i> 查看课程信息</a>
+            </script>
+        </div>
+    </div>
+</div>
+
+<script type="text/html" id="statusTpl">
+    {{#  if(d.status==0){ }}
+    <button class="layui-btn layui-btn-xs">尚未开课</button>
+    {{#  }else if(d.status==1){  }}
+    <button class="layui-btn layui-btn-xs">正在进行</button>
+    {{#  }else if(d.status==2){  }}
+    <button class="layui-btn layui-btn-xs layui-btn-primary">已结束</button>
+    {{#  }  }}
+</script>
+<script type="text/html" id="typeTpl">
+    {{#  if(d.status==0){ }}
+    <button class="layui-btn layui-btn-xs">选修课</button>
+    {{#  }else if(d.status==1){  }}
+    <button class="layui-btn layui-btn-xs">必修课</button>
+    {{#  }else if(d.status==2){  }}
+    <button class="layui-btn layui-btn-xs">公共课</button>
+    {{#  }  }}
+</script>
+<!--<script>-->
+<!--    layui.use('jquery',function () {-->
+<!--        var $ = layui.jquery;-->
+<!--        $("#course_search").on('click',function () {-->
+<!--            var =-->
+<!--        });-->
+
+<!--    })-->
+<!--</script>-->
+<script>
+    layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table'], function () {
+        var $ = layui.jquery
+            , admin = layui.admin
+            , view = layui.view
+            , table = layui.table
+            , form = layui.form;
+
+        form.render(null, 'layadmin-userfront-formlist');
+
+        //查看详情
+        table.on('row(LAY-user-manage)', function (obj) {
+            var id = obj.data.id;
+            var index = obj.data.index;
+            $(document).ready(function () {
+                $('.showDetail').eq(index-1).click(function () {
+                    $.ajax({
+                        url: 'http://go.htdocs.net/client/start/json/user/stuDetail',
+                        type: 'GET',
+                        data: {'id': id},
+                        datatype: 'json',
+                        success: function (res) {
+                            $(function(){
+                                $.cookie('cookies', JSON.stringify(res), {secure: true});
+                                window.location="studetail.html";
+                            })
+                        }
+                    })
+                })
+            });
+        })
+        //监听搜索
+        form.on('submit(LAY-user-front-search)', function (obj) {
+            var field = obj.field; //获取提交的字段
+            var active = {
+                getInfo: function () {
+                    var $course_name = $.trim($('#course_name').val())
+                        , $teacher = $.trim($('#teacher').val());
+                    if ($course_name || $teacher) {
+                        setTimeout(function () {
+                            table.reload('LAY-user-manage', {
+                                where: field
+                            }, 800)
+                        })
+                    }
+                }
+            }
+            $('.layui-btn .layuiadmin-btn-useradmin').on('click', function () {
+                var type = $(this).data('type');
+                active[type] ? active[type].call(this) : '';
+            });
+        });
+    });
+</script>

@@ -1,0 +1,139 @@
+.clearfix:after {
+    /*消除浮动，恢复div标签使用内容撑开*/
+    display: block;
+    clear: both;
+    content: '';
+}
+
+.layui-personal-box {
+    height: 360px;
+    width: 228px;
+    border-radius: 3px;
+    background: white;
+}
+
+.content-msg {
+    width: 69.5%;
+    margin: auto;
+}
+
+.msg-content {
+    margin-left: 2%;
+    border-bottom: 1px solid lightgray;
+}
+
+.hot-recommend li {
+    margin: 2% 0 0 2%;
+    float: left;
+}
+
+.hot-recommend li:hover {
+}
+
+.msg {
+    width: 280px;
+    height: 210px;
+    margin-top: 10px;
+}
+
+.msg img {
+    width: 280px;
+    height: 180px;
+}
+
+.msg a {
+}
+
+.msg a:hover {
+    color: deepskyblue;
+}
+
+.msg h4 {
+    margin-top: 5px;
+}
+
+.free {
+    color: #21af08;
+    float: left;
+}
+
+.members {
+    float: right;
+    color: gray;
+}
+
+/*===title-content end===*/
+.bottom-down .down-content p {
+    margin-right: 340px;
+}
+
+.bottom-up {
+    height: 130px;
+    width: 100%;
+    background: #535d69;
+}
+
+.bottom-up .up-content {
+    height: 100%;
+    width: 1200px;
+    background: #535d69;
+    margin: 0 auto;
+    color: white;
+    border-top: 1px solid gray;
+}
+
+.bottom-up .up-content .logo {
+    background: url("https://www.python.org/static/img/python-logo.png") no-repeat 0 21px;
+    width: 238px;
+    height: 100%;
+    float: left;
+    margin-right: 80px;
+}
+
+.bottom-up .up-content p {
+    line-height: 32px;
+    /*text-align: center;*/
+}
+
+.bottom-up .up-content .top-content {
+    margin-top: 20px;
+}
+
+.bottom-up .up-content .top-content a {
+    color: white;
+}
+
+.bottom-up .up-content .bottom-content .tel {
+    margin-left: 20px;
+}
+
+.bottom-up .up-content .bottom-content a {
+    color: white;
+}
+
+.bottom-up .up-content .top-content .about-me {
+    margin-left: 20px;
+}
+
+.bottom-up .up-content .top-content .about-me i {
+    font-size: 20px;
+}
+
+.bottom-down {
+    height: 65px;
+    width: 100%;
+    background: #343c46;
+    color: white;
+}
+
+.bottom-down .down-content {
+    height: 100%;
+    width: 1200px;
+    background: #343c46;
+    margin: 0 auto;
+}
+
+.bottom-down .down-content p {
+    text-align: center;
+    line-height: 65px;
+}

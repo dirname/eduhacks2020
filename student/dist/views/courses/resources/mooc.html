@@ -1,0 +1,91 @@
+<script type="text/html" template>
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/template.css?v={{ layui.admin.v }}-1" media="all">
+</script>
+
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>优质资源</cite></a>
+        <a><cite>慕课中心</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid layadmin-cmdlist-fluid">
+    <div class="layui-row layui-col-space30">
+        <div class="layui-col-md2 layui-col-sm4">
+            <div class="cmdlist-container" id="mooc_container">
+            </div>
+        </div>
+        <div class="layui-col-md12 layui-col-sm12">
+            <div id="pager"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['admin', 'laypage', 'layer', 'laytpl'], function () {
+        var $ = layui.$
+            , admin = layui.admin
+            , laypage = layui.laypage
+            , laytpl = layui.laytpl
+            , layer = layui.layer;
+
+        $.ajax({
+            type: "get",
+            url: "json/courses/mooc.js",
+            data: {},
+            dataType: "json",
+            success: function (res) {
+                // console.log(res);
+                var json = eval(res);
+                $.each(json.data, function (index, item) {
+                    $("#mooc_container").append("<div id=\"course_mooc\">\n" +
+                        "    <a href=\"javascript:;\">\n" +
+                        "        <img style=\"height: 150px;\"\n" +
+                        "             src=\"\" class=\"courseImg\">\n" +
+                        "    </a>\n" +
+                        "    <a href=\"javascript:;\">\n" +
+                        "        <div class=\"cmdlist-text\">\n" +
+                        "            <p class=\"info\"></p>\n" +
+                        "            <div class=\"msg_detail\" style=\"padding-bottom: 5%\">\n" +
+                        "                <b class=\"from\"></b><br>\n" +
+                        "                <b class=\"teacher\" style=\"float: left;padding-top: 1px;margin-right: -10px\"></b>\n" +
+                        "                <span class=\"flow\" style=\"float: right\">\n" +
+                        "                    <i class=\"layui-icon layui-icon-rate\"></i>" +
+                        "                </span>\n" +
+                        "            </div>\n" +
+                        "        </div>\n" +
+                        "    </a>\n" +
+                        "</div>");
+                    $('.courseImg').eq(index).attr('src', item.img);
+                    $('.info').eq(index).text(item.course_name);
+                    $('.from').eq(index).text(item.from);
+                    $('.teacher').eq(index).text('--' + item.teacher);
+                    $('.flow').eq(index).append(item.stared);
+                })
+            },
+            error: function () {
+                layer.msg("错误")
+            }
+        });
+        // $.get('http://47.92.50.43:8888/sys/jscount', data => {
+        //     laypage.render({ //异步
+        //         elem: 'pager', //注意，这里的 pager 是 ID，不用加 # 号
+        //         count: data.count, //数据总数，从服务端得到
+        //         limit: 10,
+        //         jump: function (obj) {
+        //             // console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+        //             // console.log(obj.limit); //得到每页显示的条数
+        //             $.get('http://htdocs.net/sys/jslist', {
+        //                 pageIndex: obj.curr,
+        //                 pageSize: obj.limit //给后台传参
+        //             }, data => {
+        //                 laytpl($("#course_mooc").html()).render(data, function (html) {
+        //                     $('#mooc_container').html(html);
+        //                 });
+        //             })
+        //         }
+        //     });
+        // })
+    });
+</script>

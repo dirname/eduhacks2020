@@ -1,0 +1,326 @@
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>个人中心</cite></a>
+        <a><cite>学期课程</cite></a>
+        <a><cite>课程详情</cite></a>
+    </div>
+</div>
+<div class="layui-fluid" id="LAY-component-grid-stack" template lay-url="./json/user/courseDetail.js?courseId={{ layui.router().search.courseId }}">
+    <div class="layui-row layui-col-space20">
+        <div class="layui-col-md6" style="width: 70%;margin-left: 15%">
+            <div class="layui-card clearfix" style="height: 350px;">
+                <div class="layui-card-body" style="height: 82%;width:45%;margin:2%;float: left;">
+                    <img src="{{d.data.courseImg}}" alt=""
+                         style="height: 100%;width: 100%;border-radius: 2px" id="courseImg">
+                </div>
+                <div style="float: left;margin-top: 2.4%;margin-left: -7px">
+                    <div>
+                        <h1 style="color: black;" id="courseName">{{d.data.courseName}}</h1>
+                    </div>
+                    <div style="margin-top: 15px">
+                        <span style="color: grey">主讲老师：</span><span style="color: black" id="teacher">{{d.data.teacher}}</span>
+                    </div>
+                    <div style="margin-top: 7px">
+                        <div style="margin-top: 7px;width: 100%;">
+                            <span style="color: grey">课程编号：</span>
+                            <span style="color: black" id="courseID">{{d.data.courseId}}</span>
+                        </div>
+                        <div style="margin-top: 7px;width: 100%;">
+                            <span style="color: grey;">学科分类：</span>
+                            <span style="color: black" id="subject">{{d.data.subject}}</span>
+                        </div>
+                        <div style="margin-top: 7px;width: 100%;">
+                            <span style="color: grey">开课时间：</span>
+                            <span style="color: black" id="openTime">{{d.data.openTime}}</span><br>
+                        </div>
+                        <div style="margin-top: 7px;width: 100%;">
+                            <span style="color: grey">教学班级：</span>
+                            <span style="color: black" id="class">{{d.data.class}}</span>
+                        </div>
+                        <div style="margin-top: 7px;width: 100%;">
+                            <span style="color: grey">课程类型：</span>
+                            <span style="color: black" id="courseType">{{d.data.courseType}}</span>
+                        </div>
+                        <div style="margin-top: 7px;width: 100%;">
+                            <span style="color: grey">课程状态：</span>
+                            <script type="text/html" template lay-url="./json/user/courseDetail.js?courseId={{ layui.router().search.courseId }}">
+                                {{#  if(d.data.status === 0){  }}
+                                    <span style="color: black">等待开课</span>
+                                {{#  }else if(d.data.status === 1){  }}
+                                    <span style="color: black">正在进行</span>
+                                {{#  }else if(d.data.status === 2){  }}
+                                    <span style="color: black">已结束</span>
+                                {{#  }  }}
+                            </script>
+                        </div>
+                        <script type="text/html" template lay-url="./json/user/courseDetail.js?courseId={{ layui.router().search.courseId }}">
+                            {{#  if(d.data.status === 0){  }}
+                                <input class="layui-btn layui-btn-primary" type="button" value="等待开课" style="margin-top: 11%;" disabled>
+                            {{#  }else if(d.data.status === 1){  }}
+                            <a href="../zego/screen/index.html">
+<!--                                <a lay-href="/user/term/live/courseId={{ d.id }}"></a>-->
+                                <input class="layui-btn" type="button" value="进入教室" style="margin-top: 11%;">
+                            </a>
+                                <input class="layui-btn" type="button" value="联系老师" style="margin-top: 11%;margin-left: 20px">
+                            {{#  }else if(d.data.status === 2){  }}
+                                <input class="layui-btn layui-btn-primary layui-btn-disabled" type="button" value="已结束" style="margin-top: 11%;">
+                            {{#  }  }}
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">
+                    <a lay-href="/user/term/mycourses" class="layui-btn layui-btn-primary layui-btn-sm">返回上级</a>
+                </div>
+                <div class="layui-card-body">
+                    <div class="layui-tab">
+                        <ul class="layui-tab-title">
+                            <li class="layui-this">课程简介</li>
+                            <li>课程目录</li>
+                            <li>课程公告</li>
+                            <li>课程作业</li>
+                            <li>课程资料</li>
+                            <li>课程讨论</li>
+                            <li>课程录播</li>
+                        </ul>
+                        <div class="layui-tab-content">
+                            <div class="layui-tab-item layui-show">
+                                <blockquote class="layui-elem-quote" style="padding: 20px;" id="synopsis">
+                                </blockquote>
+                            </div>
+                            <div class="layui-tab-item" id="catalog">
+                                <ul class="layui-timeline" id="catalog_container">
+                                    <li class="layui-timeline-item">
+                                        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                                        <div class="layui-timeline-content layui-text">
+                                            <div class="layui-timeline-title">等待开课</div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="layui-tab-item" id="notice">
+                                <ul class="layui-timeline" id="notice_container">
+                                    <li class="layui-timeline-item">
+                                        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                                        <div class="layui-timeline-content layui-text">
+                                            <div class="layui-timeline-title">等待开课</div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="layui-tab-item" id="homework">
+                                <ul class="layui-timeline" id="homework_container">
+                                    <li class="layui-timeline-item">
+                                        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                                        <div class="layui-timeline-content layui-text">
+                                            <div class="layui-timeline-title">等待开课</div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="layui-tab-item">
+                                <input type="button" class="layui-btn" value="资料下载">
+                                <input type="button" class="layui-btn" value="资料上传">
+                            </div>
+                            <div class="layui-tab-item">
+                                <script type="text/html" template>
+                                    <link rel="stylesheet"
+                                          href="{{ layui.setter.base }}style/template.css?v={{ layui.admin.v }}-1"
+                                          media="all">
+                                </script>
+                                <div class="layui-fluid layadmin-message-fluid">
+                                    <div class="layui-row">
+                                        <div class="layui-col-md12" id="discuss">
+                                            <div class="layui-form" style="margin-top: -30px;">
+                                                <div class="layui-form-item layui-form-text">
+                                                    <div class="layui-input-block">
+                                                        <textarea name="desc" placeholder="请输入内容"
+                                                                  class="layui-textarea"></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="layui-form-item" style="overflow: hidden;">
+                                                    <div class="layui-input-block layui-input-right">
+                                                        <button class="layui-btn" lay-submit lay-filter="formDemo">发表
+                                                        </button>
+                                                    </div>
+                                                    <div class="layadmin-messag-icon">
+                                                        <a href="javascript:;"><i
+                                                                class="layui-icon layui-icon-face-smile-b"></i></a>
+                                                        <a href="javascript:;"><i
+                                                                class="layui-icon layui-icon-picture"></i></a>
+                                                        <a href="javascript:;"><i
+                                                                class="layui-icon layui-icon-link"></i></a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="layui-col-md12 layadmin-homepage-list-imgtxt message-content"
+                                             id="discuss_container">
+                                            <div class="layui-row message-content-btn">
+                                                <a href="javascript:;" class="layui-btn" id="more">更多</a>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="layui-tab-item" id="videos">
+                                <ul class="layui-timeline" id="videos_container">
+                                    <li class="layui-timeline-item">
+                                        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                                        <div class="layui-timeline-content layui-text">
+                                            <div class="layui-timeline-title">等待开课</div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script id="second" type="text/html">
+    {{# layui.each(d, function(index, item){ }}
+    <li class="layui-timeline-item">
+        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+        <div class="layui-timeline-content layui-text">
+            <a style="color: grey">
+                <h3 class="layui-timeline-title" style="color: #808080">{{item.date}}</h3>
+            </a>
+            <a style="color: grey">
+                <p>{{item.content}}</p>
+            </a>
+        </div>
+    </li>
+    {{# }); }}
+</script>
+<script id="third" type="text/html">
+    {{# layui.each(d, function(index, item){ }}
+    <li class="layui-timeline-item">
+        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+        <div class="layui-timeline-content layui-text">
+            <h3 class="layui-timeline-title"><i class="iconfont icon-gonggao-" style="font-size: 20px"></i>{{item.time}}&emsp;公告
+            </h3>
+            <p>{{item.content}}</p>
+        </div>
+    </li>
+    {{# }); }}
+</script>
+<script id="fourth" type="text/html">
+    {{# layui.each(d, function(index, item){ }}
+    <li class="layui-timeline-item">
+        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+        <div class="layui-timeline-content layui-text">
+            <h3 class="layui-timeline-title"><i class="iconfont icon-xingzhuangcopy"></i>{{item.time}}&emsp;作业</h3>
+            <p>{{item.content}}</p>
+        </div>
+    </li>
+    {{# }); }}
+</script>
+<script id="sixth" type="text/html">
+    {{# layui.each(d, function(index, item){ }}
+    <div class="media-body">
+        <a href="javascript:;" class="media-left" style="float: left;">
+            <div>
+                <img src="{{item.avatarUrl}}"
+                     height="30px" width="30px">
+            </div>
+        </a>
+        <div class="pad-btm">
+            <p class="fontColor">
+                <a href="javascript:;">{{item.username}}</a>
+            </p>
+        </div>
+        <p class="message-text">{{item.comment}}</p>
+    </div>
+    {{# }); }}
+</script>
+<script id="last" type="text/html">
+    {{# layui.each(d, function(index, item){ }}
+    <li class="layui-timeline-item">
+        <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+        <div class="layui-timeline-content layui-text">
+            <h3 class="layui-timeline-title">{{item.time}}</h3>
+            <a href="">{{item.title}}</a>
+        </div>
+    </li>
+    {{# }); }}
+</script>
+<script>
+    layui.use(['admin', 'layer', 'form', 'element', 'laytpl'], function () {
+        var $ = layui.$
+            , admin = layui.admin
+            , form = layui.form
+            , element = layui.element
+            , laytpl = layui.laytpl;
+
+        form.on('submit(formDemo)', function (data) {
+            // layer.msg(JSON.stringify(data.field));
+            return false;
+        });
+        // $.get('http://htdocs.net/client/json/stuDetailSecond.js', {
+        //     //给后台传参
+        // }, data => {
+        //     laytpl($("#second").html()).render(data, function (html) {
+        //         $('#catalog_container').html(html);
+        //     });
+        // })
+        // $.get('http://htdocs.net/client/json/stuDetailThird.js', {
+        //     //给后台传参
+        // }, data => {
+        //     laytpl($("#third").html()).render(data, function (html) {
+        //         $('#notice_container').html(html);
+        //     });
+        // })
+        // $.get('http://htdocs.net/client/json/stuDetailFourth.js', {
+        //     //给后台传参
+        // }, data => {
+        //     laytpl($("#fourth").html()).render(data, function (html) {
+        //         $('#homework_container').html(html);
+        //     });
+        // })
+        // $.get('http://htdocs.net/client/json/stuDetailSixth.js', {
+        //     //给后台传参
+        // }, data => {
+        //     laytpl($("#sixth").html()).render(data, function (html) {
+        //         $('#discuss_container').html(html);
+        //     });
+        // })
+        // $.get('http://htdocs.net/client/json/stuDetailLast.js', {
+        //     //给后台传参
+        // }, data => {
+        //     laytpl($("#last").html()).render(data, function (html) {
+        //         $('#videos_container').html(html);
+        //     });
+        // })
+    });
+</script>
+<!--<script>-->
+<!--    var $res = JSON.parse($.cookie('cookies'));-->
+<!--    var $courseImg = $('#courseImg');-->
+<!--    var $courseName = $('#courseName');-->
+<!--    var $teacher = $('#teacher');-->
+<!--    var $courseID = $('#courseID');-->
+<!--    var $subject = $('#subject');-->
+<!--    var $openTime = $('#openTime');-->
+<!--    var $class = $('#class');-->
+<!--    var $courseType = $('#courseType');-->
+<!--    var $status = $('#status');-->
+<!--    var $synopsis = $('#synopsis');-->
+<!--    $courseImg.attr('src', $res.data.img);-->
+<!--    $courseName.attr('value', $res.data.coursename);-->
+<!--    $teacher.attr('value', $res.data.teacher);-->
+<!--    $courseID.attr('value', $res.data.id);-->
+<!--    $subject.attr('value', $res.data.subject);-->
+<!--    $openTime.attr('value', $res.data.time);-->
+<!--    $class.attr('value', $res.data.class);-->
+<!--    $courseType.attr('value', $res.data.type);-->
+<!--    $status.attr('value', $res.data.status);-->
+<!--    $synopsis.attr('value', $res.data.synopsis)-->
+<!--</script>-->

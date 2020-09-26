@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Bingo - 科技驱动在线教学的新工具、新方法和新技术</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+        <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+        <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+    <link rel="stylesheet" href="https://g.alicdn.com/de/prismplayer/2.9.0/skins/default/aliplayer-min.css" />
+    <script type="text/javascript" charset="utf-8" src="https://g.alicdn.com/de/prismplayer/2.9.0/aliplayer-min.js"></script>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1981219_s1pvywee3re.css">
+    <style>
+        .clearfix:after {
+            /*消除浮动，恢复div标签使用内容撑开*/
+            display: block;
+            clear: both;
+            content: '';
+        }
+    </style>
+</head>
+<body class="layui-layout-body">
+<div id="LAY_app"></div>
+<script src="layui/layui.js"></script>
+<script>
+    layui.config({
+        base: '../dist/'
+        , version: '1.4.0'
+    }).use('index');
+    // $("#cord-body").resize(function () {
+    //     $("#he-plugin-standard").height(document.getElementById("cord-body").clientHeight - 300);
+    // });
+</script>
+<!--<script>-->
+<!--    var reconnect = false;-->
+<!--    var ws;-->
+<!--    var $ = layui.jquery;-->
+<!--    var wsUrl = "ws://echo.websocket.org/echo"-->
+<!--    var ttl;-->
+
+
+<!--    if ("WebSocket" in window && typeof WebSocket != 'undefined') {-->
+<!--        console.log('Hello World')-->
+<!--    } else {-->
+<!--        layer.open({-->
+<!--            title: "error"-->
+<!--            , content: "您的浏览器不支持WebSocket，请下载谷歌（https://www.google.cn/chrome/）或者支持的其他浏览器"-->
+<!--            , icon: 5-->
+<!--        });-->
+<!--    }-->
+<!--    var createWebSocket = function (wsUrl) {-->
+<!--        try {-->
+<!--            ws = new WebSocket(wsUrl)-->
+<!--            console.log(ws.readyState);-->
+<!--            wsInit();//初始化-->
+<!--        } catch (e) {-->
+<!--            //失败重连-->
+<!--            console.log("reconnect..")-->
+<!--            wsReconnect(wsUrl);-->
+<!--        }-->
+<!--    };-->
+<!--    //初始化-->
+<!--    var wsInit = function () {-->
+<!--        ws.onopen = function () {-->
+<!--            ws.send()//根据后台需要接受什么数据才能握手成功来发送数据-->
+<!--            console.log("Connection open..")-->
+<!--            // heartCheck.start();-->
+<!--        }-->
+<!--        ws.onmessage = function (evt) {-->
+<!--            var data = JSON.parse(evt.data)-->
+<!--            // heartCheck.reset(); //收到后台消息，心跳检查重置-->
+<!--        }-->
+<!--        ws.onerror = function () {-->
+<!--            console.log(this.readyState);-->
+<!--            layer.open({-->
+<!--                title: "error"-->
+<!--                , content: "出现了未知错误, 请刷新页面重试"-->
+<!--                , icon: 5-->
+<!--            });-->
+<!--        }-->
+<!--        ws.onclose = function () {-->
+<!--            layer.msg('与服务器断开连接，正在尝试重新建立连接..')-->
+<!--        }-->
+
+<!--        //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。-->
+<!--        window.onbeforeunload = function () {-->
+<!--            closeWebSocket();-->
+<!--        }-->
+<!--    }-->
+<!--    //设置重连-->
+<!--    var wsReconnect = function (url) {-->
+<!--        if (reconnect) {-->
+<!--            return;-->
+<!--        }-->
+<!--        reconnect = true;-->
+<!--        //没连接上一直重连，直到成功-->
+<!--        //设置时间控制重连速度-->
+<!--        ttl && clearTimeout(ttl);-->
+<!--        ttl = setTimeout(function () {-->
+<!--            createWebSocket(url)-->
+<!--        }, 4000)-->
+<!--    }-->
+<!--</script>-->
+</body>
+</html>
+
+

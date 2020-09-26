@@ -1,0 +1,93 @@
+
+
+<div class="prism-player" id="player-con"></div>
+<script>
+    var player = new Aliplayer({
+            "id": "player-con",
+            "source": "rtmp://live.htdocs.net/eduHacks2020/00001?auth_key=1601049780-0-0-9c136df343b4d1d806718c6949d10df8",
+            "width": "100%",
+            "height": "800px",
+            "autoplay": true,
+            "isLive": true,
+            "rePlay": false,
+            "videoHeight": "800px",
+            "playsinline": true,
+            "preload": true,
+            "autoPlayDelay": "0",
+            "language": "zh-cn",
+            "controlBarVisibility": "hover",
+            "videoWidth": "100%",
+            "useH5Prism": true,
+            "extraInfo": {
+                "crossOrigin": "anonymous"
+            },
+            "skinLayout": [
+                {
+                    "name": "bigPlayButton",
+                    "align": "blabs",
+                    "x": 30,
+                    "y": 80
+                },
+                {
+                    "name": "errorDisplay",
+                    "align": "tlabs",
+                    "x": 0,
+                    "y": 0
+                },
+                {
+                    "name": "infoDisplay"
+                },
+                {
+                    "name": "controlBar",
+                    "align": "blabs",
+                    "x": 0,
+                    "y": 0,
+                    "children": [
+                        {
+                            "name": "liveDisplay",
+                            "align": "tlabs",
+                            "x": 15,
+                            "y": 6
+                        },
+                        {
+                            "name": "fullScreenButton",
+                            "align": "tr",
+                            "x": 10,
+                            "y": 10
+                        },
+                        {
+                            "name": "setting",
+                            "align": "tr",
+                            "x": 15,
+                            "y": 12
+                        },
+                        {
+                            "name": "volume",
+                            "align": "tr",
+                            "x": 5,
+                            "y": 10
+                        },
+                        {
+                            "name": "snapshot",
+                            "align": "tr",
+                            "x": 10,
+                            "y": 12
+                        }
+                    ]
+                }
+            ]
+        }, function (player) {
+            console.log("The player is created");
+        }
+    );
+    /* h5截图按钮, 截图成功回调 */
+    player.on('snapshoted', function (data) {
+        var pictureData = data.paramData.base64
+        var downloadElement = document.createElement('a')
+        downloadElement.setAttribute('href', pictureData)
+        var fileName = 'Aliplayer' + Date.now() + '.png'
+        downloadElement.setAttribute('download', fileName)
+        downloadElement.click()
+        pictureData = null
+    })
+</script>

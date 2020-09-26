@@ -1,0 +1,118 @@
+<title>搜索结果</title>
+
+<script type="text/html" template>
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/template.css?v={{ layui.admin.v }}-1" media="all">
+</script>
+
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>搜索</cite></a>
+        <a><cite>搜索结果</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card layadmin-serach-main">
+                <div class="layui-card-header">
+                    <p style="font-size: 18px;">
+                        <span style="color: #01AAED" id="keyword"></span> 查询到
+                        <strong id="count"></strong> 个结果
+                    </p>
+                    <p class="layadmin-font-em" id="consume"></p>
+                </div>
+                <div class="layui-card-body">
+                    <ul class="layadmin-serach-list layui-text" id="result_container">
+                    </ul>
+                    <div id="LAY-template-search-page" style="text-align: center;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script id="resultTemplate" type="text/html">
+    {{# layui.each(d, function(index, item){ }}
+    <li>
+        <div class="layui-serachlist-text">
+            <h3>
+                <a href="" target="">{{item.title}}</a>
+            </h3>
+            <p>{{item.content}}</p>
+        </div>
+    </li>
+    {{# }); }}
+</script>
+<script type="text/javascript">
+    layui.use(['admin', 'laypage', 'jquery'], function () {
+        var $ = layui.jquery;
+        var laypage = layui.laypage;
+        $.get('http://47.92.50.43:8888/sys/jscount', data => {
+            laypage.render({ //异步
+                elem: 'LAY-template-search-page', //注意，这里的 pager 是 ID，不用加 # 号
+                count: data.count, //数据总数，从服务端得到
+                limit: 10,
+                jump: function (obj) {
+                    // console.log(obj.curr); //得到当前页，以便向服务端请求对应页的数据。
+                    // console.log(obj.limit); //得到每页显示的条数
+                    $.get('http://htdocs.net/sys/jslist', {
+                        pageIndex: obj.curr,
+                        pageSize: obj.limit //给后台传参
+                    }, data => {
+                        laytpl($("#course_all").html()).render(data, function (html) {
+                            $('#course_all_container').html(html);
+                        });
+                    })
+                }
+            });
+        })
+    });
+    $(document).ready(function () {
+        //请求参数
+        // var search_url = decodeURIComponent(window.location.href);
+        // var keyword = search_url.split('=')[2]
+        // console.log(keyword)
+        // var list = {"keyword": keyword};
+        // $.ajax({
+        //     //请求方式
+        //     type: "POST",
+        //     //请求类型
+        //     contentType: "application/json;charset=UTF-8",
+        //     //请求地址
+        //     url: "http://127.0.0.1/json/template/search.js",
+        //     //提交数据，json字符串
+        //     data : JSON.stringify(list),
+        //     //请求成功
+        //     success: function (res) {
+        //         layui.use(['laytpl'], function () {
+        //             var laypage = layui.laypage;
+        //
+        //             laypage.render({ //异步
+        //                 elem: 'LAY-template-search-page', //分页
+        //                 count: res.data.count, //数据总数，从服务端得到
+        //                 limit: 10,
+        //                 jump: function (obj) {
+        //                     // obj.curr 得到当前页，以便向服务端请求对应页的数据。
+        //                     // obj.limit 得到每页显示的条数
+        //                     $.get('http://47.92.50.43:8888/sys/jslist', {
+        //                         pageIndex: obj.curr,
+        //                         pageSize: obj.limit
+        //                     }, data => {
+        //                         laytpl($("#resultTemplate").html()).render(data, function (html) {
+        //                             $('#result_container').html(html); //获取后台返回数据
+        //                         });
+        //                     })
+        //                 }
+        //             });
+        //
+        //         });
+        //     },
+        //     //请求失败，包含具体的错误信息
+        //     error: function (e) {
+        //         console.log(e.status);
+        //         layui.msg('信息加载失败')
+        //     }
+        // });
+    });
+</script>

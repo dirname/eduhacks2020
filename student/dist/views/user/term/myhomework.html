@@ -1,0 +1,118 @@
+
+
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>个人中心</cite></a>
+        <a><cite>学期课程</cite></a>
+        <a><cite>我的作业</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="app-content-list">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">内容标题</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="title" placeholder="请输入" autocomplete="off" class="layui-input" id="content">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">课程名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="coursename" placeholder="请输入" autocomplete="off" class="layui-input" id="courseName">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">文件类型</label>
+                    <div class="layui-input-inline">
+                        <select name="label" id="type">
+                            <option value="">请选择标签</option>
+                            <option value="0">作业</option>
+                            <option value="1">测试</option>
+                            <option value="2">word</option>
+                            <option value="3">ppt</option>
+                            <option value="4">视频</option>
+                            <option value="5">其他</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-list" lay-submit lay-filter="LAY-app-contlist-search" id="homework_search">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <script type="text/html" id="typeTpl">
+            {{#  if(d.type === 0){ }}
+            <span>作业</span>
+            {{#  } else if(d.type === 1){ }}
+            <span>测试</span>
+            {{#  } else if(d.type === 2){ }}
+            <span>word</span>
+            {{#  } else if(d.type === 3){ }}
+            <span>ppt</span>
+            {{#  } else if(d.type === 4){ }}
+            <span>视频</span>
+            {{#  } else if(d.type === 5){ }}
+            <span>其他</span>
+            {{#  } }}
+        </script>
+        <div class="layui-card-body">
+            <table id="LAY-app-content-homework" lay-filter="LAY-app-content-homework"></table>
+            <script type="text/html" id="buttonTpl">
+                {{#  if(d.status==0){ }}
+                <button class="layui-btn layui-btn-xs">已完成</button>
+                {{#  }else if(d.status==1){  }}
+                <button class="layui-btn  layui-btn-primary layui-btn-xs">待批阅</button>
+                {{#  }else if(d.status==2){  }}
+                <button class="layui-btn  layui-btn-warm layui-btn-xs">未完成</button>
+                {{#  }  }}
+            </script>
+            <script type="text/html" id="table-content-list">
+                <a class="layui-btn layui-btn-xs" lay-event="resubmit"><i class="layui-icon layui-icon-refresh"></i>重新提交</a>
+            </script>
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use('contlist', layui.factory('contlist')).use(['admin', 'contlist', 'table','upload'], function(){
+        var $ = layui.$
+            ,admin = layui.admin
+            ,view = layui.view
+            ,table = layui.table
+            ,form = layui.form
+            ,upload = layui.upload;
+
+        form.render(null, 'app-content-list');
+        upload.render({
+            elem: '#uploadfile'
+            ,url: 'https://httpbin.org/post' //改成您自己的上传接口
+            ,done: function(res){
+                layer.msg('上传成功');
+                layui.$('#uploadDemoView').removeClass('layui-hide').find('img').attr('src', res.files.file);
+                console.log(res)
+            }
+        });
+        //监听提交
+        form.on('submit(LAY-app-contlist-search)', function (data) {
+            var field = data.field;
+            var $content = $.trim($('#content').val()); //去空格
+            var $courseName = $.trim($('#courseName').val());
+            var $type = $.trim($('#type').val());
+            //执行重载
+            if ($content || $courseName || $type) {
+                table.reload('LAY-app-content-homework', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    },
+                    where: field
+                });
+            }
+        });
+    });
+</script>

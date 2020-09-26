@@ -1,0 +1,157 @@
+
+
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>数字资源</cite></a>
+        <a><cite>课程资料</cite></a>
+        <a><cite>资料下载</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="app-content-comment">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">课程名称</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="cid" placeholder="请输入" autocomplete="off" class="layui-input"
+                               id="course_name">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">教师姓名</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="username" placeholder="请输入" autocomplete="off" class="layui-input"
+                               id="teacher">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">上传时间</label>
+                    <div class="layui-input-inline">
+                        <input type="text" class="layui-input" id="date" placeholder="yyyy-MM-dd" readonly>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-comm" data-type="reload" lay-submit
+                            lay-filter="LAY-app-contcomm-search">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-comm" data-type="batchdownload"><i
+                        class="layui-icon layui-icon-ok-circle"></i>下载选中内容
+                </button>
+            </div>
+            <table id="LAY-app-content-comm" lay-filter="LAY-app-content-comm"></table>
+            <script type="text/html" id="table-content-com">
+                <a class="download layui-btn layui-btn-normal layui-btn-xs" lay-event="download">
+                    <i class="layui-icon layui-icon-ok-circle"></i>下载</a>
+            </script>
+        </div>
+    </div>
+</div>
+<script type="text/html" id="indexTpl">
+    {{d.LAY_TABLE_INDEX+1}}
+</script>
+<script>
+    layui.use('laydate', function () {
+        var laydate = layui.laydate;
+        var $ = layer.$;
+        laydate.render({
+            elem: '#date'
+            , range: true
+            ,done: function (value) {
+            }
+        })
+    })
+</script>
+<script>
+    layui.use('contlist', layui.factory('contlist')).use(['admin', 'contlist', 'table'], function () {
+        var $ = layui.$
+            , admin = layui.admin
+            , view = layui.view
+            , table = layui.table
+            , form = layui.form;
+
+        form.render(null, 'app-content-comment');
+
+        //点击下载
+        table.on('row(LAY-app-content-comm)', function (obj) {
+            var id = obj.data.id;
+            var index = obj.data.index;
+            // console.log(index);
+            // console.log(obj.data.id);
+            layer.msg("正在向服务器请求id为"+obj.data.id+'号文件的资源');
+            $(document).ready(function(){
+                $('.download').eq(index-1).click(function () {
+                    console.log()
+                    var url = "download?fileId="+obj.data.id;
+                    // 构造隐藏的form表单
+                    var $form = $('<form>');//定义一个form表单
+                    $form.attr("style","display:none");
+                    $form.attr("target","");
+                    $form.attr("method","post");  //请求类型
+                    $form.attr("action",url);   //请求地址
+                    $("body").append($form);//将表单放置在web中;
+                    // 添加提交参数
+                    var $input = $("<input>");
+                    $input.attr("type","hidden");
+                    $input.attr("value",id);
+                    // 提交表单
+                    $form.submit();
+                    console.log('ok');
+                })
+            });
+        })
+        //监听搜索
+        form.on('submit(LAY-app-contcomm-search)', function (data) {
+            var $course_name = $.trim($('#course_name').val()); //去空格
+            var $teacher = $.trim($('#teacher').val());
+            var $date = $.trim($('#date').val());
+            //执行重载
+            if ($course_name || $teacher || $date) {
+                table.reload('LAY-app-content-comm', {
+                    page: {
+                        curr: 1 //重新从第 1 页开始
+                    },
+                    where: {
+                        course: $course_name,
+                        teacher: $teacher,
+                        upload_time: $date
+                    }
+                });
+            }
+        });
+
+        //点击事件
+        var active = {
+            batchdownload: function () {
+                var checkStatus = table.checkStatus('LAY-app-content-comm')
+                    , checkData = checkStatus.data; //得到选中的数据
+                console.log(checkData);
+                if (checkData.length === 0) {
+                    return layer.msg('请选择要下载的文件');
+                }
+                admin.req({
+                    url: 'http://htdocs.net/download'
+                    , method: 'post'
+                    , datatype: 'json'
+                    , data: JSON.stringify(checkData)
+                    , done: function (res) {
+                        return false; //不刷新界面
+                    }
+                })
+                layer.msg('等待下载..');
+            }
+        }
+        $('.layui-btn.layuiadmin-btn-comm').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>

@@ -1,0 +1,75 @@
+
+
+<div class="layui-form" lay-filter="layuiadmin-form-comment" id="layuiadmin-form-comment" style="padding: 20px 0 0 0;">
+  <div class="layui-form-item">
+    <label class="layui-form-label">重新上传</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="file" name="file" id="fileReload">
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">当前文件</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="text" name="title" value="{{ d.params.title || '' }}" lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">课程名称</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <input type="text" name="class_name" value="{{ d.params.courseName || '' }}" lay-verify="required" placeholder="请输入课程名称" autocomplete="off" class="layui-input">
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label">文件类型</label>
+    <div class="layui-input-inline">
+      <script type="text/html" template>
+        <select name="type" lay-verify="required">
+          <option value="">请选择标签</option>
+          <option value="作业" {{ d.params.type === 0 ? 'selected' : '' }}>作业</option>
+          <option value="测试" {{ d.params.type === 1 ? 'selected' : '' }}>测试</option>
+          <option value="word" {{ d.params.type === 2 ? 'selected' : '' }}>word</option>
+          <option value="ppt" {{ d.params.type === 3 ? 'selected' : '' }}>ppt</option>
+          <option value="视频" {{ d.params.type === 4 ? 'selected' : '' }}>视频</option>
+          <option value="其他" {{ d.params.type === 5 ? 'selected' : '' }}>其他</option>
+        </select>
+      </script>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label"></label>
+    <div class="layui-input-inline">
+      <input type="button" lay-submit lay-filter="layuiadmin-app-com-submit" value="确认" class="layui-btn">
+    </div>
+  </div>
+</div>
+<script>
+  layui.use('upload', function () {
+    var upload = layui.upload,
+            $ = layui.jquery;
+    upload.render({
+      elem: '#fileReload'
+      , url: 'https://httpbin.org/post' //改成您自己的上传接口
+      , headers: {token: '请求头'}
+      , accept: ['file', 'images', 'video']
+      , exts: 'zip|rar|7z|jpg|png|gif|bmp|jpeg|mp4|pdf|md|doc|mov|avi|pptx|txt|ppt'
+      , multiple: true
+      , size: '204800'
+      , done: function (res) {
+        if(res.code === 0){
+          layer.msg('正在上传..', {time: 2000}, function () {
+            layer.msg('上传成功！请等待审核..');
+          })
+        }
+      }
+      , error: function () {
+        layer.msg('请求异常')
+      }
+    });
+  })
+</script>

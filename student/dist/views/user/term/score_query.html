@@ -1,0 +1,113 @@
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">主页</a>
+        <a><cite>个人中心</cite></a>
+        <a><cite>学期课程</cite></a>
+        <a><cite>成绩查询</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="app-content-list">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">课程 ID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="id" placeholder="请输入" autocomplete="off" class="layui-input" id="term">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-list" lay-submit lay-filter="LAY-app-contlist-search"
+                            id="score_query">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <table id="demo1" lay-filter="LAY-app-content-score_query">
+                <p style="text-align: center; color: red"><b>*请输入课程 ID 查询成绩, 该课程成绩使用区块链进行保存, 一经保存, 无法修改, 请务必在每学期考试结束后核对成绩</b></p>
+            </table>
+            <script></script>
+            <script type="text/html" id="buttonTpl">
+                {{#  if(d.score >= 60){ }}
+                <button class="layui-btn layui-btn-xs">通过</button>
+                {{#  }else{  }}
+                <button class="layui-btn  layui-btn-danger layui-btn-xs">挂科</button>
+                {{#  }  }}
+            </script>
+            <script type="text/html" id="table-content-list">
+                {{#  if(d.score >= 60){  }}
+                <a class="layui-btn layui-btn-xs layui-btn-primary"><i
+                        class="layui-icon layui-icon-ok-circle"></i>已通过</a>
+                {{#  }else{  }}
+                <a class="layui-btn layui-btn-xs layui-btn-warm" lay-event="apply_revision"><i
+                        class="layui-icon layui-icon-refresh"></i>申请重修</a>
+                {{#  }  }}
+            </script>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use('contlist', layui.factory('contlist')).use(['admin', 'contlist', 'table', 'upload'], function () {
+        var $ = layui.jquery
+            , admin = layui.admin
+            , view = layui.view
+            , table = layui.table
+            , form = layui.form
+            , upload = layui.upload;
+
+        form.render(null, 'app-content-list');
+
+        //查询存证记录（学生考试结果）
+        //监听提交
+        form.on('submit(LAY-app-contlist-search)', function (data) {
+            var field = data.field;
+            var $courseName = $.trim($('#courseName').val()); //去空格
+            var $term = $.trim($('#term').val());
+
+            console.log(field);
+
+            $.get({
+                url: 'http://localhost:7788?id=' + field.id,
+                success: function (res) {
+                    let th = "";
+                    let td = "";
+                    let tableHtml = "";
+                    if (res.code == 0) {
+                        res.data.forEach(function (data2) {
+                            switch (data2.name) {
+                                case "studentId":
+                                    th += '<th lay-data="{field:\'courseId\'}">课程ID</th>'
+                                    break
+                                case "studentscore":
+                                    th += '<th lay-data="{field:\'stuScore\'}">学生成绩</th>'
+                                    break
+                                case "studentname":
+                                    th += '<th lay-data="{field:\'stuName\'}">学生姓名</th>'
+                                    break
+                                default:
+                                    th += '<th lay-data="{field:\'' + data2.name + '\'}">' + data2.desc + '</th>'
+                                    break
+                            }
+                            td += '<td>' + data2.value + '</td>'
+                        })
+                        tableHtml = "<thead>" + th + "</thead><tbody><tr>" + td + "</tr></tbody>"
+                        $("#demo1").html(tableHtml)
+                        table.init('LAY-app-content-score_query', {
+                            // height: 315 //设置高度
+                            // ,limit: 10 //注意：请务必确保 limit 参数（默认：10）是与你服务端限定的数据条数一致
+                            //支持所有基础参数
+                        });
+                    } else{
+                        layer.msg(res.msg)
+                    }
+                },
+                error: function (err) {
+                    layer.msg("查询失败,服务器错误")
+                }
+            });
+        });
+    });
+</script>
