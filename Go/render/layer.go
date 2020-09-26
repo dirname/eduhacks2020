@@ -3,7 +3,6 @@ package render
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
 )
 
 // 定义 Layer 的类型
@@ -19,6 +18,9 @@ const (
 
 )
 
+const layerTemp = "<script>\n    layer.open({\n        type: %d\n        , title: '%s'\n        , content: '%s'\n        , icon: %d\n    });\n</script>"
+const layerMsg = "<script>\n    layer.msg('%s', {\n        time: %d\n    });\n</script>"
+
 // ReadTemp 读取模板
 func ReadTemp(filePth string) (string, error) {
 	fileBytes, err := ioutil.ReadFile(filePth)
@@ -28,14 +30,10 @@ func ReadTemp(filePth string) (string, error) {
 
 // GetLayer 获取一个 Layer 的代码
 func GetLayer(t, icon int, title, content string) string {
-	dir, _ := os.Getwd()
-	temp, _ := ReadTemp(dir + "/render/html/layer.temp")
-	return fmt.Sprintf(temp, t, title, content, icon)
+	return fmt.Sprintf(layerTemp, t, title, content, icon)
 }
 
 // GetMsg 获取一个 MSg 的代码
 func GetMsg(content string, Sec int) string {
-	dir, _ := os.Getwd()
-	temp, _ := ReadTemp(dir + "/render/html/msg.temp")
-	return fmt.Sprintf(temp, content, Sec*1000)
+	return fmt.Sprintf(layerMsg, content, Sec*1000)
 }
