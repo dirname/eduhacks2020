@@ -13,3 +13,10 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# IDEA
+.idea/
+
+# Node
+node_modules/
+jspm_packages/
