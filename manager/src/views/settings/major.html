@@ -1,0 +1,126 @@
+<title>Major Management</title>
+
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">Home</a>
+        <a><cite>College-Level Settings</cite></a>
+        <a><cite>Major Management</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-majorfront-list">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">College</label>
+                    <div class="layui-input-inline">
+                        <select id="collegeSelect" name="collegeID" lay-verify="required" lay-search="">
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">Major Name</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="majorName" placeholder="Please input" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-major-front-search">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card-header layuiadmin-card-header-auto">
+            <button class="layui-btn layuiadmin-btn-major" data-type="add">Add</button>
+        </div>
+        <div class="layui-card-body">
+            <table id="LAY-app-content-major" lay-filter="LAY-app-content-major"></table>
+            <script type="text/html" id="layuiadmin-app-cont-majorbar">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i
+                        class="layui-icon layui-icon-edit"></i>Edit</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i
+                        class="layui-icon layui-icon-delete"></i>Del</a>
+            </script>
+        </div>
+    </div>
+    <div id="layerMsgBox"></div>
+</div>
+
+<script>
+    layui.use('contlist', layui.factory('contlist')).use(['admin', 'contlist', 'table'], function () {
+        let $ = layui.$
+            , admin = layui.admin
+            , view = layui.view
+            , table = layui.table
+            , form = layui.form
+            , setter = layui.setter;
+
+        let field = {};
+        field.token = layui.data(layui.setter.tableName)[layui.setter.request.tokenName];
+        const t = getRequest("/api/manager/college/html", 1, window.location.pathname, field);
+        ws.sendRequest(t).then(response => {
+            let obj = JSON.parse(Utf8ArrayToStr(response.getData()));
+            layui.$("#collegeSelect").html('<option value="0">All Colleges</option>\n' + obj.data)
+            layui.form.render(null, 'layadmin-majorfront-list');
+        })
+
+        form.render(null, 'layadmin-majorfront-list');
+
+        //监听搜索
+        form.on('submit(LAY-major-front-search)', function (data) {
+            let field = data.field;
+
+            field.collegeID = parseInt(field.collegeID)
+
+            //执行重载
+            table.reload('LAY-app-content-major', {
+                where: field
+            });
+        });
+
+        let active = {
+            add: function () {
+                admin.popup({
+                    title: 'Add a major'
+                    , area: ['450px', '250px']
+                    , id: 'LAY-popup-content-major'
+                    , success: function (layero, index) {
+                        view(this.id).render('settings/addMajor').done(function () {
+                            form.render(null, 'layuiadmin-form-major');
+
+                            //监听提交
+                            form.on('submit(layuiadmin-app-major-submit)', function (data) {
+                                let field = data.field; //获取提交的字段
+                                field.id = parseInt(field.id);
+                                field.token = layui.data(setter.tableName)[setter.request.tokenName];
+                                let t = getRequest("/api/manager/major/add", 1, window.location.pathname, field)
+                                if (!ws.isOpened) {
+                                    layer.open({
+                                        type: 0
+                                        , title: "Unable to add data"
+                                        , content: "Unable to add data, the communication with the server is disconnected, please refresh the page and try again"
+                                        , icon: 5
+                                    })
+                                    return
+                                }
+
+                                //提交 Ajax 成功后，关闭当前弹层并重载表格
+                                //$.ajax({});
+                                ws.sendRequest(t);
+                                layui.table.reload('LAY-app-content-major'); //重载表格
+                                layer.close(index); //执行关闭
+                            });
+                        });
+                    }
+                });
+            }
+        }
+        $('.layui-btn.layuiadmin-btn-major').on('click', function () {
+            let type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>

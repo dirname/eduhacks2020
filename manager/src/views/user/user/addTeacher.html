@@ -1,0 +1,81 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">Teacher ID</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="username" value="{{ d.params.username || '' }}" lay-verify="required"
+                       placeholder="Cannot be duplicated" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Password</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="password" name="password" value="{{ d.params.username || '' }}" lay-verify="required"
+                       placeholder="Please input ..." autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Name</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="nickname" value="{{ d.params.name || '' }}" layui-require
+                       placeholder="Please input ..." autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Phone</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="phone" value="{{ d.params.phone || '' }}" lay-verify="phone"
+                       placeholder="Cannot be duplicated" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Email</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="email" value="{{ d.params.email || '' }}" lay-verify="email"
+                       placeholder="Cannot be duplicated" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item" lay-filter="full-time">
+        <label class="layui-form-label">Full-Time</label>
+        <div class="layui-input-block">
+            <script type="text/html" template>
+                <input type="radio" name="fullTime" value="false" title="Part-time" checked>
+                <input type="radio" name="fullTime" value="true" title="Full-time">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item" lay-filter="sex">
+        <label class="layui-form-label">Gender</label>
+        <div class="layui-input-block">
+            <script type="text/html" template>
+                <input type="radio" name="gender" value="false" title="Male" checked>
+                <input type="radio" name="gender" value="true" title="Female">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="LAY-user-front-submit" value="Add" class="layui-btn">
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['admin', 'form', 'upload'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , upload = layui.upload
+            , setter = layui.setter;
+
+    })
+</script>

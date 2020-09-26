@@ -1,0 +1,38 @@
+<div class="layui-form" lay-filter="layuiadmin-form-major" id="layuiadmin-app-form-major">
+    <div class="layui-form-item">
+        <label class="layui-form-label">College</label>
+        <div class="layui-input-inline">
+            <select id="college_select" name="collegeID" lay-verify="required" lay-search="">
+            </select>
+        </div>
+    </div>
+    <script type="text/html" template>
+        <input style="display:none" value="{{ d.params.collegeID }}" id="college_id"/>
+    </script>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Name</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="name" value="{{ d.params.name || '' }}" lay-verify="required"
+                       placeholder="Cannot be duplicated" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="layuiadmin-app-major-submit" value="Edit" class="layui-btn">
+        </div>
+    </div>
+</div>
+<script>
+    let field = {};
+    field.token = layui.data(layui.setter.tableName)[layui.setter.request.tokenName];
+    t = getRequest("/api/manager/college/html", 1, window.location.pathname, field);
+    ws.sendRequest(t).then(response => {
+        let obj = JSON.parse(Utf8ArrayToStr(response.getData()));
+        layui.$("#college_select").html(obj.data)
+        layui.$("#college_select").val(layui.$("#college_id").val())
+        layui.form.render(null, 'layuiadmin-form-major');
+    })
+</script>

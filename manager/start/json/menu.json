@@ -1,0 +1,67 @@
+{
+  "code": 0,
+  "msg": "",
+  "data": [
+    {
+      "title": "Quick start",
+      "icon": "layui-icon-home",
+      "list": [
+        {
+          "title": "README Blog",
+          "jump": "/"
+        }
+      ]
+    },
+    {
+      "name": "user",
+      "title": "User Management",
+      "icon": "layui-icon-user",
+      "list": [
+        {
+          "name": "teachers-list",
+          "title": "Teacher Staff Management",
+          "jump": "user/user/teacher"
+        },
+        {
+          "name": "students-list",
+          "title": "Student Staff Management",
+          "jump": "user/user/student"
+        }
+      ]
+    },
+    {
+      "name": "clients",
+      "title": "Client Devices Console",
+      "icon": "layui-icon-cellphone",
+      "list": [
+        {
+          "name": "Clients-List",
+          "title": "Client Devices List",
+          "jump": "control/devices"
+        }
+      ]
+    },
+    {
+      "name": "set",
+      "title": "College-Level Settings",
+      "icon": "layui-icon-set",
+      "list": [
+        {
+          "name": "college-list",
+          "title": "College Management",
+          "jump": "settings/college"
+        },
+        {
+          "name": "major-list",
+          "title": "Major Management",
+          "jump": "settings/major"
+        },
+        {
+          "name": "class-list",
+          "title": "Class Management",
+          "jump": "settings/class"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+<div class="layui-form" lay-filter="layuiadmin-form-useradmin" style="padding: 20px 0 0 0;">
+    <div class="layui-form-item">
+        <label class="layui-form-label">College</label>
+        <div class="layui-input-inline">
+            <select id="college_select" name="college" lay-verify="required" lay-search=""
+                    lay-filter="collegeAddSelect">
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Major</label>
+        <div class="layui-input-inline">
+            <select id="major_select" name="major" lay-verify="required" lay-search="" lay-filter="majorAddSelect">
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Class</label>
+        <div class="layui-input-inline">
+            <select id="class_select" name="class" lay-verify="required" lay-search="" lay-filter="classAddSelect">
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Student ID</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="username" value="{{ d.params.username || '' }}" lay-verify="required"
+                       placeholder="Cannot be duplicated" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Password</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="password" name="username" value="{{ d.params.username || '' }}" lay-verify="required" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Phone</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="phone" value="{{ d.params.phone || '' }}" lay-verify="phone"
+                       placeholder="Cannot be duplicated" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Email</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="email" value="{{ d.params.email || '' }}" lay-verify="email"
+                       placeholder="Cannot be duplicated" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item" lay-filter="sex">
+        <label class="layui-form-label">Gender</label>
+        <div class="layui-input-block">
+            <script type="text/html" template>
+                <input type="radio" name="sex" value="false" title="Male" checked>
+                <input type="radio" name="sex" value="true" title="Female">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="LAY-user-front-submit" value="Add" class="layui-btn">
+        </div>
+    </div>
+</div>
+
+<script>
+    layui.use(['admin', 'form', 'upload'], function () {
+        var $ = layui.$
+            , form = layui.form
+            , upload = layui.upload
+            , setter = layui.setter;
+
+
+        var field = {};
+        field.token = layui.data(setter.tableName)[setter.request.tokenName];
+        const t = getRequest("/api/manager/college/html", 1, window.location.pathname, field);
+        ws.sendRequest(t).then(response => {
+            var obj = JSON.parse(Utf8ArrayToStr(response.getData()));
+            $("#college_select").html(obj.data)
+            renderMajorSelect(false)
+            form.render(null, 'layuiadmin-form-useradmin');
+        })
+
+
+        function renderMajorSelect(first) {
+            field = {}
+            field.token = layui.data(setter.tableName)[setter.request.tokenName];
+            field.collegeID = parseInt($("#college_select").val());
+            const t = getRequest("/api/manager/major/html", 1, window.location.pathname, field);
+            ws.sendRequest(t).then(response => {
+                var obj = JSON.parse(Utf8ArrayToStr(response.getData()));
+                $("#major_select").html(obj.data)
+                if (first) {
+                    $("#major_select").val($("#major_id").val())
+                }
+                renderClassSelect(false)
+                form.render(null, 'layuiadmin-form-useradmin');
+            })
+        }
+
+        function renderClassSelect(first) {
+            field = {}
+            field.token = layui.data(setter.tableName)[setter.request.tokenName];
+            field.majorID = parseInt($("#major_select").val());
+            const t = getRequest("/api/manager/class/html", 1, window.location.pathname, field);
+            ws.sendRequest(t).then(response => {
+                var obj = JSON.parse(Utf8ArrayToStr(response.getData()));
+                $("#class_select").html(obj.data)
+                if (first) {
+                    $("#class_select").val($("#class_id").val())
+                }
+                form.render(null, 'layuiadmin-form-useradmin');
+            })
+        }
+
+        form.on('select(collegeAddSelect)', function (data) {
+            renderMajorSelect(false);
+        });
+
+
+        form.on('select(majorAddSelect)', function (data) {
+            renderClassSelect(false);
+        });
+
+
+    })
+</script>

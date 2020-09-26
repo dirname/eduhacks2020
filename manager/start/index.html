@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Bingo - Management Site</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="pace/pace.css">
+    <script src="utils/transfer.js"></script>
+    <script src="utils/spark-md5.js"></script>
+    <script src="pace/pace.js"></script>
+    <script src="utils/websocket.js"></script>
+    <script type="text/javascript" src="utils/parser.js"></script>
+    <script>
+        let ws = undefined
+            , csrfToken = undefined
+            , token = undefined
+            , deviceId = undefined;
+        /^http(s*):\/\//.test(location.href) || alert('请先部署到 localhost 下再访问');
+    </script>
+</head>
+<!--<div id="layerMsgBox"></div>-->
+<body>
+<div id="LAY_app"></div>
+<script src="layui/layui.js"></script>
+<script src="utils/fingerprint2.min.js"></script>
+<script src="//pv.sohu.com/cityjson?ie=utf-8"></script>
+<!--生成浏览器标识-->
+<script>
+    let excludes = {};
+    excludes.userAgent = true;
+    excludes.enumerateDevices = true;
+    excludes.fontsFlash = true;
+    excludes.fonts = true;
+    excludes.audio = true;
+    excludes.webgl = true;
+    excludes.canvas = true;
+    let options = {excludes: excludes}
+    Fingerprint2.get(options, function (components) {
+        components.push({
+            key: 'ip',
+            value: returnCitySN["cip"]//通过接口获取的到ip
+        });
+        const values = components.map(function (component) {
+            return component.value
+        });
+        deviceId = Fingerprint2.x64hash128(values.join(''), 31);
+    });
+</script>
+<!--字节转换函数-->
+<script>
+    layui.use("layer", function () {
+        let layer = layui.layer,
+            $ = layui.$;
+        let paceOptions = {
+            // Disable the 'elements' source
+            elements: true
+        }
+
+        // Pace.start();
+        if ("WebSocket" in window) {
+            if (ws == undefined) {
+                ws = new WebSocketAsPromised('ws://127.0.0.1:555/ws?systemId=' + deviceId, {
+                    packMessage: data => XORData(data.serializeBinary()),
+                    unpackMessage: data => deserializeObject(data),
+                    attachRequestId: (data, requestId) => data.setId(requestId.toString()), // attach requestId to message as `id` field
+                    extractRequestId: data => getReqId(data),
+                });
+            } else {
+                console.log("The connection to the server has been already existed: %s", ws.url);
+            }
+            ws.open()
+                .then(() => console.log("The connection to the server has been established: %s", ws.url))
+                .then(() => layui.config({
+                    base: '../dist/' //指定 layuiAdmin 项目路径，本地开发用 src，线上用 dist
+                    , version: '1.4.0'
+                }).use('index'));
+
+
+            ws.onUnpackedMessage.addListener(data => {
+                switch (typeof data) {
+                    case "object":
+                        // 这是通过 protobuf 传的, 需要通过方法来调用
+                        if (data.getCode() == -1) {
+                            // 此时代表没有登录状态了
+                            layui.data(layui.setter.tableName, {
+                                key: layui.setter.request.tokenName
+                                , remove: true
+                            });
+
+                            layui.data(layui.setter.tableName, {
+                                key: "nickname", remove: true
+                            })
+
+                            //跳转到登入页
+                            location.hash = '/user/login';
+                        }
+                        console.log(data);
+                        let render = data.getRender()
+                        if (render) {
+                            $("#" + data.getHtml().getId()).html(data.getHtml().getCode())
+                        }
+                        break
+                    case "string":
+                        // 这是通过 API 接口调用的, 直接解析 json 即可
+                        const obj = JSON.parse(data);
+                        try {
+                            const msgObj = JSON.parse(obj["data"]);
+                            layer.open({
+                                type: 0
+                                , title: msgObj["title"]
+                                , content: msgObj["content"]
+                                , icon: msgObj["icon"]
+                            })
+                        } catch (e) {
+                            console.log("Not the expected message type and needs to be reprocessed")
+                        }
+
+                }
+            });
+
+            ws.onError.addListener(event => layer.open({
+                type: 0
+                , title: "Fatal error"
+                , content: event
+                , icon: 5
+            }));
+
+            ws.onClose.addListener(event =>
+                layer.open({
+                    type: 0
+                    ,
+                    title: "Fatal error"
+                    ,
+                    content: "The communication with the server is disconnected, please refresh the page and try again " + event.reason
+                    ,
+                    icon: 5
+                }));
+        } else {
+            layer.open({
+                type: 0
+                , title: "Fatal error"
+                , content: "The browser you are using does not support Websocket, you can use Chrome browser!"
+                , icon: 5
+            });
+        }
+    })
+
+
+</script>
+</body>
+</html>
+
+

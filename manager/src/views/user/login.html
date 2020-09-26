@@ -1,0 +1,115 @@
+<script type="text/html" template>
+    <link rel="stylesheet" href="{{ layui.setter.base }}style/login.css?v={{ layui.admin.v }}-1" media="all">
+</script>
+
+
+<div class="layadmin-user-login layadmin-user-display-show" id="LAY-user-login" style="display: none;">
+
+    <div class="layadmin-user-login-main">
+        <div class="layadmin-user-login-box layadmin-user-login-header">
+            <h2>Bingo</h2>
+            <p>Backstage management system</p>
+        </div>
+        <div class="layadmin-user-login-box layadmin-user-login-body layui-form">
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-username"
+                       for="LAY-user-login-username"></label>
+                <input type="text" name="user" id="LAY-user-login-username" lay-verify="required"
+                       placeholder="Please input username"
+                       class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <label class="layadmin-user-login-icon layui-icon layui-icon-password"
+                       for="LAY-user-login-password"></label>
+                <input type="password" name="password" id="LAY-user-login-password" lay-verify="required"
+                       placeholder="Please input password" class="layui-input">
+            </div>
+            <div class="layui-form-item">
+                <button style="background-color: #03152A;" class="layui-btn layui-btn-fluid" lay-submit
+                        lay-filter="LAY-user-login-submit">Login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="layui-trans layadmin-user-login-footer">
+
+        <p>© 2020 <a href="http://admin.htdocs.net/" target="_blank">htdocs.net</a></p>
+    </div>
+
+    <!--    <div class="ladmin-user-login-theme">-->
+    <!--        <script type="text/html" template>-->
+    <!--            <ul>-->
+    <!--                <li data-theme=""><img src="{{ layui.setter.base }}style/res/bg-none.jpg"></li>-->
+    <!--                <li data-theme="#03152A" style="background-color: #03152A;"></li>-->
+    <!--                <li data-theme="#2E241B" style="background-color: #2E241B;"></li>-->
+    <!--                <li data-theme="#50314F" style="background-color: #50314F;"></li>-->
+    <!--                <li data-theme="#344058" style="background-color: #344058;"></li>-->
+    <!--                <li data-theme="#20222A" style="background-color: #20222A;"></li>-->
+    <!--            </ul>-->
+    <!--        </script>-->
+    <!--    </div>-->
+
+    <div id="layerMsgBox"></div>
+</div>
+
+<script>
+    layui.use(['admin', 'form'], function () {
+        var $ = layui.$
+            , setter = layui.setter
+            , admin = layui.admin
+            , form = layui.form
+            , router = layui.router()
+            , search = router.search;
+
+        layer.msg("You have not logged in, please login first !");
+
+        form.render();
+
+        //提交
+        form.on('submit(LAY-user-login-submit)', function (obj) {
+
+            obj.field.type = -1;
+            var t = getRequest("/api/login", 1, window.location.pathname, obj.field)
+            if (!ws.isOpened) {
+                layer.open({
+                    type: 0
+                    ,
+                    title: "Unable to get data"
+                    ,
+                    content: "Unable to get data, the communication with the server is disconnected, please refresh the page and try again"
+                    ,
+                    icon: 5
+                })
+                return
+            }
+            ws.sendRequest(t).then(response => {
+                    var loginData = response.getData()
+                    // var render = response.getRender()
+                    // if (render) {
+                    //     $("#" + response.getHtml().getId()).html(response.getHtml().getCode())
+                    // }
+                    if (response.getCode() == 200) {
+                        var loginObj = JSON.parse(Utf8ArrayToStr(loginData));
+                        //请求成功后，写入 access_token
+                        layui.data(setter.tableName, {
+                            key: setter.request.tokenName
+                            , value: loginObj.token
+                        });
+                        layui.data(setter.tableName, {
+                            key: "nickname",
+                            value: loginObj.data.nickname
+                        });
+                        layui.data(layui.setter.tableName, {
+                            key: "deviceId"
+                            , value: deviceId
+                        });
+                        location.hash = search.redirect ? decodeURIComponent(search.redirect) : '/';
+                    }
+                }
+            )
+
+        });
+
+    });
+</script>

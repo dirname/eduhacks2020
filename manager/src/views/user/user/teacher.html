@@ -1,0 +1,125 @@
+<title>Teacher Staff Managements</title>
+
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">Home</a>
+        <a><cite>Users Management</cite></a>
+        <a><cite>Teacher Staff Management</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-userfront-formlist">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">Teacher ID</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="username" placeholder="Please input" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">Phone</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="phone" placeholder="Please input" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">Name</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="nickname" placeholder="Please input" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-teacher-front-search">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="layui-card-body">
+            <div style="padding-bottom: 10px;">
+                <button class="layui-btn layuiadmin-btn-useradmin" data-type="add">Add</button>
+            </div>
+
+            <table id="LAY-teacher-manage" lay-filter="LAY-teacher-manage"></table>
+            <script type="text/html" id="table-useradmin-teacher">
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i
+                        class="layui-icon layui-icon-delete"></i>Del</a>
+            </script>
+        </div>
+    </div>
+    <div id="layerMsgBox"></div>
+</div>
+
+<script>
+    layui.use('useradmin', layui.factory('useradmin')).use(['admin', 'useradmin', 'table'], function () {
+        var $ = layui.$
+            , admin = layui.admin
+            , view = layui.view
+            , table = layui.table
+            , form = layui.form
+            , setter = layui.setter;
+
+        form.render(null, 'layadmin-userfront-formlist');
+
+        //监听搜索
+        form.on('submit(LAY-teacher-front-search)', function (data) {
+            var field = data.field;
+
+            //执行重载
+            table.reload('LAY-teacher-manage', {
+                where: field
+            });
+        });
+
+        //事件
+        var active = {
+                add: function () {
+                    admin.popup({
+                        title: 'Add a teacher'
+                        , area: ['500px', '550px']
+                        , id: 'LAY-popup-user-add'
+                        , success: function (layero, index) {
+                            view(this.id).render('user/user/addteacher').done(function () {
+                                form.render(null, 'layuiadmin-form-useradmin');
+
+                                //监听提交
+                                form.on('submit(LAY-user-front-submit)', function (data) {
+                                    var field = data.field; //获取提交的字段
+
+                                    field.token = layui.data(setter.tableName)[setter.request.tokenName];
+                                    var t = getRequest("/api/manager/teacher/add", 1, window.location.pathname, field)
+                                    if (!ws.isOpened) {
+                                        layer.open({
+                                            type: 0
+                                            ,
+                                            title: "Unable to add data"
+                                            ,
+                                            content: "Unable to add data, the communication with the server is disconnected, please refresh the page and try again"
+                                            ,
+                                            icon: 5
+                                        })
+                                        return
+                                    }
+                                    ws.sendRequest(t);
+                                    layui.table.reload('LAY-teacher-manage'); //重载表格
+                                    layer.close(index); //执行关闭
+                                });
+                            });
+                        }
+                    });
+                }
+            }
+        ;
+
+        $('.layui-btn.layuiadmin-btn-useradmin').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>

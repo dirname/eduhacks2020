@@ -1,2 +1,1 @@
-# eduhacks2020
-eduhacks2020
+# EduHacks2020 Web

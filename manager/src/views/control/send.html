@@ -1,0 +1,43 @@
+<div class="layui-form" lay-filter="layuiadmin-form-sender" id="layuiadmin-app-form-sender">
+    <div class="layui-form-item">
+        <label class="layui-form-label">Element ID</label>
+        <div class="layui-input-inline">
+            <input type="text" name="id" placeholder="default by layerMsgBox" autocomplete="off"
+                   class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Title</label>
+        <div class="layui-input-inline">
+            <input type="text" name="title" lay-verify="required"
+                   placeholder="Cannot be duplicated" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Content</label>
+        <div class="layui-input-inline">
+            <input type="text" name="content" lay-verify="required"
+                   placeholder="Cannot be duplicated" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Icon</label>
+        <div class="layui-input-inline">
+            <select name="icon">
+                <option type="number" value="0">0</option>
+                <option type="number" value="1">1</option>
+                <option type="number" value="2">2</option>
+                <option type="number" value="3">3</option>
+                <option type="number" value="4">4</option>
+                <option type="number" value="5">5</option>
+                <option type="number" value="6">6</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="layuiadmin-app-sender-submit" value="Send" class="layui-btn">
+        </div>
+    </div>
+</div>

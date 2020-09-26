@@ -1,0 +1,97 @@
+<title>Major Management</title>
+
+<div class="layui-card layadmin-header">
+    <div class="layui-breadcrumb" lay-filter="breadcrumb">
+        <a lay-href="">Home</a>
+        <a><cite>College-Level Settings</cite></a>
+        <a><cite>Major Management</cite></a>
+    </div>
+</div>
+
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-form layui-card-header layuiadmin-card-header-auto" lay-filter="layadmin-Devicesfront-list">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">systemID</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="systemId" placeholder="Please input" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">Conn User</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="username" placeholder="Please input" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">User Name</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="nickname" placeholder="Please input" autocomplete="off"
+                               class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button class="layui-btn layuiadmin-btn-useradmin" lay-submit lay-filter="LAY-Devices-front-search">
+                        <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="layui-card-body">
+            <table id="LAY-app-content-Devices" lay-filter="LAY-app-content-Devices"></table>
+            <script type="text/html" id="layuiadmin-app-cont-Devicesbar">
+                <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="Msg"><i
+                        class="layui-icon layui-icon-release"></i>Msg</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="Disconnect"><i
+                        class="layui-icon layui-icon-close"></i>Disconnect</a>
+            </script>
+        </div>
+    </div>
+    <div id="layerMsgBox"></div>
+</div>
+
+<script>
+    layui.use('control', layui.factory('control')).use(['admin', 'control', 'tableHTTP'], function () {
+        let $ = layui.$
+            , admin = layui.admin
+            , view = layui.view
+            , table = layui.tableHTTP
+            , form = layui.form
+            , setter = layui.setter;
+
+        form.render(null, 'layadmin-Devicesfront-list');
+
+        //监听搜索
+        form.on('submit(LAY-Devices-front-search)', function (data) {
+            let field = data.field;
+
+            //执行重载
+            table.reload('LAY-app-content-Devices', {
+                where: field
+            });
+        });
+
+        // 注册成为发送者
+        $.ajax(setter.api + "/api/manager/register", {
+            type: 'post',
+            data: JSON.stringify({"systemId": deviceId}),
+            headers: {
+                Authorization: layui.data(setter.tableName)[setter.request.tokenName]
+            },
+            success: function (res, status) {
+                if (res.code == 0) {
+                    layer.msg("Sender registration result : " + res.msg)
+                }
+            }
+        });
+
+        let active = {}
+        $('.layui-btn.layuiadmin-btn-major').on('click', function () {
+            let type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+    });
+</script>

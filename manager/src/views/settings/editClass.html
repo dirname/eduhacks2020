@@ -1,0 +1,71 @@
+<div class="layui-form" lay-filter="layuiadmin-form-class" id="layuiadmin-app-form-class">
+    <div class="layui-form-item">
+        <label class="layui-form-label">College</label>
+        <div class="layui-input-inline">
+            <select id="college_select" name="college" lay-verify="required" lay-search="" lay-filter="college_select">
+            </select>
+        </div>
+    </div>
+    <script type="text/html" template>
+        <input style="display:none" value="{{ d.params.collegeID }}" id="college_id"/>
+        <input style="display:none" value="{{ d.params.majorID }}" id="major_id"/>
+    </script>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Major</label>
+        <div class="layui-input-inline">
+            <select id="major_select" name="major" lay-verify="required" lay-search="">
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">Name</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="className" value="{{ d.params.name || '' }}" lay-verify="required"
+                       placeholder="Cannot be duplicated" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="layuiadmin-app-class-submit" value="Edit" class="layui-btn">
+        </div>
+    </div>
+</div>
+<script>
+    layui.use("jquery", function () {
+        let $ = layui.$
+            , setter = layui.setter
+            , form = layui.form;
+        let field = {};
+        field.token = layui.data(setter.tableName)[setter.request.tokenName];
+        let t = getRequest("/api/manager/college/html", 1, window.location.pathname, field);
+        ws.sendRequest(t).then(response => {
+            let obj = JSON.parse(Utf8ArrayToStr(response.getData()));
+            $("#college_select").html(obj.data);
+            $("#college_select").val($("#college_id").val());
+            renderMajorSelect(true);
+            form.render(null, 'layuiadmin-form-class');
+        })
+
+        function renderMajorSelect(first) {
+            field = {}
+            field.token = layui.data(setter.tableName)[setter.request.tokenName];
+            field.collegeID = parseInt($("#college_select").val());
+            t = getRequest("/api/manager/major/html", 1, window.location.pathname, field);
+            ws.sendRequest(t).then(response => {
+                let obj = JSON.parse(Utf8ArrayToStr(response.getData()));
+                $("#major_select").html(obj.data)
+                if (first) {
+                    $("#major_select").val($("#major_id").val())
+                }
+                form.render(null, 'layuiadmin-form-class');
+            })
+        }
+
+        form.on('select(college_select)', function (data) {
+            renderMajorSelect(false);
+        });
+    })
+</script>

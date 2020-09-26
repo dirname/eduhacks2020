@@ -1,0 +1,17 @@
+<div class="layui-form" lay-filter="layuiadmin-form-college" id="layuiadmin-app-form-college">
+    <div class="layui-form-item">
+        <label class="layui-form-label">Name</label>
+        <div class="layui-input-inline">
+            <script type="text/html" template>
+                <input type="text" name="name" value="{{ d.params.name || '' }}" lay-verify="required"
+                       placeholder="Cannot be duplicated" autocomplete="off" class="layui-input">
+            </script>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label"></label>
+        <div class="layui-input-inline">
+            <input type="button" lay-submit lay-filter="layuiadmin-app-college-submit" value="Edit" class="layui-btn">
+        </div>
+    </div>
+</div>
