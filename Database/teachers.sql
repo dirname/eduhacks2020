@@ -20,6 +20,7 @@ CREATE TABLE "teacher"."users"
     PRIMARY KEY ("id")
 );
 CREATE INDEX "idx_teachers_deleted_at" ON "teacher"."users" ("deleted_at");
+CREATE INDEX IF NOT EXISTS "idx_teacher_query" ON "teacher"."users" ("username", "password", "phone", "email");
 -- ----------------------------
 -- Table structure for Course
 -- ----------------------------

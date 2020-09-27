@@ -38,7 +38,7 @@ func (c *Controller) Run(w http.ResponseWriter, r *http.Request, orm *database.O
 	}).Upgrade(w, r, nil)
 	if err != nil {
 		log.Errorf("upgrade error: %v", err)
-		http.NotFound(w, r)
+		//http.NotFound(w, r)
 		return
 	}
 

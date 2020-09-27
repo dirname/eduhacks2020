@@ -68,5 +68,6 @@ CREATE TABLE "college"."users"
     CONSTRAINT "fk_administrations_college" FOREIGN KEY ("college_id") REFERENCES "college"."colleges" ("id")
 );
 CREATE INDEX "idx_administrations_deleted_at" ON "college"."users" ("deleted_at");
+CREATE INDEX IF NOT EXISTS "idx_administrations_query" ON "college"."users" ("username", "password", "phone", "email");
 
 
