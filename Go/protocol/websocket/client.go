@@ -3,6 +3,7 @@ package websocket
 import (
 	"eduhacks2020/Go/api/users"
 	"eduhacks2020/Go/database"
+	"eduhacks2020/Go/models/psql"
 	"eduhacks2020/Go/protobuf"
 	"eduhacks2020/Go/render"
 	websocket2 "eduhacks2020/Go/routers/websocket"
@@ -12,6 +13,7 @@ import (
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -63,13 +65,24 @@ func (c *Client) Read(d *database.ORM, r2 *database.RedisClient, id string, m *d
 					return
 				}
 			} else {
-				c.Router(msg, d, r2, id, m, collectionName)
-				if c.NickName == "" || c.UserName == "" || c.UserRole == 0 {
-					c.setInfo(id)
+				if string(msg) == "wsTest" {
+					c.testWS(d)
+				} else {
+					c.Router(msg, d, r2, id, m, collectionName)
+					if c.NickName == "" || c.UserName == "" || c.UserRole == 0 {
+						c.setInfo(id)
+					}
 				}
 			}
 		}
 	}()
+}
+
+func (c *Client) testWS(orm *database.ORM) {
+	result := &psql.Student{}
+	rows := orm.DB.Raw("select * from student.users").Scan(result)
+	count := strconv.FormatInt(rows.RowsAffected, 10)
+	SendMessage2Client(c.ClientID, "wsTest", 0, "ok", &count)
 }
 
 func xorData(data []byte, decrypt bool) []byte {

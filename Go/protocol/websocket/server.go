@@ -234,14 +234,20 @@ func WriteMessage() {
 // Render 渲染
 func Render(conn *websocket.Conn, messageID string, sendUserID string, code int, message string, data interface{}) error {
 	// 为了提供演示这里不使用 protobuf 来传输
-	js, _ := json.Marshal(RetData{
+	ret := RetData{
 		MessageID:  messageID,
 		SendUserID: sendUserID,
 		Code:       code,
 		Msg:        message,
 		Data:       data,
-	})
-	return conn.WriteMessage(2, xorData(js, false))
+	}
+	js, _ := json.Marshal(&ret)
+	if sendUserID == "wsTest" {
+		// 这里是测试的
+		return conn.WriteJSON(&ret)
+	} else {
+		return conn.WriteMessage(2, xorData(js, false))
+	}
 }
 
 // PingTimer 启动定时器进行心跳检测
