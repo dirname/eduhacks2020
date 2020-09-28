@@ -14,6 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+	"sync"
 	"time"
 )
 
@@ -108,7 +109,7 @@ func (c *Client) setInfo(sessionID string) {
 		Id:     "",
 	}
 	logout, _ := proto.Marshal(res)
-	session := database.SessionManager{Values: make(map[interface{}]interface{})}
+	session := database.SessionManager{Values: sync.Map{}}
 	data, err := session.GetData(sessionID)
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -117,7 +118,7 @@ func (c *Client) setInfo(sessionID string) {
 		return
 	}
 	session.DecryptedData(data.(string), database.SessionName)
-	token := session.Values["token"]
+	token, _ := session.Values.Load("token")
 	if token == nil {
 		c.Socket.WriteMessage(2, xorData(logout, false))
 		return

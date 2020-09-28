@@ -21,6 +21,7 @@ type databaseConf struct {
 	MongoDB   string
 	RedisHost string
 	RedisPwd  string
+	MongoPool int
 }
 
 // Database 数据库的配置
@@ -89,6 +90,7 @@ func ReadConfigure() {
 	DialInfo.Source = Database.MongoDB
 	DialInfo.Username = Database.MongoUser
 	DialInfo.Password = Database.MongoPwd
+	DialInfo.PoolLimit = Database.MongoPool
 
 	GlobalSetting = &global{
 		LocalHost:  getIntranetIP(),
@@ -114,6 +116,7 @@ func DefaultSetting() {
 		MongoUser: "educator",
 		MongoPwd:  "EduHacks2020.*",
 		MongoDB:   "education",
+		MongoPool: 4396,
 		RedisHost: "go.htdocs.net:6379",
 		RedisPwd:  "EduHacks2020.*",
 	}
@@ -122,6 +125,7 @@ func DefaultSetting() {
 	DialInfo.Source = Database.MongoDB
 	DialInfo.Username = Database.MongoUser
 	DialInfo.Password = Database.MongoPwd
+	DialInfo.PoolLimit = Database.MongoPool
 
 	AdminConf = &adminConf{
 		Username: "dirname",

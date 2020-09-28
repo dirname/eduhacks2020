@@ -55,34 +55,53 @@ func (m *MongoClientDevice) Close() {
 
 // Online 添加
 func (m *MongoClientDevice) Online(d *ClientDevice) {
-	if count, err := m.Session.DB(setting.DialInfo.Source).C(m.CollectionName).Find(bson.M{"systemId": d.SystemID}).Count(); err == nil {
+	session := m.Session.Copy()
+	defer session.Close()
+	col := session.DB(setting.DialInfo.Source).C(m.CollectionName)
+	query := bson.M{"systemId": d.SystemID}
+	update := bson.M{"$set": d}
+	//if err := col.Update(query, update); err != nil{
+	//	m.setInsert(d)
+	//}
+	if count, err := col.Find(query).Count(); err == nil {
 		if count > 0 {
 			findRes := ClientDevice{}
-			m.Session.DB(setting.DialInfo.Source).C(m.CollectionName).Find(bson.M{"systemId": d.SystemID}).One(&findRes)
+			col.Find(query).One(&findRes)
 			d.UserRole = findRes.UserRole
 			d.UserName = findRes.UserName
 			d.NickName = findRes.NickName
 			log.Infof("the same systemID has been connected and will be updated in the database systemID: %s", d.SystemID)
-			selector := bson.M{"systemId": d.SystemID}
-			update := bson.M{"$set": d}
-			if err := m.Session.DB(setting.DialInfo.Source).C(m.CollectionName).Update(selector, update); err != nil {
+			selector := query
+			if err := col.Update(selector, update); err != nil {
 				log.WithFields(log.Fields{
 					"reason": err.Error(),
 				}).Error("client failed to update")
 			}
-			return
+		} else {
+			if err := col.Insert(d); err != nil {
+				log.WithFields(log.Fields{
+					"reason": err.Error(),
+				}).Error("client failed to add to collection")
+			}
 		}
 	}
-	if err := m.Session.DB(setting.DialInfo.Source).C(m.CollectionName).Insert(d); err != nil {
-		log.WithFields(log.Fields{
-			"reason": err.Error(),
-		}).Error("client failed to add to collection")
+}
+
+func (m *MongoClientDevice) setInsert(d *ClientDevice) {
+	session := m.Session.Copy()
+	defer session.Close()
+	col := session.DB(setting.DialInfo.Source).C(m.CollectionName)
+	if col.Insert(d) != nil {
+		log.Error("client failed to add to collection")
 	}
 }
 
 // Offline 下线
 func (m *MongoClientDevice) Offline(clientID string) {
-	if err := m.Session.DB(setting.DialInfo.Source).C(m.CollectionName).Remove(bson.M{"clientId": clientID}); err != nil {
+	session := m.Session.Copy()
+	defer session.Close()
+	query := bson.M{"clientId": clientID}
+	if err := session.DB(setting.DialInfo.Source).C(m.CollectionName).Remove(query); err != nil {
 		log.WithFields(log.Fields{
 			"reason": err.Error(),
 		}).Error("client failed to remove collection")

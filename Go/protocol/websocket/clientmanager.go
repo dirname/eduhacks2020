@@ -14,8 +14,8 @@ import (
 
 // ClientManager 连接管理
 type ClientManager struct {
-	ClientIDMap     map[string]*Client // 全部的连接
-	ClientIDMapLock sync.RWMutex       // 读写锁
+	ClientIDMap     sync.Map     // 全部的连接
+	ClientIDMapLock sync.RWMutex // 读写锁
 
 	Connect    chan *Client // 连接处理
 	DisConnect chan *Client // 断开连接处理
@@ -30,7 +30,7 @@ type ClientManager struct {
 // NewClientManager 新的实例
 func NewClientManager() (clientManager *ClientManager) {
 	clientManager = &ClientManager{
-		ClientIDMap:   make(map[string]*Client),
+		ClientIDMap:   sync.Map{},
 		Connect:       make(chan *Client, 10000),
 		DisConnect:    make(chan *Client, 10000),
 		Groups:        make(map[string][]string, 100),
@@ -56,7 +56,6 @@ func (manager *ClientManager) Start() {
 
 // EventConnect 建立连接事件
 func (manager *ClientManager) EventConnect(client *Client) {
-	manager.AddClient(client)
 	client.Manager.Online(&database.ClientDevice{
 		ClientID:    client.ClientID,
 		SystemID:    client.SystemID,
@@ -66,6 +65,7 @@ func (manager *ClientManager) EventConnect(client *Client) {
 		NickName:    client.NickName,
 		UserRole:    client.UserRole,
 	})
+	manager.AddClient(client)
 	log.WithFields(log.Fields{
 		"host":     setting.GlobalSetting.LocalHost,
 		"port":     setting.CommonSetting.Port,
@@ -114,11 +114,11 @@ func (manager *ClientManager) AddClient(client *Client) {
 	manager.ClientIDMapLock.Lock()
 	defer manager.ClientIDMapLock.Unlock()
 
-	manager.ClientIDMap[client.ClientID] = client
+	manager.ClientIDMap.Store(client.ClientID, client)
 }
 
 // AllClient 获取所有的客户端
-func (manager *ClientManager) AllClient() map[string]*Client {
+func (manager *ClientManager) AllClient() sync.Map {
 	manager.ClientIDMapLock.RLock()
 	defer manager.ClientIDMapLock.RUnlock()
 
@@ -129,7 +129,12 @@ func (manager *ClientManager) AllClient() map[string]*Client {
 func (manager *ClientManager) Count() int {
 	manager.ClientIDMapLock.RLock()
 	defer manager.ClientIDMapLock.RUnlock()
-	return len(manager.ClientIDMap)
+	count := 0
+	manager.ClientIDMap.Range(func(k, v interface{}) bool {
+		count++
+		return true
+	})
+	return count
 }
 
 // DelClient 删除客户端
@@ -152,7 +157,7 @@ func (manager *ClientManager) delClientIDMap(clientID string) {
 	manager.ClientIDMapLock.Lock()
 	defer manager.ClientIDMapLock.Unlock()
 
-	delete(manager.ClientIDMap, clientID)
+	manager.ClientIDMap.Delete(clientID)
 }
 
 // GetByClientID 通过clientId获取
@@ -160,11 +165,12 @@ func (manager *ClientManager) GetByClientID(clientID string) (*Client, error) {
 	manager.ClientIDMapLock.RLock()
 	defer manager.ClientIDMapLock.RUnlock()
 
-	client, ok := manager.ClientIDMap[clientID]
+	client, ok := manager.ClientIDMap.Load(clientID)
 	if !ok {
 		return nil, errors.New("客户端不存在")
 	}
-	return client, nil
+	clientResult := client.(*Client)
+	return clientResult, nil
 }
 
 // SendMessage2LocalGroup 发送到本机分组

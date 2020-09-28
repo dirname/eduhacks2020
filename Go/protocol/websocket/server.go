@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	log "github.com/sirupsen/logrus"
+	"sync"
 	"time"
 )
 
@@ -255,15 +256,29 @@ func PingTimer() {
 	go func() {
 		ticker := time.NewTicker(heartbeatInterval)
 		defer ticker.Stop()
+		var lock sync.RWMutex
 		for {
 			<-ticker.C
 			//发送心跳
-			for clientID, conn := range Manager.AllClient() {
+			lock.RLock()
+			clients := Manager.AllClient()
+			lock.RUnlock()
+			lock.Lock()
+			clients.Range(func(key, value interface{}) bool {
+				conn := value.(*Client)
 				if err := conn.Socket.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second)); err != nil {
 					Manager.DisConnect <- conn
-					log.Errorf("failed to send heartbeat: %s total connections：%d", clientID, Manager.Count())
+					log.Errorf("failed to send heartbeat: %s total connections：%d", key.(string), Manager.Count())
 				}
-			}
+				return true
+			})
+			//for clientID, conn := range clients {
+			//	if err := conn.Socket.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(time.Second)); err != nil {
+			//		Manager.DisConnect <- conn
+			//		log.Errorf("failed to send heartbeat: %s total connections：%d", clientID, Manager.Count())
+			//	}
+			//}
+			lock.Unlock()
 		}
 
 	}()

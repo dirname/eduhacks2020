@@ -17,6 +17,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -84,12 +85,12 @@ func (l *LoginParam) Exec(db *gorm.DB, redis *redis.Client, sessionID string, re
 }
 
 func saveToSession(username, name, token, sessionID string, role int) {
-	session := database.SessionManager{Values: make(map[interface{}]interface{})}
-	session.Values["login"] = true
-	session.Values["username"] = username
-	session.Values["nickname"] = name
-	session.Values["role"] = role
-	session.Values["token"] = token
+	session := database.SessionManager{Values: sync.Map{}}
+	session.Values.Store("login", true)
+	session.Values.Store("username", username)
+	session.Values.Store("nickname", name)
+	session.Values.Store("role", role)
+	session.Values.Store("token", token)
 	cipherText, err := session.EncryptedData(database.SessionName)
 	if err != nil {
 		log.Errorf("Encrypted an error has occurred %s", err.Error())

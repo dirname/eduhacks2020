@@ -54,7 +54,7 @@ func (l *LogoutParam) Exec(redis *redis.Client, request *protobuf.Request, respo
 	if err == nil {
 		response.Code = http.StatusOK
 		response.Html.Code = render.GetLayer(0, render.Smile, "Logout", errMsg)
-		session := database.SessionManager{Values: make(map[interface{}]interface{})}
+		session := database.SessionManager{}
 		session.DeleteData(id)
 		selector := bson.M{"systemId": l.SystemID}
 		update := bson.M{"$set": bson.M{"user": "", "name": "", "role": 0}}
