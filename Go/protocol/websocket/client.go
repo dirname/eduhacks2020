@@ -14,7 +14,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
-	"sync"
 	"time"
 )
 
@@ -80,8 +79,8 @@ func (c *Client) Read(d *database.ORM, r2 *database.RedisClient, id string, m *d
 }
 
 func (c *Client) testWS(orm *database.ORM) {
-	result := &psql.Student{}
-	rows := orm.DB.Raw("select * from student.users").Scan(result)
+	var result []psql.Student
+	rows := orm.DB.Raw("select * from student.users").Scan(&result)
 	count := strconv.FormatInt(rows.RowsAffected, 10)
 	SendMessage2Client(c.ClientID, "wsTest", 0, "ok", &count)
 }
@@ -109,7 +108,7 @@ func (c *Client) setInfo(sessionID string) {
 		Id:     "",
 	}
 	logout, _ := proto.Marshal(res)
-	session := database.SessionManager{Values: sync.Map{}}
+	session := database.SessionManager{Values: make(map[interface{}]interface{})}
 	data, err := session.GetData(sessionID)
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -118,7 +117,7 @@ func (c *Client) setInfo(sessionID string) {
 		return
 	}
 	session.DecryptedData(data.(string), database.SessionName)
-	token, _ := session.Values.Load("token")
+	token := session.Values["token"]
 	if token == nil {
 		c.Socket.WriteMessage(2, xorData(logout, false))
 		return

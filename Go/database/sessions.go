@@ -7,7 +7,6 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/kidstuff/mongostore"
 	log "github.com/sirupsen/logrus"
-	"sync"
 	"time"
 )
 
@@ -22,7 +21,7 @@ var codecs = securecookie.CodecsFromPairs([]byte(sessionKey))
 
 // SessionManager 这是对 mongoStore 的改写, 从 mgo 层面直接解密 session, 使其在 websocket 通信时能实时读取
 type SessionManager struct {
-	Values sync.Map
+	Values map[interface{}]interface{}
 }
 
 // CreateMongoStore 返回 *mgo.Session 再调用结束后及时释放数据库连接资源
