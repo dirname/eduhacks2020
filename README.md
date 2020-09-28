@@ -88,8 +88,9 @@
 
 # 分支说明 :page_facing_up:
 
+| 分支 | 说明 |
+|:---:|:----:|
 | [当前分支](https://github.com/dirname/eduhacks2020) | 后端的代码 |
-|----|----|
 | [web](https://github.com/dirname/eduhacks2020/tree/web) | 前端的代码 |
 
 # 已知问题 :bug:
