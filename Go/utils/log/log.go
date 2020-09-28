@@ -55,7 +55,7 @@ func Setup() {
 	//logrus.SetReportCaller(true) //是否记录代码位置
 	logrus.AddHook(lfHook)
 	logrus.SetFormatter(&logrus.TextFormatter{
-		ForceColors:     true,
+		ForceColors: true,
 	})
 	//logrus.SetOutput()
 }
