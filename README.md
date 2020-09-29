@@ -10,7 +10,7 @@
 
 **由于需要参加 IELTS 的考试, 该项目仅实现了核心板块的内容, 查看完整的功能版图可参考 [requirements.md](requirements.md)**
 
-# 分支的功能 :white_check_mark:
+# 目前的功能 :white_check_mark:
 
 - 使用 Websocket 可实时查看连接的客户端以及客户端的角色(账号)
 - Websocket 渲染前端页面 (管理端可以向客户端发送消息或断开指定客户端的连接)
@@ -31,7 +31,7 @@
 - PostgreSQL 12.4
 - Redis 6.0.6
 
-# 思路说明 💡
+# 思路说明 :bulb:
 
 本项目主要围绕两点进行
 1. 使用 Websocket 渲染前端
@@ -98,3 +98,7 @@
 - 在集群中, 无法获取所有节点的客户端信息
   
   由于当前在客户端建立时, 会在 Mongo 建立一个集合, 来储存客户端连接的信息, 每个节点创建的集合不一样, 因此无法获取所有节点的信息, 可以通过 Redis 来储存每一个节点的集合名来解决
+
+# 演示地址 :dizzy:
+
+[Demo](https://admin.htdocs.net) User: `dirname` Password: `dirname`
